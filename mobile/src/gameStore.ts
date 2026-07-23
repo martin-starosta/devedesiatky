@@ -1,8 +1,10 @@
 import { create, type StoreApi, type UseBoundStore } from 'zustand'
 import {
+  choicesForEvent,
   createBootstrapState,
   createRng,
   reduce,
+  type EventChoiceId,
   type GameState,
   type Ideology,
   type PartyPresetId,
@@ -17,6 +19,11 @@ type GameStore = {
   hydrated: boolean
   hydrate: () => Promise<void>
   foundParty: (input: { ideology?: Ideology; preset?: PartyPresetId }) => Promise<void>
+  advanceQuarter: () => Promise<void>
+  finishPolitika: () => Promise<void>
+  finishPeniaze: () => Promise<void>
+  resolveEvent: (choiceId?: EventChoiceId) => Promise<void>
+  dismissFact: () => Promise<void>
   newGame: (input: { confirmed: boolean }) => NewGameResult | Promise<NewGameResult>
 }
 
@@ -27,6 +34,8 @@ const DURABLE_ACTIONS = new Set([
   'FINISH_POLITIKA',
   'FINISH_PENIAZE',
   'RESOLVE_EVENT',
+  'DISMISS_FACT',
+  'COLLECT_FACT',
   'ADVANCE_QUARTER',
 ])
 
@@ -62,6 +71,25 @@ export function createGameStore(options: { persistence: Persistence; seed?: numb
           ideology: input.ideology,
           preset: input.preset,
         })
+      },
+      advanceQuarter: async () => {
+        await dispatch({ type: 'ADVANCE_QUARTER' })
+      },
+      finishPolitika: async () => {
+        await dispatch({ type: 'FINISH_POLITIKA' })
+      },
+      finishPeniaze: async () => {
+        await dispatch({ type: 'FINISH_PENIAZE' })
+      },
+      resolveEvent: async (choiceId) => {
+        const { state } = get()
+        if (state.turnPhase !== 'event' || !state.activeEventId) return
+        const choice = choiceId ?? choicesForEvent(state)[0]?.id
+        if (!choice) return
+        await dispatch({ type: 'RESOLVE_EVENT', choiceId: choice })
+      },
+      dismissFact: async () => {
+        await dispatch({ type: 'DISMISS_FACT' })
       },
       newGame: (input) => {
         if (get().hasSave && !input.confirmed) {

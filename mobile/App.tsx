@@ -1,21 +1,28 @@
 import { StatusBar } from 'expo-status-bar'
 import { useEffect, useState } from 'react'
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { createGameStore } from './src/gameStore'
 import { devicePersistence } from './src/devicePersistence'
 import { SetupParty } from './src/SetupParty'
+import { GameShell } from './src/GameShell'
+import { Centrala } from './src/Centrala'
+import { PhaseStub } from './src/PhaseStub'
 
 const useGameStore = createGameStore({ persistence: devicePersistence })
 
 export default function App() {
   const [ready, setReady] = useState(false)
-  const year = useGameStore((s) => s.state.year)
-  const quarter = useGameStore((s) => s.state.quarter)
-  const preferencie = useGameStore((s) => s.state.preferencie)
   const phase = useGameStore((s) => s.state.phase)
+  const turnPhase = useGameStore((s) => s.state.turnPhase)
+  const state = useGameStore((s) => s.state)
   const hasSave = useGameStore((s) => s.hasSave)
   const foundParty = useGameStore((s) => s.foundParty)
+  const advanceQuarter = useGameStore((s) => s.advanceQuarter)
+  const finishPolitika = useGameStore((s) => s.finishPolitika)
+  const finishPeniaze = useGameStore((s) => s.finishPeniaze)
+  const resolveEvent = useGameStore((s) => s.resolveEvent)
+  const dismissFact = useGameStore((s) => s.dismissFact)
   const newGame = useGameStore((s) => s.newGame)
   const hydrate = useGameStore((s) => s.hydrate)
 
@@ -47,7 +54,7 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <SafeAreaView style={styles.safe}>
-          <View style={styles.container}>
+          <View style={styles.loading}>
             <ActivityIndicator color="#f4e6c8" />
           </View>
         </SafeAreaView>
@@ -55,29 +62,47 @@ export default function App() {
     )
   }
 
+  if (phase === 'setup') {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.safe} edges={['top', 'right', 'bottom', 'left']}>
+          <SetupParty onFound={(input) => void foundParty(input)} />
+          <StatusBar style="light" />
+        </SafeAreaView>
+      </SafeAreaProvider>
+    )
+  }
+
+  const stage =
+    turnPhase === 'centrala' ? (
+      <Centrala
+        state={state}
+        onAdvanceQuarter={() => void advanceQuarter()}
+        onNewGame={hasSave ? requestNewGame : undefined}
+      />
+    ) : (
+      <PhaseStub
+        phase={turnPhase}
+        onContinue={
+          turnPhase === 'politika'
+            ? () => void finishPolitika()
+            : turnPhase === 'peniaze'
+              ? () => void finishPeniaze()
+              : turnPhase === 'fact'
+                ? () => void dismissFact()
+                : turnPhase === 'event'
+                  ? () => void resolveEvent()
+                  : undefined
+        }
+      />
+    )
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safe} edges={['top', 'right', 'bottom', 'left']}>
-        {phase === 'setup' ? (
-          <SetupParty onFound={(input) => void foundParty(input)} />
-        ) : (
-          <View style={styles.container}>
-            <Text style={styles.brand}>Divoké deväťdesiate</Text>
-            <Text style={styles.meta}>
-              {year} Q{quarter} · {phase}
-              {hasSave ? ' · uložené' : ''}
-            </Text>
-            <Text style={styles.preferencie} accessibilityLabel="preferencie">
-              Preferencie: {preferencie.toFixed(1)} %
-            </Text>
-            <Text style={styles.hint}>Engine live — GameState cez shared package.</Text>
-            {hasSave ? (
-              <Pressable style={styles.secondary} onPress={requestNewGame} accessibilityRole="button">
-                <Text style={styles.secondaryLabel}>Nová hra</Text>
-              </Pressable>
-            ) : null}
-          </View>
-        )}
+        <GameShell state={state} phase={turnPhase}>
+          {stage}
+        </GameShell>
         <StatusBar style="light" />
       </SafeAreaView>
     </SafeAreaProvider>
@@ -89,43 +114,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1a0f12',
   },
-  container: {
+  loading: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 16,
+    alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
-  },
-  brand: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#f4e6c8',
-    letterSpacing: -0.5,
-  },
-  meta: {
-    fontSize: 16,
-    color: '#c4a484',
-  },
-  preferencie: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#f0f0f0',
-    marginTop: 8,
-  },
-  secondary: {
-    alignSelf: 'flex-start',
-    marginTop: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  secondaryLabel: {
-    color: '#c4a484',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  hint: {
-    marginTop: 8,
-    fontSize: 14,
-    color: '#9a8a7a',
   },
 })
