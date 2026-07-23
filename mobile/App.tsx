@@ -16,12 +16,15 @@ import {
   VolbyNoc,
   VolbyNocNozo,
 } from './src/Volby94'
+import { Snem } from './src/Snem'
+import { CasovaOs } from './src/CasovaOs'
 import { PhaseStub } from './src/PhaseStub'
 
 const useGameStore = createGameStore({ persistence: devicePersistence })
 
 export default function App() {
   const [ready, setReady] = useState(false)
+  const [overlay, setOverlay] = useState<'snem' | 'timeline' | null>(null)
   const phase = useGameStore((s) => s.state.phase)
   const turnPhase = useGameStore((s) => s.state.turnPhase)
   const state = useGameStore((s) => s.state)
@@ -95,10 +98,16 @@ export default function App() {
   }
 
   let stage =
-    turnPhase === 'centrala' ? (
+    overlay === 'snem' ? (
+      <Snem state={state} onClose={() => setOverlay(null)} />
+    ) : overlay === 'timeline' ? (
+      <CasovaOs state={state} onClose={() => setOverlay(null)} />
+    ) : turnPhase === 'centrala' ? (
       <Centrala
         state={state}
         onAdvanceQuarter={() => void advanceQuarter()}
+        onOpenSnem={() => setOverlay('snem')}
+        onOpenTimeline={() => setOverlay('timeline')}
         onNewGame={hasSave ? requestNewGame : undefined}
       />
     ) : turnPhase === 'politika' ? (

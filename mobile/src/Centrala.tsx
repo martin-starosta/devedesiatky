@@ -32,10 +32,14 @@ function koaliciaStatus(koalicia: number, inGovernment: boolean): string {
 export function Centrala({
   state,
   onAdvanceQuarter,
+  onOpenSnem,
+  onOpenTimeline,
   onNewGame,
 }: {
   state: GameState
   onAdvanceQuarter: () => void
+  onOpenSnem?: () => void
+  onOpenTimeline?: () => void
   onNewGame?: () => void
 }) {
   const reduceMotion = useReducedMotion()
@@ -74,6 +78,27 @@ export function Centrala({
         <Text style={styles.ctaLabel}>Spustiť ťah</Text>
         <Text style={styles.ctaSub}>Politika, fond, kauzy</Text>
       </Pressable>
+
+      <View style={styles.sideRow}>
+        <Pressable
+          accessibilityRole="button"
+          style={styles.side}
+          onPress={onOpenSnem}
+          disabled={!onOpenSnem}
+        >
+          <Text style={styles.sideLabel}>Snem</Text>
+          <Text style={styles.sideSub}>Mandáty</Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          style={styles.side}
+          onPress={onOpenTimeline}
+          disabled={!onOpenTimeline}
+        >
+          <Text style={styles.sideLabel}>Časová os</Text>
+          <Text style={styles.sideSub}>{state.collectedFactIds.length} faktov</Text>
+        </Pressable>
+      </View>
 
       {onNewGame ? (
         <Pressable accessibilityRole="button" style={styles.secondary} onPress={onNewGame}>
@@ -144,6 +169,27 @@ const styles = StyleSheet.create({
     color: '#ffd8c0',
     fontSize: 12,
     marginTop: 2,
+  },
+  sideRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 8,
+  },
+  side: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#3a2a28',
+    padding: 12,
+    gap: 2,
+  },
+  sideLabel: {
+    color: '#f4e6c8',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  sideSub: {
+    color: '#9a8a7a',
+    fontSize: 12,
   },
   secondary: {
     alignSelf: 'flex-start',
