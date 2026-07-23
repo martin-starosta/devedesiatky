@@ -8,7 +8,7 @@ Package manager: **pnpm** (workspace root).
 # from repo root
 pnpm install
 pnpm --filter web dev
-pnpm --filter web test
+pnpm test                 # content + simulation + web UI tests
 pnpm --filter web typecheck
 pnpm --filter web build
 ```

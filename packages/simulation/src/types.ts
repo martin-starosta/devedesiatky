@@ -1,21 +1,3 @@
-export type {
-  CampaignChannel,
-  CampaignRegion,
-  CoalitionPost,
-  CompanyId,
-  EventChoiceId,
-  EventId,
-  FactId,
-  Ideology,
-  InstitutionAssignee,
-  InstitutionId,
-  KauzaCondition,
-  KauzaStatus,
-  NpcArchetypeId,
-  PartyPresetId,
-  PolitikaActionId,
-  SponsorId,
-} from '@devedesiatky/content'
 import type {
   CampaignChannel,
   CampaignRegion,
@@ -35,6 +17,25 @@ import type {
   SponsorId,
 } from '@devedesiatky/content'
 import type { NpcPartyState } from './npcRoster'
+
+export type {
+  CampaignChannel,
+  CampaignRegion,
+  CoalitionPost,
+  CompanyId,
+  EventChoiceId,
+  EventId,
+  FactId,
+  Ideology,
+  InstitutionAssignee,
+  InstitutionId,
+  KauzaCondition,
+  KauzaStatus,
+  NpcArchetypeId,
+  PartyPresetId,
+  PolitikaActionId,
+  SponsorId,
+}
 
 export type Quarter = 1 | 2 | 3 | 4
 
