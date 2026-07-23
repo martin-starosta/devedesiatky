@@ -1,5 +1,10 @@
 import type { GameAction, GameState, Quarter, Rng } from './types'
 import { applyFoundParty } from './foundParty'
+import {
+  applyAssignToSponsor,
+  applyFinishPeniaze,
+  openPeniazePhase,
+} from './patronage'
 
 function nextQuarter(year: number, quarter: Quarter): { year: number; quarter: Quarter } {
   if (quarter === 4) {
@@ -16,18 +21,22 @@ export function reduce(state: GameState, action: GameAction, rng: Rng): GameStat
   switch (action.type) {
     case 'FOUND_PARTY':
       return applyFoundParty(state, action, rng)
+    case 'ASSIGN_TO_SPONSOR':
+      return applyAssignToSponsor(state, action, rng)
+    case 'FINISH_PENIAZE':
+      return applyFinishPeniaze(state)
     case 'ADVANCE_QUARTER': {
-      if (state.phase !== 'playing') {
+      if (state.phase !== 'playing' || state.turnPhase === 'peniaze') {
         return state
       }
-      // Consume one draw so rngState advances even while Preferencie stay stub-stable.
       rng.next()
       const calendar = nextQuarter(state.year, state.quarter)
-      return {
+      const advanced: GameState = {
         ...state,
         ...calendar,
         rngState: rng.state,
       }
+      return openPeniazePhase(advanced, rng)
     }
   }
 }

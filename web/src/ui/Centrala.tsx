@@ -35,6 +35,7 @@ export function Centrala() {
   const state = useGameStore((s) => s.state)
   const advanceQuarter = useGameStore((s) => s.advanceQuarter)
   const topWeights = topDemographics(state.demographicWeights, 3)
+  const eyeLevel = Math.min(1, state.kauzyPressure / 12)
 
   return (
     <main className="centrala">
@@ -45,7 +46,7 @@ export function Centrala() {
 
       <motion.section
         className="centrala__board"
-        key={`${state.year}-${state.quarter}-${state.preferencie}`}
+        key={`${state.year}-${state.quarter}-${state.preferencie}-${state.pokladna}`}
         initial={{ opacity: 0.55, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.28, ease: 'easeOut' }}
@@ -67,6 +68,20 @@ export function Centrala() {
             <span className="centrala__label">Kancelárie</span>
             <strong className="centrala__value centrala__value--sm">{state.offices}</strong>
           </div>
+        </div>
+        <div className="centrala__metric">
+          <span className="centrala__label">Kauzy — oko</span>
+          <div
+            className="centrala__eye"
+            style={{ ['--eye-level' as string]: String(eyeLevel) }}
+            title={`${state.kauzy.length} zápisov · tlak ${state.kauzyPressure.toFixed(1)}`}
+            aria-label={`Tlak kauz ${state.kauzyPressure.toFixed(1)}`}
+          >
+            <span className="centrala__eye-pupil" />
+          </div>
+          <span className="centrala__eye-meta">
+            {state.kauzy.length} v ledgeri · tlak {state.kauzyPressure.toFixed(1)}
+          </span>
         </div>
         <div className="centrala__metric">
           <span className="centrala__label">Voličská základňa</span>

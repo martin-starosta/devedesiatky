@@ -4,6 +4,7 @@ import {
   freeFoundingDefaults,
   partyPresets,
 } from '../content/partyFounding'
+import { openPeniazePhase } from './patronage'
 import type {
   DemographicWeights,
   GameAction,
@@ -68,6 +69,7 @@ function resolveFounding(
   pokladna: number
   offices: number
   presetId: PartyPresetId | null
+  inGovernment: boolean
 } {
   if (action.preset) {
     const preset = partyPresets[action.preset]
@@ -77,6 +79,8 @@ function resolveFounding(
       pokladna: preset.pokladna,
       offices: preset.offices,
       presetId: preset.id,
+      // Stroj moci starts in government; challenger starts in opposition.
+      inGovernment: action.preset === 'hnutie-machine',
     }
   }
 
@@ -87,6 +91,8 @@ function resolveFounding(
     pokladna: freeFoundingDefaults.pokladna,
     offices: freeFoundingDefaults.offices,
     presetId: null,
+    // Free founding defaults to government so the patronage thesis is playable.
+    inGovernment: true,
   }
 }
 
@@ -100,7 +106,7 @@ export function applyFoundParty(
   }
 
   const founded = resolveFounding(action, rng)
-  return {
+  const playing: GameState = {
     ...state,
     phase: 'playing',
     ideology: founded.ideology,
@@ -109,6 +115,12 @@ export function applyFoundParty(
     offices: founded.offices,
     demographicWeights: weightsFromIdeology(founded.ideology),
     presetId: founded.presetId,
+    inGovernment: founded.inGovernment,
     rngState: rng.state,
   }
+
+  if (!founded.inGovernment) {
+    return { ...playing, turnPhase: 'centrala' }
+  }
+  return openPeniazePhase(playing, rng)
 }

@@ -1,5 +1,6 @@
 import { mvp1ClockStub } from '../content/mvp1ClockStub'
 import { createBootstrapState } from './createBootstrapState'
+import { applyFinishPeniaze } from './patronage'
 import { createRng } from './rng'
 import { reduce } from './reduce'
 import type { GameState, Ideology, PartyPresetId, Quarter } from './types'
@@ -11,15 +12,17 @@ type InitialOptions = {
   preferencie?: number
   ideology?: Ideology
   preset?: PartyPresetId
+  /** Keep the post-founding Peniaze FNM offer open (patronage fixtures). */
+  openPeniaze?: boolean
 }
 
 /**
- * Test/helper: bootstrap + FOUND_PARTY so clock fixtures start in a playing run.
+ * Test/helper: bootstrap + FOUND_PARTY so fixtures start in a playing run.
  * Production UI should dispatch FOUND_PARTY from setup instead.
  */
 export function createInitialState(options: InitialOptions): GameState {
   const boot = createBootstrapState({ seed: options.seed })
-  const founded = reduce(
+  let founded = reduce(
     boot,
     {
       type: 'FOUND_PARTY',
@@ -29,10 +32,15 @@ export function createInitialState(options: InitialOptions): GameState {
     createRng(boot.rngState),
   )
 
-  return {
+  founded = {
     ...founded,
     year: options.year ?? founded.year,
     quarter: options.quarter ?? founded.quarter,
     preferencie: options.preferencie ?? founded.preferencie ?? mvp1ClockStub.startPreferencie,
   }
+
+  if (!options.openPeniaze && founded.turnPhase === 'peniaze') {
+    return applyFinishPeniaze(founded)
+  }
+  return founded
 }

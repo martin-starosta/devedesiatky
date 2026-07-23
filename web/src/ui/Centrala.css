@@ -91,6 +91,33 @@
   font-weight: 600;
 }
 
+.centrala__eye {
+  --eye-level: 0;
+  position: relative;
+  width: 3.2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1px solid rgba(196, 163, 90, 0.55);
+  background: radial-gradient(circle at 50% 50%, #f2e6c9, #6a4a2a 70%);
+  box-shadow: inset 0 0 0 calc(var(--eye-level) * 4px) rgba(120, 20, 20, 0.45);
+}
+
+.centrala__eye-pupil {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(0.55rem + var(--eye-level) * 0.55rem);
+  height: calc(0.55rem + var(--eye-level) * 0.55rem);
+  border-radius: 50%;
+  background: #1a1008;
+  transform: translate(-50%, -50%);
+}
+
+.centrala__eye-meta {
+  font-size: 0.8rem;
+  color: var(--paper-deep);
+}
+
 .centrala__cta {
   appearance: none;
   border: 1px solid var(--gold);
