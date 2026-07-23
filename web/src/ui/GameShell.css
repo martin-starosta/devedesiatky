@@ -21,7 +21,11 @@
 }
 
 .shell[data-phase='centrala'] {
-  --phase-glow: rgba(184, 212, 168, 0.14);
+  --phase-glow: rgba(200, 16, 46, 0.16);
+  background:
+    radial-gradient(ellipse at 80% 0%, rgba(200, 16, 46, 0.18), transparent 45%),
+    radial-gradient(ellipse at 50% -20%, var(--phase-glow), transparent 55%),
+    transparent;
 }
 
 .shell__chrome {

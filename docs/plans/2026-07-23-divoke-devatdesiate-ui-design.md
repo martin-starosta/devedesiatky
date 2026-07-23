@@ -40,6 +40,27 @@ You operate the machine of power in a graphite / blood-red pulp world; the HUD f
 
 **Pulp Power** (Hybrid C, revised): Tropico power-fantasy readability + Clash juice on the loop + *Sviňa* pulp as the world skin. State-TV language reserved for election night; patronage table pattern reserved for FNM.
 
+### Locked Centrála visual target (2026-07-23)
+
+Player-approved mock: `docs/design-refs/centrala-dashboard-target.png`
+
+**Keep from this mock**
+- Pig-in-suit boss silhouette as brand mascot (fictional, never a real likeness)
+- Night asphalt / Hotel Sláva atmosphere behind the HUD
+- Metal bolted scoreboard strip: Preferencie · Pokladňa · Koalícia · Kauza oko
+- Torn-paper “Centrála strany” board with polaroid HQ + sticky-note schedule
+- Dense 2×3 action tile grid with chunky icons
+- Signal-yellow primary CTA + bottom Politika / Fond / Centrála dock
+- Stamps, envelopes of cash, CRT TV, megaphone as period *props*
+
+**Adapt to GDD (do not copy blindly)**
+- Title spelling: **Divoké deväťdesiate** (not “devätdesiate”)
+- CTA maps to turn flow: “Ďalší ťah” / open Politika, not a free-roam “deň” loop unless we redesign the sim
+- Action tiles map to existing systems (Politika AP, FNM, médiá, kauzy), not a new idle upgrade tree
+- Preferencie stays the Clash-scale master number; avoid packing four equal-weight hero metrics
+
+**Tone line from mock (keep):** *Ty si šéf. Morálka je voliteľná.*
+
 ---
 
 ## 2. Visual system

@@ -12,15 +12,23 @@ function formatSk(amount: number): string {
   return `${Math.round(amount)}`
 }
 
+function koaliciaHint(koalicia: number, inGovernment: boolean): string {
+  if (!inGovernment) return 'mimo'
+  if (koalicia >= 70) return 'ok'
+  if (koalicia >= 40) return 'krehká'
+  return 'riziko'
+}
+
 export function HudStrip() {
   const state = useGameStore((s) => s.state)
   const reduceMotion = useReducedMotion()
   const eyeLevel = Math.min(1, state.kauzyPressure / 12)
+  const eyePct = Math.round(eyeLevel * 100)
 
   return (
     <header className="hud" aria-label="Skóre">
       <div className="hud__cell hud__cell--hero">
-        <span className="hud__label">Pref</span>
+        <span className="hud__label">Preferencie</span>
         <motion.strong
           key={state.preferencie.toFixed(1)}
           className="hud__value hud__value--hero"
@@ -43,16 +51,25 @@ export function HudStrip() {
       ) : (
         <div className="hud__cell">
           <span className="hud__label">Koalícia</span>
-          <strong className="hud__value">{state.koalicia.toFixed(0)}</strong>
+          <strong className="hud__value">
+            {state.koalicia.toFixed(0)}
+            <span className="hud__hint">
+              {' '}
+              {koaliciaHint(state.koalicia, state.inGovernment)}
+            </span>
+          </strong>
         </div>
       )}
       <div
-        className="hud__eye"
-        style={{ ['--eye-level' as string]: String(eyeLevel) }}
+        className="hud__eye-wrap"
         title={`Kauzy tlak ${state.kauzyPressure.toFixed(1)}`}
         aria-label={`Kauzy tlak ${state.kauzyPressure.toFixed(1)}`}
       >
-        <span className="hud__eye-pupil" />
+        <span className="hud__label">Kauza</span>
+        <div className="hud__eye" style={{ ['--eye-level' as string]: String(eyeLevel) }}>
+          <span className="hud__eye-pupil" />
+        </div>
+        <span className="hud__eye-pct">{eyePct}%</span>
       </div>
     </header>
   )

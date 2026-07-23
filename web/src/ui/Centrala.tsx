@@ -8,10 +8,6 @@ function formatDateLabel(year: number, quarter: number): string {
   return `${names[quarter - 1]} ${year}`
 }
 
-function formatSkCurrency(amount: number): string {
-  return `${Math.round(amount).toLocaleString('sk-SK')} Sk`
-}
-
 const demographicLabelsSk: Record<DemographicId, string> = {
   narodovci: 'Národovci',
   mestania: 'Mešťania',
@@ -21,14 +17,20 @@ const demographicLabelsSk: Record<DemographicId, string> = {
   vychodniari: 'Východniari',
 }
 
-function topDemographics(
+function topDemographic(
   weights: Record<DemographicId, number>,
-  count: number,
-): Array<{ id: DemographicId; weight: number }> {
-  return (Object.entries(weights) as Array<[DemographicId, number]>)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, count)
-    .map(([id, weight]) => ({ id, weight }))
+): { id: DemographicId; weight: number } {
+  const [id, weight] = (Object.entries(weights) as Array<[DemographicId, number]>).sort(
+    (a, b) => b[1] - a[1],
+  )[0]
+  return { id, weight }
+}
+
+function koaliciaStatus(koalicia: number, inGovernment: boolean): string {
+  if (!inGovernment) return 'Opozícia'
+  if (koalicia >= 70) return 'Stabilná'
+  if (koalicia >= 40) return 'Krehká'
+  return 'Nestabilná'
 }
 
 export function Centrala({
@@ -41,123 +43,136 @@ export function Centrala({
   const state = useGameStore((s) => s.state)
   const advanceQuarter = useGameStore((s) => s.advanceQuarter)
   const reduceMotion = useReducedMotion()
-  const topWeights = topDemographics(state.demographicWeights, 3)
-  const eyeLevel = Math.min(1, state.kauzyPressure / 12)
+  const top = topDemographic(state.demographicWeights)
+  const eyePct = Math.round(Math.min(1, state.kauzyPressure / 12) * 100)
+  const trustLow = state.reputacia < 4 || state.preferencie < 12
 
   return (
     <main className="centrala">
-      <header className="centrala__brand">
-        <p className="centrala__eyebrow">Stranícka centrála</p>
-        <h1 className="centrala__title">Divoké deväťdesiate</h1>
+      <header className="centrala__hero" aria-label="Centrála">
+        <div className="centrala__hero-copy">
+          <h1 className="centrala__title">Divoké deväťdesiate</h1>
+          <p className="centrala__tagline">Ty si šéf. Morálka je voliteľná.</p>
+          <p className="centrala__date">{formatDateLabel(state.year, state.quarter)}</p>
+        </div>
       </header>
 
       <motion.section
-        className="centrala__board"
-        key={`${state.year}-${state.quarter}-${state.preferencie}-${state.pokladna}`}
-        initial={reduceMotion ? false : { opacity: 0.55, y: 8 }}
+        className="centrala__hq"
+        key={`${state.year}-${state.quarter}`}
+        initial={reduceMotion ? false : { opacity: 0.7, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.28, ease: 'easeOut' }}
       >
-        <div className="centrala__metric">
-          <span className="centrala__label">Preferencie</span>
-          <strong className="centrala__value centrala__value--hero">
-            {state.preferencie.toFixed(1)}&nbsp;%
-          </strong>
+        <div className="centrala__hq-head">
+          <span className="centrala__tape">Centrála strany</span>
+          <span className="centrala__stamp">Bez faktúry</span>
         </div>
-        <div className="centrala__metrics-row">
-          <div className="centrala__metric">
-            <span className="centrala__label">Pokladňa</span>
-            <strong className="centrala__value centrala__value--sm">
-              {formatSkCurrency(state.pokladna)}
-            </strong>
+        <div className="centrala__hq-body">
+          <div className="centrala__polaroid">
+            <div className="centrala__polaroid-shot" aria-hidden />
+            <p className="centrala__polaroid-cap">
+              {state.inGovernment ? 'Vláda' : 'Opozícia'} · {state.offices} kancelárií
+            </p>
           </div>
-          <div className="centrala__metric">
-            <span className="centrala__label">Kancelárie</span>
-            <strong className="centrala__value centrala__value--sm">{state.offices}</strong>
-          </div>
-        </div>
-        <div className="centrala__metrics-row">
-          <div className="centrala__metric">
-            <span className="centrala__label">Reputácia</span>
-            <strong className="centrala__value centrala__value--sm">
-              {state.reputacia.toFixed(1)}
-            </strong>
-          </div>
-          <div className="centrala__metric">
-            <span className="centrala__label">Médiá</span>
-            <strong className="centrala__value centrala__value--sm">
-              {state.media.toFixed(1)}
-            </strong>
-          </div>
-        </div>
-        {state.inGovernment ? (
-          <div className="centrala__metric">
-            <span className="centrala__label">Koalícia</span>
-            <div
-              className="centrala__bar"
-              role="meter"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.max(0, Math.min(100, state.koalicia))}
-              aria-label={`Stabilita koalície ${state.koalicia.toFixed(0)}`}
-            >
-              <span
-                className="centrala__bar-fill"
-                style={{
-                  width: `${Math.max(0, Math.min(100, state.koalicia))}%`,
-                }}
-              />
-            </div>
-            <span className="centrala__eye-meta">{state.koalicia.toFixed(0)} / 100</span>
-          </div>
-        ) : null}
-        <div className="centrala__metric">
-          <span className="centrala__label">Kauzy: oko</span>
-          <div
-            className="centrala__eye"
-            style={{ ['--eye-level' as string]: String(eyeLevel) }}
-            title={`${state.kauzy.length} zápisov · tlak ${state.kauzyPressure.toFixed(1)}`}
-            aria-label={`Tlak kauz ${state.kauzyPressure.toFixed(1)}`}
-          >
-            <span className="centrala__eye-pupil" />
-          </div>
-          <span className="centrala__eye-meta">
-            {state.kauzy.length} v ledgeri · tlak {state.kauzyPressure.toFixed(1)}
-          </span>
-        </div>
-        <div className="centrala__metric">
-          <span className="centrala__label">Voličská základňa</span>
-          <ul className="centrala__weights">
-            {topWeights.map((row) => (
-              <li key={row.id}>
-                <strong>{demographicLabelsSk[row.id]}</strong>
-                {': '}
-                {Math.round(row.weight * 100)}&nbsp;%
-              </li>
-            ))}
+          <ul className="centrala__notes">
+            <li className="centrala__note centrala__note--blood">
+              <span>Dnes</span>
+              <strong>{state.inGovernment ? 'Politika / Fond' : 'Opozičný ťah'}</strong>
+            </li>
+            <li className="centrala__note centrala__note--mint">
+              <span>Základňa</span>
+              <strong>
+                {demographicLabelsSk[top.id]} {Math.round(top.weight * 100)}%
+              </strong>
+            </li>
+            <li className="centrala__note centrala__note--signal">
+              <span>Koalícia</span>
+              <strong>
+                {state.koalicia.toFixed(0)} · {koaliciaStatus(state.koalicia, state.inGovernment)}
+              </strong>
+            </li>
+            <li className="centrala__note">
+              <span>Dôvera</span>
+              <strong>{trustLow ? 'Nízka' : 'Drží'}</strong>
+            </li>
           </ul>
-        </div>
-        <div className="centrala__metric">
-          <span className="centrala__label">Dátum</span>
-          <strong className="centrala__value">
-            {formatDateLabel(state.year, state.quarter)}
-          </strong>
         </div>
       </motion.section>
 
-      <button type="button" className="centrala__cta" onClick={advanceQuarter}>
-        Ďalší ťah
-      </button>
-      {onOpenSnem ? (
-        <button type="button" className="centrala__link" onClick={onOpenSnem}>
-          Snem
+      <section className="centrala__tiles" aria-label="Stav strany">
+        <article className="centrala__tile">
+          <span className="centrala__tile-mark centrala__tile-mark--megaphone" aria-hidden />
+          <h2>Voličský stroj</h2>
+          <p>{demographicLabelsSk[top.id]}</p>
+          <strong>{state.preferencie.toFixed(1)}%</strong>
+        </article>
+        <article className="centrala__tile">
+          <span className="centrala__tile-mark centrala__tile-mark--board" aria-hidden />
+          <h2>Kampaň</h2>
+          <p>Kancelárie v krajoch</p>
+          <strong>Lv. {state.offices}</strong>
+        </article>
+        <article className="centrala__tile">
+          <span className="centrala__tile-mark centrala__tile-mark--tv" aria-hidden />
+          <h2>Mediálny dosah</h2>
+          <p>Kontrola priestoru</p>
+          <strong>{state.media.toFixed(0)}</strong>
+        </article>
+        <article className="centrala__tile">
+          <span className="centrala__tile-mark centrala__tile-mark--crew" aria-hidden />
+          <h2>Kádre</h2>
+          <p>Reputácia vonku</p>
+          <strong>{state.reputacia.toFixed(1)}</strong>
+        </article>
+        <button
+          type="button"
+          className="centrala__tile centrala__tile--btn"
+          onClick={onOpenSnem}
+          disabled={!onOpenSnem}
+        >
+          <span className="centrala__tile-mark centrala__tile-mark--map" aria-hidden />
+          <h2>Krajina</h2>
+          <p>Snem a mandáty</p>
+          <strong>Snem →</strong>
         </button>
-      ) : null}
-      {onOpenTimeline ? (
-        <button type="button" className="centrala__link" onClick={onOpenTimeline}>
-          Časová os ({state.collectedFactIds.length})
+        <button
+          type="button"
+          className="centrala__tile centrala__tile--btn centrala__tile--danger"
+          onClick={onOpenTimeline}
+          disabled={!onOpenTimeline}
+        >
+          <span className="centrala__tile-mark centrala__tile-mark--eye" aria-hidden />
+          <h2>Kauzy</h2>
+          <p>{state.kauzy.length} v ledgeri</p>
+          <strong>{eyePct}% oko</strong>
         </button>
-      ) : null}
+      </section>
+
+      <div className="centrala__rail">
+        <button
+          type="button"
+          className="centrala__side"
+          onClick={onOpenTimeline}
+          disabled={!onOpenTimeline}
+        >
+          <span>Časová os</span>
+          <small>{state.collectedFactIds.length} faktov</small>
+        </button>
+        <button type="button" className="centrala__cta" onClick={advanceQuarter}>
+          Spustiť ťah
+          <small>Politika, fond, kauzy</small>
+        </button>
+        <button
+          type="button"
+          className="centrala__side"
+          onClick={onOpenSnem}
+          disabled={!onOpenSnem}
+        >
+          <span>Snem</span>
+          <small>Mandáty</small>
+        </button>
+      </div>
     </main>
   )
 }
