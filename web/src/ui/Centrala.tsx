@@ -84,6 +84,27 @@ export function Centrala() {
             </strong>
           </div>
         </div>
+        {state.inGovernment ? (
+          <div className="centrala__metric">
+            <span className="centrala__label">Koalícia</span>
+            <div
+              className="centrala__bar"
+              role="meter"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.max(0, Math.min(100, state.koalicia))}
+              aria-label={`Stabilita koalície ${state.koalicia.toFixed(0)}`}
+            >
+              <span
+                className="centrala__bar-fill"
+                style={{
+                  width: `${Math.max(0, Math.min(100, state.koalicia))}%`,
+                }}
+              />
+            </div>
+            <span className="centrala__eye-meta">{state.koalicia.toFixed(0)} / 100</span>
+          </div>
+        ) : null}
         <div className="centrala__metric">
           <span className="centrala__label">Kauzy: oko</span>
           <div

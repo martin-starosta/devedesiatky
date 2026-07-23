@@ -35,6 +35,17 @@
   max-width: 42ch;
 }
 
+.fnm__koalicia {
+  margin: 0.55rem 0 0;
+  color: var(--ash);
+  font-size: 0.9rem;
+}
+
+.fnm__koalicia strong {
+  color: var(--signal);
+  font-family: var(--font-mono);
+}
+
 .fnm__sponsors {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -123,6 +134,18 @@
 
 .fnm__assign-btn:active {
   transform: scale(0.98);
+}
+
+.fnm__assign-btn--danger {
+  border-color: rgba(200, 16, 46, 0.55);
+  background: rgba(200, 16, 46, 0.12);
+  color: var(--blood);
+}
+
+.fnm__assign-btn--danger:hover {
+  background: var(--blood);
+  color: var(--bone);
+  border-color: var(--blood);
 }
 
 .fnm__cta {

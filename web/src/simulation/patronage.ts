@@ -1,17 +1,23 @@
 import {
   companies,
   companyIds,
+  fnmEffects,
   fnmOfferCount,
   sponsors,
   type CompanyId,
 } from '../content/patronage'
 import type {
+  FnmAssignment,
   GameAction,
   GameState,
   KauzaEntry,
   Rng,
   SponsorId,
 } from './types'
+
+function round1(value: number): number {
+  return Math.round(value * 10) / 10
+}
 
 function dealFnmOffer(pool: CompanyId[], rng: Rng): { offered: CompanyId[]; pool: CompanyId[] } {
   const remaining = [...pool]
@@ -80,9 +86,118 @@ export function applyPollTickAfterPatronage(
   const swing = pollSwingFromPatronage(cash, rng)
   return {
     ...state,
-    preferencie: Math.round((state.preferencie + swing) * 10) / 10,
+    preferencie: round1(state.preferencie + swing),
     rngState: rng.state,
   }
+}
+
+function takeCompanyOffOffer(state: GameState, companyId: CompanyId): CompanyId[] {
+  return state.fnmOffered.filter((id) => id !== companyId)
+}
+
+/** Pád vlády: Koalícia ≤ 0 strips government and ends Peniaze. */
+export function applyCoalitionCollapse(state: GameState): GameState {
+  if (state.koalicia > 0 || !state.inGovernment) {
+    return state
+  }
+  return {
+    ...state,
+    inGovernment: false,
+    koalicia: 0,
+    turnPhase: 'centrala',
+    fnmPool: [...state.fnmPool, ...state.fnmOffered],
+    fnmOffered: [],
+  }
+}
+
+function maybeEndPeniaze(state: GameState, remainingOffers: CompanyId[]): GameState {
+  if (remainingOffers.length === 0 && state.turnPhase === 'peniaze') {
+    return { ...state, turnPhase: 'centrala', fnmOffered: remainingOffers }
+  }
+  return { ...state, fnmOffered: remainingOffers }
+}
+
+export function applyAssignFnm(
+  state: GameState,
+  action: Extract<GameAction, { type: 'ASSIGN_FNM' }>,
+  rng: Rng,
+): GameState {
+  if (
+    state.phase !== 'playing' ||
+    !state.inGovernment ||
+    state.turnPhase !== 'peniaze' ||
+    !state.fnmOffered.includes(action.companyId)
+  ) {
+    return state
+  }
+
+  const { companyId, destination } = action
+  const remaining = takeCompanyOffOffer(state, companyId)
+
+  if (destination.kind === 'sponsor') {
+    if (!(destination.sponsorId in sponsors)) {
+      return state
+    }
+    const cash = cashForDeal(companyId, destination.sponsorId)
+    const pressure = pressureForDeal(companyId, destination.sponsorId)
+    const entry: KauzaEntry = {
+      id: `${companyId}:${destination.sponsorId}:${state.year}Q${state.quarter}`,
+      companyId,
+      sponsorId: destination.sponsorId,
+      year: state.year,
+      quarter: state.quarter,
+      pressure,
+    }
+    const assignment: FnmAssignment = destination
+    const afterDeal: GameState = {
+      ...state,
+      pokladna: state.pokladna + cash,
+      kauzy: [...state.kauzy, entry],
+      kauzyPressure: round1(state.kauzyPressure + pressure),
+      fnmAssigned: { ...state.fnmAssigned, [companyId]: assignment },
+      fnmOffered: remaining,
+    }
+    const afterPoll = applyPollTickAfterPatronage(afterDeal, cash, rng)
+    return maybeEndPeniaze(afterPoll, remaining)
+  }
+
+  if (destination.kind === 'partner') {
+    rng.next()
+    const next: GameState = {
+      ...state,
+      koalicia: round1(state.koalicia + fnmEffects.partner.koalicia),
+      fnmAssigned: { ...state.fnmAssigned, [companyId]: destination },
+      fnmOffered: remaining,
+      rngState: rng.state,
+    }
+    return applyCoalitionCollapse(maybeEndPeniaze(next, remaining))
+  }
+
+  if (destination.kind === 'auction') {
+    rng.next()
+    const next: GameState = {
+      ...state,
+      reputacia: round1(state.reputacia + fnmEffects.auction.reputacia),
+      koalicia: round1(state.koalicia + fnmEffects.auction.koalicia),
+      fnmAssigned: { ...state.fnmAssigned, [companyId]: destination },
+      fnmOffered: remaining,
+      rngState: rng.state,
+    }
+    return applyCoalitionCollapse(maybeEndPeniaze(next, remaining))
+  }
+
+  // cancel / delay: political cost, company returns to the pool
+  rng.next()
+  const next: GameState = {
+    ...state,
+    preferencie: round1(state.preferencie + fnmEffects.cancel.preferencie),
+    koalicia: round1(state.koalicia + fnmEffects.cancel.koalicia),
+    fnmPool: [...state.fnmPool, companyId],
+    fnmAssigned: { ...state.fnmAssigned, [companyId]: destination },
+    fnmOffered: remaining,
+    rngState: rng.state,
+  }
+  return applyCoalitionCollapse(maybeEndPeniaze(next, remaining))
 }
 
 export function applyAssignToSponsor(
@@ -90,42 +205,15 @@ export function applyAssignToSponsor(
   action: Extract<GameAction, { type: 'ASSIGN_TO_SPONSOR' }>,
   rng: Rng,
 ): GameState {
-  if (
-    state.phase !== 'playing' ||
-    !state.inGovernment ||
-    state.turnPhase !== 'peniaze' ||
-    !state.fnmOffered.includes(action.companyId) ||
-    !(action.sponsorId in sponsors)
-  ) {
-    return state
-  }
-
-  const cash = cashForDeal(action.companyId, action.sponsorId)
-  const pressure = pressureForDeal(action.companyId, action.sponsorId)
-  const entry: KauzaEntry = {
-    id: `${action.companyId}:${action.sponsorId}:${state.year}Q${state.quarter}`,
-    companyId: action.companyId,
-    sponsorId: action.sponsorId,
-    year: state.year,
-    quarter: state.quarter,
-    pressure,
-  }
-
-  const fnmOffered = state.fnmOffered.filter((id) => id !== action.companyId)
-  const afterDeal: GameState = {
-    ...state,
-    pokladna: state.pokladna + cash,
-    kauzy: [...state.kauzy, entry],
-    kauzyPressure: Math.round((state.kauzyPressure + pressure) * 10) / 10,
-    fnmOffered,
-    fnmAssigned: { ...state.fnmAssigned, [action.companyId]: action.sponsorId },
-  }
-
-  const afterPoll = applyPollTickAfterPatronage(afterDeal, cash, rng)
-  if (fnmOffered.length === 0) {
-    return { ...afterPoll, turnPhase: 'centrala' }
-  }
-  return afterPoll
+  return applyAssignFnm(
+    state,
+    {
+      type: 'ASSIGN_FNM',
+      companyId: action.companyId,
+      destination: { kind: 'sponsor', sponsorId: action.sponsorId },
+    },
+    rng,
+  )
 }
 
 export function applyFinishPeniaze(state: GameState): GameState {
@@ -135,7 +223,6 @@ export function applyFinishPeniaze(state: GameState): GameState {
   return {
     ...state,
     turnPhase: 'centrala',
-    // Unused offers return to the pool for a later quarter.
     fnmPool: [...state.fnmPool, ...state.fnmOffered],
     fnmOffered: [],
   }
@@ -144,6 +231,7 @@ export function applyFinishPeniaze(state: GameState): GameState {
 export function initialPatronageFields(inGovernment: boolean): Pick<
   GameState,
   | 'inGovernment'
+  | 'koalicia'
   | 'fnmPool'
   | 'fnmOffered'
   | 'fnmAssigned'
@@ -153,6 +241,7 @@ export function initialPatronageFields(inGovernment: boolean): Pick<
 > {
   return {
     inGovernment,
+    koalicia: inGovernment ? fnmEffects.startingKoalicia : 0,
     fnmPool: [...companyIds],
     fnmOffered: [],
     fnmAssigned: {},

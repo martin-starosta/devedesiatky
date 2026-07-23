@@ -83,3 +83,11 @@ export const sponsorIds = Object.keys(sponsors) as SponsorId[]
 
 /** How many FNM cards to deal each Peniaze phase. */
 export const fnmOfferCount = { min: 2, max: 4 }
+
+/** Tunable FNM destination effects (content, not engine). */
+export const fnmEffects = {
+  startingKoalicia: 55,
+  partner: { koalicia: 12 },
+  auction: { reputacia: 1.2, koalicia: -4 },
+  cancel: { preferencie: -0.8, koalicia: -6 },
+} as const

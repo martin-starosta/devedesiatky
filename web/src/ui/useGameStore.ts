@@ -4,11 +4,11 @@ import {
   createRng,
   reduce,
   type CompanyId,
+  type FnmDestination,
   type GameState,
   type Ideology,
   type PartyPresetId,
   type PolitikaActionId,
-  type SponsorId,
 } from '../simulation'
 
 type GameStore = {
@@ -17,7 +17,7 @@ type GameStore = {
   foundParty: (input: { ideology?: Ideology; preset?: PartyPresetId }) => void
   spendPolitika: (actionId: PolitikaActionId) => void
   finishPolitika: () => void
-  assignToSponsor: (companyId: CompanyId, sponsorId: SponsorId) => void
+  assignFnm: (companyId: CompanyId, destination: FnmDestination) => void
   finishPeniaze: () => void
 }
 
@@ -42,7 +42,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }),
   spendPolitika: (actionId) => dispatch(get, set, { type: 'SPEND_POLITIKA', actionId }),
   finishPolitika: () => dispatch(get, set, { type: 'FINISH_POLITIKA' }),
-  assignToSponsor: (companyId, sponsorId) =>
-    dispatch(get, set, { type: 'ASSIGN_TO_SPONSOR', companyId, sponsorId }),
+  assignFnm: (companyId, destination) =>
+    dispatch(get, set, { type: 'ASSIGN_FNM', companyId, destination }),
   finishPeniaze: () => dispatch(get, set, { type: 'FINISH_PENIAZE' }),
 }))

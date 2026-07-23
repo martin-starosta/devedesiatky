@@ -2,6 +2,7 @@ export type {
   CompanyId,
   DemographicId,
   DemographicWeights,
+  FnmDestination,
   GameAction,
   GameState,
   Ideology,

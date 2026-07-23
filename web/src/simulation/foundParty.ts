@@ -4,6 +4,7 @@ import {
   freeFoundingDefaults,
   partyPresets,
 } from '../content/partyFounding'
+import { fnmEffects } from '../content/patronage'
 import { openPolitikaPhase } from './politika'
 import type {
   DemographicWeights,
@@ -116,6 +117,7 @@ export function applyFoundParty(
     demographicWeights: weightsFromIdeology(founded.ideology),
     presetId: founded.presetId,
     inGovernment: founded.inGovernment,
+    koalicia: founded.inGovernment ? fnmEffects.startingKoalicia : 0,
     rngState: rng.state,
   }
 

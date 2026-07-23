@@ -1,5 +1,5 @@
 import { companies, sponsors, sponsorIds } from '../content/patronage'
-import type { SponsorId } from '../simulation'
+import type { FnmDestination, SponsorId } from '../simulation'
 import { useGameStore } from './useGameStore'
 import './FnmScreen.css'
 
@@ -9,8 +9,12 @@ function formatSk(amount: number): string {
 
 export function FnmScreen() {
   const state = useGameStore((s) => s.state)
-  const assignToSponsor = useGameStore((s) => s.assignToSponsor)
+  const assignFnm = useGameStore((s) => s.assignFnm)
   const finishPeniaze = useGameStore((s) => s.finishPeniaze)
+
+  const assign = (companyId: (typeof state.fnmOffered)[number], destination: FnmDestination) => {
+    assignFnm(companyId, destination)
+  }
 
   return (
     <main className="fnm">
@@ -18,7 +22,10 @@ export function FnmScreen() {
         <p className="fnm__eyebrow">Fond národného majetku</p>
         <h1 className="fnm__title">Rozdávaj</h1>
         <p className="fnm__lede">
-          Podnik sponzorovi: hotovosť hneď, kauza neskôr. Preferencie sa pohýbu.
+          Štyri cesty: sponzor (cash + kauza), partner (koalícia), súťaž (reputácia), alebo odklad.
+        </p>
+        <p className="fnm__koalicia">
+          Koalícia: <strong>{state.koalicia.toFixed(0)}</strong>
         </p>
       </header>
 
@@ -54,11 +61,34 @@ export function FnmScreen() {
                     key={sponsorId}
                     type="button"
                     className="fnm__assign-btn"
-                    onClick={() => assignToSponsor(companyId, sponsorId)}
+                    onClick={() =>
+                      assign(companyId, { kind: 'sponsor', sponsorId })
+                    }
                   >
-                    → {sponsors[sponsorId].nameSk}
+                    Sponzor: {sponsors[sponsorId].nameSk}
                   </button>
                 ))}
+                <button
+                  type="button"
+                  className="fnm__assign-btn"
+                  onClick={() => assign(companyId, { kind: 'partner' })}
+                >
+                  Koaličný partner
+                </button>
+                <button
+                  type="button"
+                  className="fnm__assign-btn"
+                  onClick={() => assign(companyId, { kind: 'auction' })}
+                >
+                  Verejná súťaž
+                </button>
+                <button
+                  type="button"
+                  className="fnm__assign-btn fnm__assign-btn--danger"
+                  onClick={() => assign(companyId, { kind: 'cancel' })}
+                >
+                  Zrušiť / odložiť
+                </button>
               </div>
             </article>
           )

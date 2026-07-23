@@ -1,6 +1,7 @@
 import type { GameAction, GameState, Quarter, Rng } from './types'
 import { applyFoundParty } from './foundParty'
 import {
+  applyAssignFnm,
   applyAssignToSponsor,
   applyFinishPeniaze,
 } from './patronage'
@@ -29,6 +30,8 @@ export function reduce(state: GameState, action: GameAction, rng: Rng): GameStat
       return applySpendPolitika(state, action, rng)
     case 'FINISH_POLITIKA':
       return applyFinishPolitika(state, rng)
+    case 'ASSIGN_FNM':
+      return applyAssignFnm(state, action, rng)
     case 'ASSIGN_TO_SPONSOR':
       return applyAssignToSponsor(state, action, rng)
     case 'FINISH_PENIAZE':

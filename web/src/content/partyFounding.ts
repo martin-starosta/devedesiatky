@@ -37,7 +37,7 @@ export const partyPresets: Record<PartyPresetId, PartyPreset> = {
   'hnutie-machine': {
     id: 'hnutie-machine',
     labelSk: 'Stroj moci',
-    blurbSk: 'Silná preferencia, viac kancelárií — udržať vládu.',
+    blurbSk: 'Silná preferencia, viac kancelárií. Udržať vládu.',
     ideology: {
       narodnyObciansky: -0.55,
       socialnyTrhovy: -0.15,
@@ -50,7 +50,7 @@ export const partyPresets: Record<PartyPresetId, PartyPreset> = {
   challenger: {
     id: 'challenger',
     labelSk: 'Malý vyzývateľ',
-    blurbSk: 'Tenký rozpočet, tri kancelárie — dobýjať zdola.',
+    blurbSk: 'Tenký rozpočet, tri kancelárie. Dobýjať zdola.',
     ideology: {
       narodnyObciansky: 0.45,
       socialnyTrhovy: 0.25,

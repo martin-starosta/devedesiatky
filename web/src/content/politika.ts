@@ -38,14 +38,14 @@ export const politikaActions: Record<PolitikaActionId, PolitikaActionDef> = {
   'pressure-media': {
     id: 'pressure-media',
     labelSk: 'Pritlačiť na médiá',
-    blurbSk: 'Štátna televízia počúva — reputácia klesá.',
+    blurbSk: 'Štátna televízia počúva. Reputácia klesá.',
     role: 'government',
     effects: { media: 0.9, reputacia: -0.5, preferencie: 0.2 },
   },
   rally: {
     id: 'rally',
     labelSk: 'Mítink',
-    blurbSk: 'Ľudia na námestí — preferencie hore.',
+    blurbSk: 'Ľudia na námestí. Preferencie hore.',
     role: 'opposition',
     effects: { preferencie: 0.8 },
   },
@@ -66,7 +66,7 @@ export const politikaActions: Record<PolitikaActionId, PolitikaActionDef> = {
   'foreign-photo-op': {
     id: 'foreign-photo-op',
     labelSk: 'Foto z Bruselu',
-    blurbSk: 'Západny foto-op — reputácia a jemný bump.',
+    blurbSk: 'Západny foto-op. Reputácia a jemný bump.',
     role: 'opposition',
     effects: { reputacia: 1.0, preferencie: 0.3 },
   },

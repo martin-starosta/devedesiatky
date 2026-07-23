@@ -37,6 +37,14 @@ export type KauzaEntry = {
   pressure: number
 }
 
+export type FnmDestination =
+  | { kind: 'sponsor'; sponsorId: SponsorId }
+  | { kind: 'partner' }
+  | { kind: 'auction' }
+  | { kind: 'cancel' }
+
+export type FnmAssignment = FnmDestination
+
 export type GameState = {
   seed: number
   rngState: number
@@ -51,6 +59,8 @@ export type GameState = {
   demographicWeights: DemographicWeights
   presetId: PartyPresetId | null
   inGovernment: boolean
+  /** Coalition stability 0–100; ≤0 collapses the government. */
+  koalicia: number
   reputacia: number
   media: number
   actionPoints: number
@@ -58,8 +68,8 @@ export type GameState = {
   fnmPool: CompanyId[]
   /** Companies offered this Peniaze phase */
   fnmOffered: CompanyId[]
-  /** companyId → sponsorId for completed dirty deals */
-  fnmAssigned: Partial<Record<CompanyId, SponsorId>>
+  /** Resolved FNM destinations this run */
+  fnmAssigned: Partial<Record<CompanyId, FnmAssignment>>
   kauzy: KauzaEntry[]
   /** Visible Eye pressure — sum of ledger pressures (detonation later) */
   kauzyPressure: number
@@ -82,6 +92,12 @@ export type GameAction =
       type: 'FINISH_POLITIKA'
     }
   | {
+      type: 'ASSIGN_FNM'
+      companyId: CompanyId
+      destination: FnmDestination
+    }
+  | {
+      /** @deprecated Prefer ASSIGN_FNM with sponsor destination */
       type: 'ASSIGN_TO_SPONSOR'
       companyId: CompanyId
       sponsorId: SponsorId

@@ -39,7 +39,10 @@ describe('patronage thesis loop', () => {
       quarter: 1,
     })
     expect(state.fnmOffered).not.toContain(companyId)
-    expect(state.fnmAssigned[companyId]).toBe(sponsorId)
+    expect(state.fnmAssigned[companyId]).toEqual({
+      kind: 'sponsor',
+      sponsorId,
+    })
     expect(state.preferencie).not.toBe(preferencieBefore)
     expect(state.kauzyPressure).toBeGreaterThan(0)
 

@@ -17,7 +17,7 @@ export function PolitikaScreen() {
           {state.inGovernment ? 'Vláda' : 'Opozícia'}
         </h1>
         <p className="politika__lede">
-          AP: <strong>{state.actionPoints}</strong>. Minútich teraz, kauzy prídu neskôr.
+          AP: <strong>{state.actionPoints}</strong>. Utratíš teraz, kauzy prídu neskôr.
         </p>
       </header>
 
