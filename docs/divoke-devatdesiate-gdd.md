@@ -2,7 +2,7 @@
 
 **Working title:** Divoké deväťdesiate (The Wild Nineties)
 **Genre:** Arcade political party tycoon
-**Platform:** Web (desktop + mobile browser)
+**Platform:** Expo / React Native, iOS-first native app (App Store). Web is not a shipped v1 product; Android later from the same Expo project.
 **Session length:** 20–30 minutes per run (full 1993–1998 campaign)
 **Tone:** Arcade-fun, fast and juicy, with real history delivered through short "Čo sa naozaj stalo" fact cards
 **Language:** Slovak first, English localization later
@@ -206,12 +206,13 @@ The stats need a face. Ujo Fero's side comments track his family through the pla
 
 ## 12. Technical design
 
-- **Stack:** React + TypeScript, Zustand, Framer Motion. Client-side only for MVP; static deploy (Azure Static Web Apps).
+- **Stack:** Expo (React Native) + TypeScript for the shipped client; shared React-free simulation + content packages. UI uses native components (Zustand for client state; Reanimated / native motion where needed). **Client-only MVP:** no backend, no accounts, no network requirement to play.
 - **Data-driven content:** parties, events, companies, fact cards in TS/JSON content files — historians and writers contribute without touching engine code; EN localization = content task.
 - **Simulation core:** deterministic quarterly reducer + seedable RNG → replays, balance tests, daily-challenge mode. Poll model: demographic pools × ideology distance × momentum, simple enough to tune in a spreadsheet.
 - **AI parties:** utility-based (each archetype scores actions by its strategy weights) — predictable enough to learn, varied enough to replay.
-- **Saves:** localStorage in production (in-memory only for any Claude-artifact prototype).
-- **Education metric:** track fact-card opens and "Zisti viac" clicks.
+- **Saves:** full game run persisted **on-device** (local device storage). Autosave after meaningful actions; resume on launch; new game overwrites after confirmation. No cloud sync and no accounts for v1.
+- **Education metric:** track fact-card opens and "Zisti viac" clicks (on-device only for v1).
+- **Out of scope for v1 product:** shipping the web/Vite client; Android release (same Expo codebase, later); any server, auth, or multiplayer backend. The existing web tree may remain as a non-product reference / freeze while the native app is the product.
 
 ---
 
@@ -223,7 +224,7 @@ The stats need a face. Ujo Fero's side comments track his family through the pla
 
 **MVP 3 — polish:** art pass, sound, minor deck, opposition-start mode, daily challenge, teacher/timeline print mode.
 
-**Cut for v1:** multiplayer, post-1998 content, real-person characters, custom scenario editor.
+**Cut for v1:** multiplayer, post-1998 content, real-person characters, custom scenario editor, accounts/backend, cloud saves, shipped web client, Android store release (iOS-first; Android later).
 
 ---
 
