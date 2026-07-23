@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import type { DemographicId } from '../simulation'
 import { useGameStore } from './useGameStore'
 import './Centrala.css'
@@ -34,20 +34,21 @@ function topDemographics(
 export function Centrala() {
   const state = useGameStore((s) => s.state)
   const advanceQuarter = useGameStore((s) => s.advanceQuarter)
+  const reduceMotion = useReducedMotion()
   const topWeights = topDemographics(state.demographicWeights, 3)
   const eyeLevel = Math.min(1, state.kauzyPressure / 12)
 
   return (
     <main className="centrala">
       <header className="centrala__brand">
-        <p className="centrala__eyebrow">Centrála</p>
+        <p className="centrala__eyebrow">Stranícka centrála</p>
         <h1 className="centrala__title">Divoké deväťdesiate</h1>
       </header>
 
       <motion.section
         className="centrala__board"
         key={`${state.year}-${state.quarter}-${state.preferencie}-${state.pokladna}`}
-        initial={{ opacity: 0.55, y: 8 }}
+        initial={reduceMotion ? false : { opacity: 0.55, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.28, ease: 'easeOut' }}
       >
@@ -103,7 +104,7 @@ export function Centrala() {
             {topWeights.map((row) => (
               <li key={row.id}>
                 <strong>{demographicLabelsSk[row.id]}</strong>
-                {' — '}
+                {': '}
                 {Math.round(row.weight * 100)}&nbsp;%
               </li>
             ))}
@@ -118,7 +119,7 @@ export function Centrala() {
       </motion.section>
 
       <button type="button" className="centrala__cta" onClick={advanceQuarter}>
-        Ďalší štvrťrok
+        Ďalší ťah
       </button>
     </main>
   )
