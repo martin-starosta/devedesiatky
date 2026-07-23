@@ -2,118 +2,163 @@
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding: 1.5rem;
+  gap: 1.15rem;
+  padding: 1.25rem 1.35rem 1.75rem;
   max-width: 40rem;
   margin: 0 auto;
 }
 
 .fnm__eyebrow {
-  margin: 0 0 0.35rem;
-  letter-spacing: 0.18em;
+  margin: 0 0 0.3rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-size: 0.72rem;
-  color: var(--gold);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--blood);
 }
 
 .fnm__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 6vw, 2.4rem);
-  color: var(--paper);
+  font-size: clamp(2rem, 7vw, 2.6rem);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--bone);
 }
 
 .fnm__lede {
-  margin: 0.55rem 0 0;
-  color: var(--paper-deep);
+  margin: 0.5rem 0 0;
+  color: var(--ash);
   line-height: 1.4;
   font-size: 0.95rem;
+  max-width: 42ch;
 }
 
 .fnm__sponsors {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
 .fnm__sponsor {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  padding: 0.75rem 0.9rem;
-  border: 1px solid rgba(196, 163, 90, 0.35);
-  background: rgba(26, 20, 16, 0.55);
+  padding: 0.75rem 0.85rem;
+  border: 1.5px solid var(--panel-border);
+  border-radius: var(--radius-card);
+  background: rgba(28, 31, 36, 0.9);
+  box-shadow: var(--shadow-inset);
 }
 
 .fnm__sponsor strong {
   font-family: var(--font-display);
-  color: var(--preferencie);
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--bone);
 }
 
 .fnm__sponsor span {
-  font-size: 0.78rem;
-  color: var(--paper-deep);
+  font-size: 0.75rem;
+  color: var(--ash);
+  font-variant-numeric: tabular-nums;
 }
 
 .fnm__companies {
   display: grid;
-  gap: 0.85rem;
+  gap: 0.75rem;
 }
 
 .fnm__company {
   display: grid;
-  gap: 0.75rem;
-  padding: 1rem 1.1rem;
-  border: 1px solid rgba(196, 163, 90, 0.3);
-  background: linear-gradient(180deg, rgba(42, 53, 48, 0.92), rgba(26, 20, 16, 0.88));
+  gap: 0.7rem;
+  padding: 0.95rem 1rem;
+  border: 1.5px solid var(--panel-border);
+  border-radius: var(--radius-panel);
+  background: var(--panel-bg);
+  box-shadow: var(--shadow-inset);
 }
 
 .fnm__company h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.15rem;
-  color: var(--paper);
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--bone);
 }
 
 .fnm__company p {
-  margin: 0.35rem 0 0;
-  color: var(--paper-deep);
-  font-size: 0.88rem;
+  margin: 0.3rem 0 0;
+  color: var(--ash);
+  font-size: 0.85rem;
 }
 
 .fnm__assign {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.fnm__assign-btn,
-.fnm__cta {
-  appearance: none;
-  border: 1px solid var(--gold);
-  background: linear-gradient(180deg, #6b3a48, #3a1f28);
-  color: var(--paper);
-  font: inherit;
-  cursor: pointer;
+  gap: 0.45rem;
 }
 
 .fnm__assign-btn {
-  padding: 0.55rem 0.75rem;
-  font-size: 0.85rem;
+  appearance: none;
+  border: 1px solid rgba(245, 197, 24, 0.45);
+  border-radius: var(--radius-card);
+  background: rgba(245, 197, 24, 0.12);
+  color: var(--signal);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+}
+
+.fnm__assign-btn:hover {
+  background: var(--signal);
+  color: var(--soot);
+  border-color: var(--signal);
+}
+
+.fnm__assign-btn:active {
+  transform: scale(0.98);
 }
 
 .fnm__cta {
-  padding: 0.9rem 1.1rem;
-  letter-spacing: 0.04em;
+  appearance: none;
+  border: 0;
+  border-radius: var(--radius-card);
+  background: var(--signal);
+  color: var(--soot);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 0.95rem 1.15rem;
+  cursor: pointer;
+  box-shadow:
+    0 2px 0 #b8940f,
+    var(--shadow-inset);
 }
 
-.fnm__assign-btn:hover,
 .fnm__cta:hover {
-  filter: brightness(1.08);
+  filter: brightness(1.06);
+}
+
+.fnm__cta:active {
+  transform: translateY(1px) scale(0.98);
 }
 
 @media (max-width: 520px) {
   .fnm__sponsors {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fnm__assign-btn:active,
+  .fnm__cta:active {
+    transform: none;
   }
 }
