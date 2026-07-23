@@ -9,7 +9,9 @@ export type {
   GameAction,
   GameState,
   Ideology,
+  KauzaCondition,
   KauzaEntry,
+  KauzaStatus,
   NpcArchetypeId,
   NpcPartyState,
   PartyPresetId,
@@ -29,3 +31,4 @@ export { availablePolitikaActions } from './politika'
 export { choicesForEvent } from './events'
 export { snemField, SNEM_SEATS, MAJORITY_SEATS } from './snem'
 export { pickNpcPolitikaAction, pickNpcPeniazeDestination } from './npcAi'
+export { fireKauzaCondition, openHostileLedger } from './kauzy'

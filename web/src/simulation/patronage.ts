@@ -7,12 +7,12 @@ import {
   type CompanyId,
 } from '../content/patronage'
 import { openEventOrCentrala } from './events'
+import { createKauzaEntry, onLostPower } from './kauzy'
 import { runNpcOppositionPeniaze } from './npcAi'
 import type {
   FnmAssignment,
   GameAction,
   GameState,
-  KauzaEntry,
   Rng,
   SponsorId,
 } from './types'
@@ -108,7 +108,7 @@ export function applyCoalitionCollapse(state: GameState): GameState {
   if (state.koalicia > 0 || !state.inGovernment) {
     return state
   }
-  return {
+  const collapsed: GameState = {
     ...state,
     inGovernment: false,
     koalicia: 0,
@@ -116,6 +116,7 @@ export function applyCoalitionCollapse(state: GameState): GameState {
     fnmPool: [...state.fnmPool, ...state.fnmOffered],
     fnmOffered: [],
   }
+  return onLostPower(collapsed)
 }
 
 function maybeEndPeniaze(
@@ -154,14 +155,13 @@ export function applyAssignFnm(
     }
     const cash = cashForDeal(companyId, destination.sponsorId, state.patronagePower)
     const pressure = pressureForDeal(companyId, destination.sponsorId)
-    const entry: KauzaEntry = {
-      id: `${companyId}:${destination.sponsorId}:${state.year}Q${state.quarter}`,
+    const entry = createKauzaEntry({
       companyId,
       sponsorId: destination.sponsorId,
       year: state.year,
       quarter: state.quarter,
       pressure,
-    }
+    })
     const assignment: FnmAssignment = destination
     const afterDeal: GameState = {
       ...state,

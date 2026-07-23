@@ -6,6 +6,7 @@ import {
   type PolitikaActionId,
 } from '../content/politika'
 import { openEventOrCentrala } from './events'
+import { fireKauzaCondition } from './kauzy'
 import { runNpcGovernmentPeniaze, runNpcPolitika } from './npcAi'
 import { openPeniazePhase } from './patronage'
 import type { GameAction, GameState, Rng } from './types'
@@ -60,6 +61,13 @@ export function applySpendPolitika(
     reputacia: round1(state.reputacia + (effects.reputacia ?? 0)),
     media: round1(state.media + (effects.media ?? 0)),
     rngState: rng.state,
+  }
+
+  if (action.actionId === 'investigate-kauza') {
+    next = fireKauzaCondition(next, 'journalist')
+  }
+  if (action.actionId === 'appoint-loyalist') {
+    next = fireKauzaCondition(next, 'defector')
   }
 
   if (next.actionPoints === 0) {

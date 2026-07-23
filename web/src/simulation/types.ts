@@ -1,4 +1,5 @@
 import type { NpcArchetypeId } from '../content/npcParties'
+import type { KauzaCondition, KauzaStatus } from '../content/kauzy'
 import type { CompanyId, SponsorId } from '../content/patronage'
 import type { PolitikaActionId } from '../content/politika'
 import type { EventChoiceId, EventId, FactId } from '../content/timeline'
@@ -31,6 +32,7 @@ export type DemographicWeights = Record<DemographicId, number>
 
 export type { CompanyId, SponsorId, PolitikaActionId, EventId, EventChoiceId, FactId, NpcArchetypeId }
 export type { NpcPartyState }
+export type { KauzaCondition, KauzaStatus }
 
 export type KauzaEntry = {
   id: string
@@ -39,6 +41,8 @@ export type KauzaEntry = {
   year: number
   quarter: Quarter
   pressure: number
+  conditions: KauzaCondition[]
+  status: KauzaStatus
 }
 
 export type FnmDestination =
@@ -77,8 +81,10 @@ export type GameState = {
   /** Resolved FNM destinations this run */
   fnmAssigned: Partial<Record<CompanyId, FnmAssignment>>
   kauzy: KauzaEntry[]
-  /** Visible Eye pressure — sum of ledger pressures (detonation later) */
+  /** Visible Eye pressure — sum of latent/muted ledger pressures */
   kauzyPressure: number
+  /** True after leaving office with a ledger: archives in hostile hands */
+  hostileLedger: boolean
   activeEventId: EventId | null
   pendingFactId: FactId | null
   collectedFactIds: FactId[]

@@ -144,7 +144,10 @@ export function Centrala({
         >
           <span className="centrala__tile-mark centrala__tile-mark--eye" aria-hidden />
           <h2>Kauzy</h2>
-          <p>{state.kauzy.length} v ledgeri</p>
+          <p>
+            {state.kauzy.length} v knihe kauz
+            {state.hostileLedger ? ' · nepriateľské archívy' : ''}
+          </p>
           <strong>{eyePct}% oko</strong>
         </button>
       </section>

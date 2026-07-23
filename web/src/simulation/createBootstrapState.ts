@@ -1,6 +1,7 @@
 import { mvp1ClockStub } from '../content/mvp1ClockStub'
 import { initialEventFields } from './events'
 import { neutralIdeology } from './foundParty'
+import { initialKauzyFields } from './kauzy'
 import { initialNpcFields } from './npcRoster'
 import { initialPatronageFields } from './patronage'
 import { initialPolitikaFields } from './politika'
@@ -34,5 +35,6 @@ export function createBootstrapState(options: { seed: number }): GameState {
     ...initialPolitikaFields(),
     ...initialEventFields(),
     ...initialNpcFields(),
+    ...initialKauzyFields(),
   }
 }

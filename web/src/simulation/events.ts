@@ -5,6 +5,7 @@ import {
   type EventId,
   type FactId,
 } from '../content/timeline'
+import { onLostPower } from './kauzy'
 import type { GameAction, GameState, Rng } from './types'
 
 function round1(value: number): number {
@@ -15,13 +16,14 @@ function collapseIfNeeded(state: GameState): GameState {
   if (state.koalicia > 0 || !state.inGovernment) {
     return state
   }
-  return {
+  const collapsed: GameState = {
     ...state,
     inGovernment: false,
     koalicia: 0,
     fnmPool: [...state.fnmPool, ...state.fnmOffered],
     fnmOffered: [],
   }
+  return onLostPower(collapsed)
 }
 
 export function initialEventFields(): Pick<
