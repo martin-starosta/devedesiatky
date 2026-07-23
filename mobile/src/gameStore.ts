@@ -8,6 +8,7 @@ import {
   type GameState,
   type Ideology,
   type PartyPresetId,
+  type PolitikaActionId,
 } from '@devedesiatky/simulation'
 import type { Persistence } from './persistence'
 
@@ -20,6 +21,7 @@ type GameStore = {
   hydrate: () => Promise<void>
   foundParty: (input: { ideology?: Ideology; preset?: PartyPresetId }) => Promise<void>
   advanceQuarter: () => Promise<void>
+  spendPolitika: (actionId: PolitikaActionId) => Promise<void>
   finishPolitika: () => Promise<void>
   finishPeniaze: () => Promise<void>
   resolveEvent: (choiceId?: EventChoiceId) => Promise<void>
@@ -31,6 +33,7 @@ export type GameStoreApi = UseBoundStore<StoreApi<GameStore>>
 
 const DURABLE_ACTIONS = new Set([
   'FOUND_PARTY',
+  'SPEND_POLITIKA',
   'FINISH_POLITIKA',
   'FINISH_PENIAZE',
   'RESOLVE_EVENT',
@@ -74,6 +77,9 @@ export function createGameStore(options: { persistence: Persistence; seed?: numb
       },
       advanceQuarter: async () => {
         await dispatch({ type: 'ADVANCE_QUARTER' })
+      },
+      spendPolitika: async (actionId) => {
+        await dispatch({ type: 'SPEND_POLITIKA', actionId })
       },
       finishPolitika: async () => {
         await dispatch({ type: 'FINISH_POLITIKA' })

@@ -7,6 +7,7 @@ import { devicePersistence } from './src/devicePersistence'
 import { SetupParty } from './src/SetupParty'
 import { GameShell } from './src/GameShell'
 import { Centrala } from './src/Centrala'
+import { PolitikaScreen } from './src/PolitikaScreen'
 import { PhaseStub } from './src/PhaseStub'
 
 const useGameStore = createGameStore({ persistence: devicePersistence })
@@ -19,6 +20,7 @@ export default function App() {
   const hasSave = useGameStore((s) => s.hasSave)
   const foundParty = useGameStore((s) => s.foundParty)
   const advanceQuarter = useGameStore((s) => s.advanceQuarter)
+  const spendPolitika = useGameStore((s) => s.spendPolitika)
   const finishPolitika = useGameStore((s) => s.finishPolitika)
   const finishPeniaze = useGameStore((s) => s.finishPeniaze)
   const resolveEvent = useGameStore((s) => s.resolveEvent)
@@ -73,26 +75,30 @@ export default function App() {
     )
   }
 
-  const stage =
+  let stage =
     turnPhase === 'centrala' ? (
       <Centrala
         state={state}
         onAdvanceQuarter={() => void advanceQuarter()}
         onNewGame={hasSave ? requestNewGame : undefined}
       />
+    ) : turnPhase === 'politika' ? (
+      <PolitikaScreen
+        state={state}
+        onSpend={(id) => void spendPolitika(id)}
+        onFinish={() => void finishPolitika()}
+      />
     ) : (
       <PhaseStub
         phase={turnPhase}
         onContinue={
-          turnPhase === 'politika'
-            ? () => void finishPolitika()
-            : turnPhase === 'peniaze'
-              ? () => void finishPeniaze()
-              : turnPhase === 'fact'
-                ? () => void dismissFact()
-                : turnPhase === 'event'
-                  ? () => void resolveEvent()
-                  : undefined
+          turnPhase === 'peniaze'
+            ? () => void finishPeniaze()
+            : turnPhase === 'fact'
+              ? () => void dismissFact()
+              : turnPhase === 'event'
+                ? () => void resolveEvent()
+                : undefined
         }
       />
     )
