@@ -1,5 +1,5 @@
-import { companies, sponsors, sponsorIds } from '../content/patronage'
-import type { FnmDestination, SponsorId } from '../simulation'
+import { companies, sponsors, sponsorIds } from '@devedesiatky/content'
+import type { FnmDestination, SponsorId } from '@devedesiatky/simulation'
 import { useGameStore } from './useGameStore'
 import './FnmScreen.css'
 

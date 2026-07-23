@@ -1,15 +1,39 @@
-import type { NpcArchetypeId } from '../content/npcParties'
-import type { KauzaCondition, KauzaStatus } from '../content/kauzy'
-import type { CompanyId, SponsorId } from '../content/patronage'
-import type { PolitikaActionId } from '../content/politika'
-import type { EventChoiceId, EventId, FactId } from '../content/timeline'
+export type {
+  CampaignChannel,
+  CampaignRegion,
+  CoalitionPost,
+  CompanyId,
+  EventChoiceId,
+  EventId,
+  FactId,
+  Ideology,
+  InstitutionAssignee,
+  InstitutionId,
+  KauzaCondition,
+  KauzaStatus,
+  NpcArchetypeId,
+  PartyPresetId,
+  PolitikaActionId,
+  SponsorId,
+} from '@devedesiatky/content'
 import type {
   CampaignChannel,
   CampaignRegion,
   CoalitionPost,
+  CompanyId,
+  EventChoiceId,
+  EventId,
+  FactId,
+  Ideology,
   InstitutionAssignee,
   InstitutionId,
-} from '../content/volby94'
+  KauzaCondition,
+  KauzaStatus,
+  NpcArchetypeId,
+  PartyPresetId,
+  PolitikaActionId,
+  SponsorId,
+} from '@devedesiatky/content'
 import type { NpcPartyState } from './npcRoster'
 
 export type Quarter = 1 | 2 | 3 | 4
@@ -45,15 +69,6 @@ export type ElectionState = {
   institutions: Record<InstitutionId, InstitutionAssignee | null>
 }
 
-/** Each axis is -1 … +1. */
-export type Ideology = {
-  narodnyObciansky: number
-  socialnyTrhovy: number
-  vychodZapad: number
-}
-
-export type PartyPresetId = 'hnutie-machine' | 'challenger'
-
 export type DemographicId =
   | 'narodovci'
   | 'mestania'
@@ -64,9 +79,7 @@ export type DemographicId =
 
 export type DemographicWeights = Record<DemographicId, number>
 
-export type { CompanyId, SponsorId, PolitikaActionId, EventId, EventChoiceId, FactId, NpcArchetypeId }
 export type { NpcPartyState }
-export type { KauzaCondition, KauzaStatus }
 
 export type KauzaEntry = {
   id: string

@@ -1,4 +1,4 @@
-import type { TurnPhase } from '../simulation'
+import type { TurnPhase } from '@devedesiatky/simulation'
 import './PhaseDock.css'
 
 const steps: Array<{ id: TurnPhase; label: string }> = [

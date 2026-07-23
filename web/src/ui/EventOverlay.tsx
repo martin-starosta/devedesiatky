@@ -1,5 +1,5 @@
-import { factCards, timelineEventsById } from '../content/timeline'
-import { choicesForEvent } from '../simulation'
+import { factCards, timelineEventsById } from '@devedesiatky/content'
+import { choicesForEvent } from '@devedesiatky/simulation'
 import { useGameStore } from './useGameStore'
 import './EventOverlay.css'
 

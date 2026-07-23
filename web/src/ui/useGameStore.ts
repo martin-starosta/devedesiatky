@@ -11,14 +11,14 @@ import {
   type NpcArchetypeId,
   type PartyPresetId,
   type PolitikaActionId,
-} from '../simulation'
+} from '@devedesiatky/simulation'
 import type {
   CampaignChannel,
   CampaignRegion,
   CoalitionPost,
   InstitutionAssignee,
   InstitutionId,
-} from '../content/volby94'
+} from '@devedesiatky/content'
 
 type GameStore = {
   state: GameState

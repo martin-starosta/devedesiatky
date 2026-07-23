@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { partyPresets, type PartyPreset } from '../content/partyFounding'
-import { neutralIdeology, type Ideology, type PartyPresetId } from '../simulation'
+import { partyPresets, type PartyPreset } from '@devedesiatky/content'
+import { neutralIdeology, type Ideology, type PartyPresetId } from '@devedesiatky/simulation'
 import { useGameStore } from './useGameStore'
 import './SetupParty.css'
 

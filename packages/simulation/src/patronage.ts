@@ -5,7 +5,7 @@ import {
   fnmOfferCount,
   sponsors,
   type CompanyId,
-} from '../content/patronage'
+} from '@devedesiatky/content'
 import { openEventOrCentrala } from './events'
 import { createKauzaEntry, onLostPower } from './kauzy'
 import { runNpcOppositionPeniaze } from './npcAi'

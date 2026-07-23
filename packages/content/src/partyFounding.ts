@@ -1,6 +1,12 @@
-import type { Ideology, PartyPresetId } from '../simulation/types'
+/** Each ideology axis is -1 … +1. */
+export type Ideology = {
+  narodnyObciansky: number
+  socialnyTrhovy: number
+  vychodZapad: number
+}
 
-/** Ideology axes: -1 … +1 */
+export type PartyPresetId = 'hnutie-machine' | 'challenger'
+
 export type PartyPreset = {
   id: PartyPresetId
   labelSk: string

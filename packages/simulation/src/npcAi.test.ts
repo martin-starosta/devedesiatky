@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { npcArchetypes } from '../content/npcParties'
+import { npcArchetypes } from '@devedesiatky/content'
 import { createInitialState } from './createInitialState'
 import { createRng } from './rng'
 import { pickNpcPeniazeAction, pickNpcPeniazeDestination, pickNpcPolitikaAction } from './npcAi'

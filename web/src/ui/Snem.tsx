@@ -1,4 +1,4 @@
-import { snemField } from '../simulation'
+import { snemField } from '@devedesiatky/simulation'
 import { useGameStore } from './useGameStore'
 import './Snem.css'
 

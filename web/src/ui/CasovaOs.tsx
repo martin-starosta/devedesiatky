@@ -1,4 +1,4 @@
-import { factCards } from '../content/timeline'
+import { factCards } from '@devedesiatky/content'
 import { useGameStore } from './useGameStore'
 import './CasovaOs.css'
 

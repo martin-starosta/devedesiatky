@@ -4,7 +4,7 @@ import {
   type EventChoiceId,
   type EventId,
   type FactId,
-} from '../content/timeline'
+} from '@devedesiatky/content'
 import { onLostPower } from './kauzy'
 import type { GameAction, GameState, Rng } from './types'
 import { startVolby94 } from './volby94'

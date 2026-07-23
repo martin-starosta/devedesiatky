@@ -1,6 +1,6 @@
-import { npcArchetypes } from '../content/npcParties'
+import { npcArchetypes } from '@devedesiatky/content'
 import type { GameState } from './types'
-import type { NpcArchetypeId } from '../content/npcParties'
+import type { NpcArchetypeId } from '@devedesiatky/content'
 
 export const SNEM_SEATS = 150
 export const MAJORITY_SEATS = 76

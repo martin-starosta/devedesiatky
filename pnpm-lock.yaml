@@ -6,8 +6,44 @@ settings:
 
 importers:
 
-  .:
+  .: {}
+
+  packages/content:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.13.2
+        version: 24.13.3
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.10
+        version: 4.1.10(@types/node@24.13.3)(vite@8.1.5(@types/node@24.13.3))
+
+  packages/simulation:
     dependencies:
+      '@devedesiatky/content':
+        specifier: workspace:*
+        version: link:../content
+    devDependencies:
+      '@types/node':
+        specifier: ^24.13.2
+        version: 24.13.3
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.10
+        version: 4.1.10(@types/node@24.13.3)(vite@8.1.5(@types/node@24.13.3))
+
+  web:
+    dependencies:
+      '@devedesiatky/content':
+        specifier: workspace:*
+        version: link:../packages/content
+      '@devedesiatky/simulation':
+        specifier: workspace:*
+        version: link:../packages/simulation
       framer-motion:
         specifier: ^12.42.2
         version: 12.42.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)

@@ -4,7 +4,7 @@ import {
   startingMedia,
   startingReputacia,
   type PolitikaActionId,
-} from '../content/politika'
+} from '@devedesiatky/content'
 import { openEventOrCentrala } from './events'
 import { fireKauzaCondition } from './kauzy'
 import { runNpcGovernmentPeniaze, runNpcPolitika } from './npcAi'

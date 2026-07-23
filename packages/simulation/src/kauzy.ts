@@ -6,7 +6,7 @@ import {
   muteReputaciaCost,
   type KauzaCondition,
   type KauzaStatus,
-} from '../content/kauzy'
+} from '@devedesiatky/content'
 import type { CompanyId, GameState, KauzaEntry, SponsorId, Quarter } from './types'
 
 function round1(value: number): number {

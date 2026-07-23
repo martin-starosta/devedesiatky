@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import type { DemographicId } from '../simulation'
+import type { DemographicId } from '@devedesiatky/simulation'
 import { useGameStore } from './useGameStore'
 import './Centrala.css'
 

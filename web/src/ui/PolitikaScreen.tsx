@@ -1,5 +1,5 @@
-import { politikaActions } from '../content/politika'
-import { availablePolitikaActions } from '../simulation'
+import { politikaActions } from '@devedesiatky/content'
+import { availablePolitikaActions } from '@devedesiatky/simulation'
 import { useGameStore } from './useGameStore'
 import './PolitikaScreen.css'
 

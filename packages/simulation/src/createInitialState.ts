@@ -1,4 +1,4 @@
-import { mvp1ClockStub } from '../content/mvp1ClockStub'
+import { mvp1ClockStub } from '@devedesiatky/content'
 import { createBootstrapState } from './createBootstrapState'
 import { applyFinishPeniaze } from './patronage'
 import { applyFinishPolitika } from './politika'

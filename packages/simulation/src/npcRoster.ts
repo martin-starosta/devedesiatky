@@ -1,7 +1,7 @@
 import {
   npcArchetypes,
   type NpcArchetypeId,
-} from '../content/npcParties'
+} from '@devedesiatky/content'
 import type { GameState, PartyPresetId } from './types'
 
 export type NpcPartyState = {

@@ -1,4 +1,4 @@
-import { mvp1ClockStub } from '../content/mvp1ClockStub'
+import { mvp1ClockStub } from '@devedesiatky/content'
 import { initialEventFields } from './events'
 import { neutralIdeology } from './foundParty'
 import { initialKauzyFields } from './kauzy'

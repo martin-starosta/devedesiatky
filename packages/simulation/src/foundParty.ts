@@ -3,8 +3,8 @@ import {
   demographicPoolIds,
   freeFoundingDefaults,
   partyPresets,
-} from '../content/partyFounding'
-import { fnmEffects } from '../content/patronage'
+} from '@devedesiatky/content'
+import { fnmEffects } from '@devedesiatky/content'
 import { buildNpcRoster } from './npcRoster'
 import { openPolitikaPhase } from './politika'
 import type {

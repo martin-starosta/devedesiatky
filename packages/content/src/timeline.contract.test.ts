@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { companies } from '../content/patronage'
 import {
+  companies,
   factCards,
   timelineEvents,
   timelineEventsById,
   type FactId,
-} from '../content/timeline'
+} from './index'
 
 describe('timeline content contracts', () => {
   it('resolves every event, fact, and referenced company id', () => {

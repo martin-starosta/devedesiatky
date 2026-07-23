@@ -1,6 +1,6 @@
-import { companies, sponsors, type CompanyId, type SponsorId } from '../content/patronage'
-import { npcArchetypes, type NpcArchetypeId } from '../content/npcParties'
-import { politikaActions, type PolitikaActionId } from '../content/politika'
+import { companies, sponsors, type CompanyId, type SponsorId } from '@devedesiatky/content'
+import { npcArchetypes, type NpcArchetypeId } from '@devedesiatky/content'
+import { politikaActions, type PolitikaActionId } from '@devedesiatky/content'
 import { availablePolitikaActions } from './politika'
 import type { FnmDestination, GameState, PatronagePower, Rng } from './types'
 

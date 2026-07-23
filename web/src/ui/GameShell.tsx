@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { TurnPhase } from '../simulation'
+import type { TurnPhase } from '@devedesiatky/simulation'
 import { FloatLayer } from './FloatLayer'
 import { HudStrip } from './HudStrip'
 import { PhaseDock } from './PhaseDock'

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { npcArchetypes } from '../content/npcParties'
+import { npcArchetypes } from '@devedesiatky/content'
 import {
   campaignChannels,
   campaignRegions,
@@ -9,8 +9,8 @@ import {
   type CampaignRegion,
   type CoalitionPost,
   type InstitutionId,
-} from '../content/volby94'
-import type { NpcArchetypeId } from '../simulation'
+} from '@devedesiatky/content'
+import type { NpcArchetypeId } from '@devedesiatky/simulation'
 import { useGameStore } from './useGameStore'
 import './Volby94.css'
 

@@ -1,4 +1,4 @@
-import type { FactId } from '../content/timeline'
+import type { FactId } from '@devedesiatky/content'
 import {
   campaignChannels,
   coalitionAcceptThreshold,
@@ -10,7 +10,7 @@ import {
   type CampaignRegion,
   type CoalitionPost,
   type InstitutionId,
-} from '../content/volby94'
+} from '@devedesiatky/content'
 import { onLostPower } from './kauzy'
 import { MAJORITY_SEATS, allocateSeats } from './snem'
 import type { ElectionState, GameAction, GameState, Rng } from './types'
