@@ -4,7 +4,9 @@ import {
   createBootstrapState,
   createRng,
   reduce,
+  type CompanyId,
   type EventChoiceId,
+  type FnmDestination,
   type GameState,
   type Ideology,
   type PartyPresetId,
@@ -23,6 +25,7 @@ type GameStore = {
   advanceQuarter: () => Promise<void>
   spendPolitika: (actionId: PolitikaActionId) => Promise<void>
   finishPolitika: () => Promise<void>
+  assignFnm: (companyId: CompanyId, destination: FnmDestination) => Promise<void>
   finishPeniaze: () => Promise<void>
   resolveEvent: (choiceId?: EventChoiceId) => Promise<void>
   dismissFact: () => Promise<void>
@@ -35,6 +38,7 @@ const DURABLE_ACTIONS = new Set([
   'FOUND_PARTY',
   'SPEND_POLITIKA',
   'FINISH_POLITIKA',
+  'ASSIGN_FNM',
   'FINISH_PENIAZE',
   'RESOLVE_EVENT',
   'DISMISS_FACT',
@@ -83,6 +87,9 @@ export function createGameStore(options: { persistence: Persistence; seed?: numb
       },
       finishPolitika: async () => {
         await dispatch({ type: 'FINISH_POLITIKA' })
+      },
+      assignFnm: async (companyId, destination) => {
+        await dispatch({ type: 'ASSIGN_FNM', companyId, destination })
       },
       finishPeniaze: async () => {
         await dispatch({ type: 'FINISH_PENIAZE' })

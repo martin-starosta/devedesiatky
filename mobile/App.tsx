@@ -8,6 +8,7 @@ import { SetupParty } from './src/SetupParty'
 import { GameShell } from './src/GameShell'
 import { Centrala } from './src/Centrala'
 import { PolitikaScreen } from './src/PolitikaScreen'
+import { FnmScreen } from './src/FnmScreen'
 import { PhaseStub } from './src/PhaseStub'
 
 const useGameStore = createGameStore({ persistence: devicePersistence })
@@ -22,6 +23,7 @@ export default function App() {
   const advanceQuarter = useGameStore((s) => s.advanceQuarter)
   const spendPolitika = useGameStore((s) => s.spendPolitika)
   const finishPolitika = useGameStore((s) => s.finishPolitika)
+  const assignFnm = useGameStore((s) => s.assignFnm)
   const finishPeniaze = useGameStore((s) => s.finishPeniaze)
   const resolveEvent = useGameStore((s) => s.resolveEvent)
   const dismissFact = useGameStore((s) => s.dismissFact)
@@ -88,17 +90,21 @@ export default function App() {
         onSpend={(id) => void spendPolitika(id)}
         onFinish={() => void finishPolitika()}
       />
+    ) : turnPhase === 'peniaze' ? (
+      <FnmScreen
+        state={state}
+        onAssign={(companyId, destination) => void assignFnm(companyId, destination)}
+        onFinish={() => void finishPeniaze()}
+      />
     ) : (
       <PhaseStub
         phase={turnPhase}
         onContinue={
-          turnPhase === 'peniaze'
-            ? () => void finishPeniaze()
-            : turnPhase === 'fact'
-              ? () => void dismissFact()
-              : turnPhase === 'event'
-                ? () => void resolveEvent()
-                : undefined
+          turnPhase === 'fact'
+            ? () => void dismissFact()
+            : turnPhase === 'event'
+              ? () => void resolveEvent()
+              : undefined
         }
       />
     )
