@@ -17,7 +17,7 @@ export function PolitikaScreen() {
           {state.inGovernment ? 'Vláda' : 'Opozícia'}
         </h1>
         <p className="politika__lede">
-          Akčné body: <strong>{state.actionPoints}</strong> · vyber ťahy tohto štvrťroka.
+          AP: <strong>{state.actionPoints}</strong>. Minútich teraz, kauzy prídu neskôr.
         </p>
       </header>
 
@@ -55,7 +55,7 @@ export function PolitikaScreen() {
       </section>
 
       <button type="button" className="politika__cta" onClick={finishPolitika}>
-        {state.inGovernment ? 'Ďalej na Fond (Peniaze)' : 'Hotovo — Centrála'}
+        {state.inGovernment ? 'Ďalej: Fond' : 'Hotovo'}
       </button>
     </main>
   )

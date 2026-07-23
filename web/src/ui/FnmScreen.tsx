@@ -16,9 +16,9 @@ export function FnmScreen() {
     <main className="fnm">
       <header className="fnm__brand">
         <p className="fnm__eyebrow">Fond národného majetku</p>
-        <h1 className="fnm__title">Peniaze</h1>
+        <h1 className="fnm__title">Rozdávaj</h1>
         <p className="fnm__lede">
-          Priraď podnik sponzorovi — hotovosť do pokladne, kauza do ledgera, preferencie sa pohýbu.
+          Podnik sponzorovi: hotovosť hneď, kauza neskôr. Preferencie sa pohýbu.
         </p>
       </header>
 
@@ -66,7 +66,7 @@ export function FnmScreen() {
       </section>
 
       <button type="button" className="fnm__cta" onClick={finishPeniaze}>
-        Hotovo — späť do centrály
+        Hotovo, späť
       </button>
     </main>
   )

@@ -51,10 +51,10 @@ export function SetupParty() {
   return (
     <main className="setup">
       <header className="setup__brand">
-        <p className="setup__eyebrow">Založ stranu</p>
+        <p className="setup__eyebrow">Nová partia</p>
         <h1 className="setup__title">Divoké deväťdesiate</h1>
         <p className="setup__lede">
-          Tri osi ideológie určia tvoju voličskú základňu. Alebo si vyber hotový štart.
+          Nastav ideológiu, zober hotový archetype, alebo choď all-in na vlastný mix.
         </p>
       </header>
 
@@ -107,7 +107,7 @@ export function SetupParty() {
       </section>
 
       <button type="button" className="setup__cta" onClick={startRun}>
-        Založiť stranu
+        Do boja
       </button>
     </main>
   )
