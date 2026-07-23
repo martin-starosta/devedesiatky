@@ -12,7 +12,7 @@ export function CasovaOs({ onClose }: { onClose: () => void }) {
         <h1 className="casova__title">Čo si otvoril</h1>
         <p className="casova__lede">
           {collected.length === 0
-            ? 'Zatiaľ žiadne fact cards. Po udalostiach ich môžeš uložiť.'
+            ? 'Zatiaľ žiadne faktové kartičky. Po udalostiach ich môžeš uložiť.'
             : `${collected.length} kartičiek z behu.`}
         </p>
       </header>

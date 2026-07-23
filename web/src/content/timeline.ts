@@ -74,14 +74,14 @@ export const factCards: Record<FactId, FactCard> = {
     titleSk: 'Marec 1994',
     bodySk:
       'Parlament odvolal vládu; nasledovala úradnícka vláda a cesta k predčasným voľbám.',
-    sourceHook: 'NR SR — odvolanie vlády (marec 1994)',
+    sourceHook: 'NR SR: odvolanie vlády (marec 1994)',
   },
   'fact-volby-94-stub': {
     id: 'fact-volby-94-stub',
     titleSk: 'Voľby 1994',
     bodySk:
-      'Jesenné voľby 1994 predznamenali novú koaličnú matematiku — plný volebný boss príde v neskoršom slice.',
-    sourceHook: 'ŠÚ SR — výsledky volieb do NR SR 1994',
+      'Jesenné voľby 1994 predznamenali novú koaličnú matematiku. Plný volebný boss príde neskôr.',
+    sourceHook: 'ŠÚ SR: výsledky volieb do NR SR 1994',
   },
 }
 
@@ -144,7 +144,7 @@ export const timelineEvents: TimelineEvent[] = [
   {
     id: 'pad-vlady',
     titleSk: 'Pád vlády',
-    bodySk: 'Defekcia v parlamente. Koalícia sa trasie — alebo sa trhá.',
+    bodySk: 'Defekcia v parlamente. Koalícia sa trasie, alebo sa trhá.',
     year: 1994,
     quarter: 1,
     factId: 'fact-pad-vlady',
@@ -165,8 +165,8 @@ export const timelineEvents: TimelineEvent[] = [
   },
   {
     id: 'volby-94-stub',
-    titleSk: 'Voľby ’94 (stub)',
-    bodySk: 'Kampaň sa blíži. Plný volebný boss príde neskôr — zatiaľ len náznak.',
+    titleSk: 'Voľby ’94 (náznak)',
+    bodySk: 'Kampaň sa blíži. Plný volebný boss príde neskôr; zatiaľ len náznak.',
     year: 1994,
     quarter: 3,
     factId: 'fact-volby-94-stub',
