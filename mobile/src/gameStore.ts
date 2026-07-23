@@ -9,9 +9,17 @@ import {
   type FnmDestination,
   type GameState,
   type Ideology,
+  type NpcArchetypeId,
   type PartyPresetId,
   type PolitikaActionId,
 } from '@devedesiatky/simulation'
+import type {
+  CampaignChannel,
+  CampaignRegion,
+  CoalitionPost,
+  InstitutionAssignee,
+  InstitutionId,
+} from '@devedesiatky/content'
 import type { Persistence } from './persistence'
 
 type NewGameResult = { needsConfirmation: true } | { needsConfirmation: false }
@@ -30,6 +38,22 @@ type GameStore = {
   resolveEvent: (choiceId?: EventChoiceId) => Promise<void>
   collectFact: () => Promise<void>
   dismissFact: () => Promise<void>
+  campaignSpend: (input: {
+    region: CampaignRegion
+    channel: CampaignChannel
+    amount: number
+  }) => Promise<void>
+  finishCampaign: () => Promise<void>
+  resolveElectionNight: () => Promise<void>
+  continueAfterNight: () => Promise<void>
+  offerCoalition: (input: { partnerId: NpcArchetypeId; posts: CoalitionPost[] }) => Promise<void>
+  finishCoalition: () => Promise<void>
+  skipNocNozov: () => Promise<void>
+  assignInstitution: (input: {
+    institutionId: InstitutionId
+    assigneeId: InstitutionAssignee
+  }) => Promise<void>
+  finishNocNozov: () => Promise<void>
   newGame: (input: { confirmed: boolean }) => NewGameResult | Promise<NewGameResult>
 }
 
@@ -45,6 +69,15 @@ const DURABLE_ACTIONS = new Set([
   'DISMISS_FACT',
   'COLLECT_FACT',
   'ADVANCE_QUARTER',
+  'CAMPAIGN_SPEND',
+  'FINISH_CAMPAIGN',
+  'RESOLVE_ELECTION_NIGHT',
+  'CONTINUE_AFTER_NIGHT',
+  'OFFER_COALITION',
+  'FINISH_COALITION',
+  'SKIP_NOC_NOZOV',
+  'ASSIGN_INSTITUTION',
+  'FINISH_NOC_NOZOV',
 ])
 
 export function createGameStore(options: { persistence: Persistence; seed?: number }): GameStoreApi {
@@ -107,6 +140,33 @@ export function createGameStore(options: { persistence: Persistence; seed?: numb
       },
       dismissFact: async () => {
         await dispatch({ type: 'DISMISS_FACT' })
+      },
+      campaignSpend: async (input) => {
+        await dispatch({ type: 'CAMPAIGN_SPEND', ...input })
+      },
+      finishCampaign: async () => {
+        await dispatch({ type: 'FINISH_CAMPAIGN' })
+      },
+      resolveElectionNight: async () => {
+        await dispatch({ type: 'RESOLVE_ELECTION_NIGHT' })
+      },
+      continueAfterNight: async () => {
+        await dispatch({ type: 'CONTINUE_AFTER_NIGHT' })
+      },
+      offerCoalition: async (input) => {
+        await dispatch({ type: 'OFFER_COALITION', ...input })
+      },
+      finishCoalition: async () => {
+        await dispatch({ type: 'FINISH_COALITION' })
+      },
+      skipNocNozov: async () => {
+        await dispatch({ type: 'SKIP_NOC_NOZOV' })
+      },
+      assignInstitution: async (input) => {
+        await dispatch({ type: 'ASSIGN_INSTITUTION', ...input })
+      },
+      finishNocNozov: async () => {
+        await dispatch({ type: 'FINISH_NOC_NOZOV' })
       },
       newGame: (input) => {
         if (get().hasSave && !input.confirmed) {

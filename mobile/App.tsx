@@ -10,6 +10,12 @@ import { Centrala } from './src/Centrala'
 import { PolitikaScreen } from './src/PolitikaScreen'
 import { FnmScreen } from './src/FnmScreen'
 import { EventOverlay, FactOverlay } from './src/EventOverlay'
+import {
+  VolbyKampan,
+  VolbyKoalicia,
+  VolbyNoc,
+  VolbyNocNozo,
+} from './src/Volby94'
 import { PhaseStub } from './src/PhaseStub'
 
 const useGameStore = createGameStore({ persistence: devicePersistence })
@@ -29,6 +35,15 @@ export default function App() {
   const resolveEvent = useGameStore((s) => s.resolveEvent)
   const collectFact = useGameStore((s) => s.collectFact)
   const dismissFact = useGameStore((s) => s.dismissFact)
+  const campaignSpend = useGameStore((s) => s.campaignSpend)
+  const finishCampaign = useGameStore((s) => s.finishCampaign)
+  const resolveElectionNight = useGameStore((s) => s.resolveElectionNight)
+  const continueAfterNight = useGameStore((s) => s.continueAfterNight)
+  const offerCoalition = useGameStore((s) => s.offerCoalition)
+  const finishCoalition = useGameStore((s) => s.finishCoalition)
+  const skipNocNozov = useGameStore((s) => s.skipNocNozov)
+  const assignInstitution = useGameStore((s) => s.assignInstitution)
+  const finishNocNozov = useGameStore((s) => s.finishNocNozov)
   const newGame = useGameStore((s) => s.newGame)
   const hydrate = useGameStore((s) => s.hydrate)
 
@@ -108,6 +123,31 @@ export default function App() {
         state={state}
         onCollect={() => void collectFact()}
         onDismiss={() => void dismissFact()}
+      />
+    ) : turnPhase === 'volby-kampan' ? (
+      <VolbyKampan
+        state={state}
+        onSpend={(input) => void campaignSpend(input)}
+        onFinish={() => void finishCampaign()}
+      />
+    ) : turnPhase === 'volby-noc' ? (
+      <VolbyNoc
+        state={state}
+        onResolve={() => void resolveElectionNight()}
+        onContinue={() => void continueAfterNight()}
+      />
+    ) : turnPhase === 'volby-koalicia' ? (
+      <VolbyKoalicia
+        state={state}
+        onOffer={(input) => void offerCoalition(input)}
+        onFinish={() => void finishCoalition()}
+        onSkip={() => void skipNocNozov()}
+      />
+    ) : turnPhase === 'volby-noc-nozo' ? (
+      <VolbyNocNozo
+        state={state}
+        onAssign={(input) => void assignInstitution(input)}
+        onFinish={() => void finishNocNozov()}
       />
     ) : (
       <PhaseStub phase={turnPhase} />
