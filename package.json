@@ -6,6 +6,8 @@
     "test": "pnpm -r --if-present test",
     "typecheck": "pnpm -r --if-present typecheck",
     "build": "pnpm --filter web build",
-    "dev": "pnpm --filter web dev"
+    "dev": "pnpm --filter web dev",
+    "mobile": "pnpm --filter mobile start",
+    "mobile:ios": "pnpm --filter mobile ios"
   }
 }
