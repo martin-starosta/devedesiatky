@@ -1,14 +1,58 @@
 import { StatusBar } from 'expo-status-bar'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { useEffect, useState } from 'react'
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
-import { useGameStore } from './src/gameStore'
+import { createGameStore } from './src/gameStore'
+import { devicePersistence } from './src/devicePersistence'
+
+const useGameStore = createGameStore({ persistence: devicePersistence })
 
 export default function App() {
+  const [ready, setReady] = useState(false)
   const year = useGameStore((s) => s.state.year)
   const quarter = useGameStore((s) => s.state.quarter)
   const preferencie = useGameStore((s) => s.state.preferencie)
   const phase = useGameStore((s) => s.state.phase)
+  const hasSave = useGameStore((s) => s.hasSave)
   const foundParty = useGameStore((s) => s.foundParty)
+  const newGame = useGameStore((s) => s.newGame)
+  const hydrate = useGameStore((s) => s.hydrate)
+
+  useEffect(() => {
+    void hydrate().finally(() => setReady(true))
+  }, [hydrate])
+
+  function requestNewGame() {
+    const result = newGame({ confirmed: false })
+    if (result instanceof Promise) {
+      void result
+      return
+    }
+    if (result.needsConfirmation) {
+      Alert.alert('Nová hra?', 'Mazanie uloženej kampane. Naozaj začať odznova?', [
+        { text: 'Zrušiť', style: 'cancel' },
+        {
+          text: 'Nová hra',
+          style: 'destructive',
+          onPress: () => {
+            void newGame({ confirmed: true })
+          },
+        },
+      ])
+    }
+  }
+
+  if (!ready) {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.safe}>
+          <View style={styles.container}>
+            <ActivityIndicator color="#f4e6c8" />
+          </View>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    )
+  }
 
   return (
     <SafeAreaProvider>
@@ -17,6 +61,7 @@ export default function App() {
           <Text style={styles.brand}>Divoké deväťdesiate</Text>
           <Text style={styles.meta}>
             {year} Q{quarter} · {phase}
+            {hasSave ? ' · uložené' : ''}
           </Text>
           <Text style={styles.preferencie} accessibilityLabel="preferencie">
             Preferencie: {preferencie.toFixed(1)} %
@@ -24,7 +69,7 @@ export default function App() {
           {phase === 'setup' ? (
             <Pressable
               style={styles.cta}
-              onPress={() => foundParty({ preset: 'hnutie-machine' })}
+              onPress={() => void foundParty({ preset: 'hnutie-machine' })}
               accessibilityRole="button"
             >
               <Text style={styles.ctaLabel}>Založiť stranu</Text>
@@ -32,7 +77,12 @@ export default function App() {
           ) : (
             <Text style={styles.hint}>Engine live — GameState cez shared package.</Text>
           )}
-          <StatusBar style="dark" />
+          {hasSave ? (
+            <Pressable style={styles.secondary} onPress={requestNewGame} accessibilityRole="button">
+              <Text style={styles.secondaryLabel}>Nová hra</Text>
+            </Pressable>
+          ) : null}
+          <StatusBar style="light" />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -78,6 +128,17 @@ const styles = StyleSheet.create({
     color: '#fff8f0',
     fontSize: 16,
     fontWeight: '700',
+  },
+  secondary: {
+    alignSelf: 'flex-start',
+    marginTop: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  secondaryLabel: {
+    color: '#c4a484',
+    fontSize: 14,
+    fontWeight: '600',
   },
   hint: {
     marginTop: 8,
