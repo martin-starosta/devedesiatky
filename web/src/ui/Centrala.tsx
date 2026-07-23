@@ -85,7 +85,7 @@ export function Centrala() {
           </div>
         </div>
         <div className="centrala__metric">
-          <span className="centrala__label">Kauzy — oko</span>
+          <span className="centrala__label">Kauzy: oko</span>
           <div
             className="centrala__eye"
             style={{ ['--eye-level' as string]: String(eyeLevel) }}
