@@ -1,5 +1,6 @@
 import { Centrala } from './ui/Centrala'
 import { FnmScreen } from './ui/FnmScreen'
+import { GameShell } from './ui/GameShell'
 import { PolitikaScreen } from './ui/PolitikaScreen'
 import { SetupParty } from './ui/SetupParty'
 import { useGameStore } from './ui/useGameStore'
@@ -11,11 +12,16 @@ export default function App() {
   if (phase === 'setup') {
     return <SetupParty />
   }
-  if (turnPhase === 'politika') {
-    return <PolitikaScreen />
-  }
-  if (turnPhase === 'peniaze') {
-    return <FnmScreen />
-  }
-  return <Centrala />
+
+  return (
+    <GameShell phase={turnPhase}>
+      {turnPhase === 'politika' ? (
+        <PolitikaScreen />
+      ) : turnPhase === 'peniaze' ? (
+        <FnmScreen />
+      ) : (
+        <Centrala />
+      )}
+    </GameShell>
+  )
 }

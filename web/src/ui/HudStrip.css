@@ -1,0 +1,73 @@
+.hud {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 0.85fr auto;
+  gap: 0.45rem;
+  align-items: center;
+  padding: 0.55rem 0.65rem;
+  border: 2px solid rgba(232, 226, 214, 0.22);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #2a2f38, #16181c);
+  box-shadow:
+    0 3px 0 #0a0a0c,
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.hud__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.hud__label {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ash);
+}
+
+.hud__value {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--bone);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud__value--hero {
+  font-size: clamp(1.25rem, 5vw, 1.55rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.hud__value--signal {
+  color: var(--signal);
+  font-size: 1.2rem;
+}
+
+.hud__eye {
+  --eye-level: 0;
+  position: relative;
+  width: 2.4rem;
+  height: 1.55rem;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--blood) 70%, #fff);
+  background: radial-gradient(circle at 45% 40%, #2a2e36, #0e0e10 75%);
+  box-shadow: inset 0 0 0 calc(var(--eye-level) * 4px) rgba(200, 16, 46, 0.6);
+  flex-shrink: 0;
+}
+
+.hud__eye-pupil {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(0.4rem + var(--eye-level) * 0.5rem);
+  height: calc(0.4rem + var(--eye-level) * 0.5rem);
+  border-radius: 50%;
+  background: var(--blood);
+  box-shadow: 0 0 0 2px #0e0e10;
+  transform: translate(-50%, -50%);
+}

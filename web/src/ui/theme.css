@@ -53,17 +53,18 @@ body::after {
 .btn-primary {
   appearance: none;
   border: 0;
-  border-radius: var(--radius-card);
+  border-radius: 999px;
   background: var(--signal);
   color: var(--soot);
   font-family: var(--font-ui);
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 800;
   letter-spacing: 0.02em;
-  padding: 0.95rem 1.15rem;
+  padding: 1rem 1.25rem;
+  min-height: 3rem;
   cursor: pointer;
   box-shadow:
-    0 2px 0 #b8940f,
+    0 4px 0 #b8940f,
     var(--shadow-inset);
 }
 
@@ -72,7 +73,7 @@ body::after {
 }
 
 .btn-primary:active {
-  transform: translateY(1px) scale(0.98);
+  transform: translateY(3px);
   box-shadow: 0 1px 0 #b8940f;
 }
 

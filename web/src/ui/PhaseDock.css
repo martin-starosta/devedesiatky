@@ -1,0 +1,27 @@
+.dock {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  padding: 0.35rem;
+  border-radius: 999px;
+  background: rgba(14, 14, 16, 0.85);
+  border: 2px solid rgba(232, 226, 214, 0.16);
+  box-shadow: 0 3px 0 #0a0a0c;
+}
+
+.dock__step {
+  text-align: center;
+  padding: 0.55rem 0.35rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ash);
+}
+
+.dock__step--active {
+  background: var(--signal);
+  color: var(--soot);
+  box-shadow: 0 2px 0 #b8940f;
+}

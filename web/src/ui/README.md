@@ -1,19 +1,22 @@
-# UI: Pulp Power
+# UI: Pulp Power arcade
 
-Arcade politics HUD for *Divoké deväťdesiate*. Design brief: `docs/plans/2026-07-23-divoke-devatdesiate-ui-design.md`.
+Arcade politics HUD for *Divoké deväťdesiate*.
+
+- Brief: `docs/plans/2026-07-23-divoke-devatdesiate-ui-design.md`
+- Research distill: `docs/plans/2026-07-23-arcade-ui-research.md`
 
 ## Do
 
-- Soot / Graphite / Bone / Ash / Blood / Signal / Mint tokens from `theme.css`
-- Signal yellow only for primary CTAs and payoffs
-- Blood for kauzy, danger, screen eyebrows
-- Clash-shallow overlays (one modal deep)
-- Condensed display titles + mono numbers
+- Clash scoreboard HUD (`HudStrip`) + phase dock
+- Signal yellow chunky offset-press CTAs
+- Blood for kauzy / danger only
+- Float deltas on preferencie / pokladňa / kauza
+- Mode glow per phase (`data-phase`)
+- Physical action cards with AP chip
 
 ## Don't
 
-- Burgundy congress carpet or gold chrome as brand surfaces
-- Georgia / warm-paper nostalgia
-- STV lower-thirds outside election night
-- Em-dashes in player-facing copy
-- AI-purple glows
+- Carpet/gold nostalgia
+- Neon pixel-font cosplay (fights *Sviňa*)
+- Nested menus deeper than one level
+- Silent number changes

@@ -1,11 +1,11 @@
 .fnm {
-  min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  gap: 1.15rem;
-  padding: 1.25rem 1.35rem 1.75rem;
-  max-width: 40rem;
-  margin: 0 auto;
+  gap: 1rem;
+  padding: 0;
+  max-width: none;
+  margin: 0;
+  min-height: auto;
 }
 
 .fnm__eyebrow {
@@ -86,10 +86,12 @@
   display: grid;
   gap: 0.7rem;
   padding: 0.95rem 1rem;
-  border: 1.5px solid var(--panel-border);
-  border-radius: var(--radius-panel);
+  border: 2.5px solid rgba(232, 226, 214, 0.28);
+  border-radius: 12px;
   background: var(--panel-bg);
-  box-shadow: var(--shadow-inset);
+  box-shadow:
+    0 3px 0 #0a0a0c,
+    var(--shadow-inset);
 }
 
 .fnm__company h2 {
@@ -115,15 +117,17 @@
 
 .fnm__assign-btn {
   appearance: none;
-  border: 1px solid rgba(245, 197, 24, 0.45);
-  border-radius: var(--radius-card);
+  border: 2px solid rgba(245, 197, 24, 0.45);
+  border-radius: 999px;
   background: rgba(245, 197, 24, 0.12);
   color: var(--signal);
   font: inherit;
   font-size: 0.82rem;
   font-weight: 700;
-  padding: 0.55rem 0.7rem;
+  padding: 0.6rem 0.8rem;
+  min-height: 2.5rem;
   cursor: pointer;
+  box-shadow: 0 2px 0 #0a0a0c;
 }
 
 .fnm__assign-btn:hover {
@@ -133,7 +137,8 @@
 }
 
 .fnm__assign-btn:active {
-  transform: scale(0.98);
+  transform: translateY(2px);
+  box-shadow: 0 0 0 #0a0a0c;
 }
 
 .fnm__assign-btn--danger {
@@ -151,17 +156,18 @@
 .fnm__cta {
   appearance: none;
   border: 0;
-  border-radius: var(--radius-card);
+  border-radius: 999px;
   background: var(--signal);
   color: var(--soot);
   font: inherit;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 800;
   letter-spacing: 0.02em;
-  padding: 0.95rem 1.15rem;
+  padding: 1rem 1.25rem;
+  min-height: 3rem;
   cursor: pointer;
   box-shadow:
-    0 2px 0 #b8940f,
+    0 4px 0 #b8940f,
     var(--shadow-inset);
 }
 
@@ -170,7 +176,8 @@
 }
 
 .fnm__cta:active {
-  transform: translateY(1px) scale(0.98);
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #b8940f;
 }
 
 @media (max-width: 520px) {

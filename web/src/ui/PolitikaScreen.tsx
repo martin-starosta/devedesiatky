@@ -17,24 +17,9 @@ export function PolitikaScreen() {
           {state.inGovernment ? 'Vláda' : 'Opozícia'}
         </h1>
         <p className="politika__lede">
-          AP: <strong>{state.actionPoints}</strong>. Utratíš teraz, kauzy prídu neskôr.
+          Utratíš AP teraz. Kauzy prídu neskôr.
         </p>
       </header>
-
-      <section className="politika__stats" aria-label="Zdroje">
-        <div>
-          <span>Preferencie</span>
-          <strong>{state.preferencie.toFixed(1)} %</strong>
-        </div>
-        <div>
-          <span>Reputácia</span>
-          <strong>{state.reputacia.toFixed(1)}</strong>
-        </div>
-        <div>
-          <span>Médiá</span>
-          <strong>{state.media.toFixed(1)}</strong>
-        </div>
-      </section>
 
       <section className="politika__actions" aria-label="Akcie">
         {actions.map((id) => {
