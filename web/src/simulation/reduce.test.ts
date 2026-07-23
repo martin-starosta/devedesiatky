@@ -9,7 +9,7 @@ import { reduce } from './reduce'
  */
 describe('quarterly simulation reducer', () => {
   it('advances quarter deterministically for a fixed seed', () => {
-    const start = createInitialState({ seed: 42 })
+    const start = createInitialState({ seed: 42, preferencie: 10 })
     expect(start.preferencie).toBe(10)
     expect(start.year).toBe(1993)
     expect(start.quarter).toBe(1)

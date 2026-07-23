@@ -1,0 +1,31 @@
+:root {
+  --ink: #1a1410;
+  --paper: #d8c9a8;
+  --paper-deep: #b9a57d;
+  --carpet: #3a1f28;
+  --carpet-glow: #5c2f3c;
+  --gold: #c4a35a;
+  --preferencie: #e8f0c8;
+  --font-display: 'Georgia', 'Times New Roman', serif;
+  --font-ui: 'Trebuchet MS', 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--preferencie);
+  font-family: var(--font-ui);
+  background:
+    radial-gradient(ellipse at 20% 0%, var(--carpet-glow), transparent 55%),
+    radial-gradient(ellipse at 80% 100%, #1c2a24, transparent 50%),
+    linear-gradient(160deg, var(--carpet), var(--ink) 70%);
+}

@@ -1,21 +1,38 @@
 import { mvp1ClockStub } from '../content/mvp1ClockStub'
-import type { GameState, Quarter } from './types'
+import { createBootstrapState } from './createBootstrapState'
+import { createRng } from './rng'
+import { reduce } from './reduce'
+import type { GameState, Ideology, PartyPresetId, Quarter } from './types'
 
 type InitialOptions = {
   seed: number
   year?: number
   quarter?: Quarter
   preferencie?: number
+  ideology?: Ideology
+  preset?: PartyPresetId
 }
 
-/** Stub starting position for MVP1 clock — full party founding lands in a later slice. */
+/**
+ * Test/helper: bootstrap + FOUND_PARTY so clock fixtures start in a playing run.
+ * Production UI should dispatch FOUND_PARTY from setup instead.
+ */
 export function createInitialState(options: InitialOptions): GameState {
-  const seed = options.seed >>> 0
+  const boot = createBootstrapState({ seed: options.seed })
+  const founded = reduce(
+    boot,
+    {
+      type: 'FOUND_PARTY',
+      ideology: options.ideology,
+      preset: options.preset,
+    },
+    createRng(boot.rngState),
+  )
+
   return {
-    seed,
-    rngState: seed,
-    year: options.year ?? mvp1ClockStub.startYear,
-    quarter: options.quarter ?? mvp1ClockStub.startQuarter,
-    preferencie: options.preferencie ?? mvp1ClockStub.startPreferencie,
+    ...founded,
+    year: options.year ?? founded.year,
+    quarter: options.quarter ?? founded.quarter,
+    preferencie: options.preferencie ?? founded.preferencie ?? mvp1ClockStub.startPreferencie,
   }
 }
