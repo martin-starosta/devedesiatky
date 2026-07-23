@@ -173,6 +173,23 @@
   box-shadow: 0 1px 0 #b8940f;
 }
 
+.centrala__link {
+  appearance: none;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-card);
+  background: transparent;
+  color: var(--ash);
+  font: inherit;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+
+.centrala__link:hover {
+  color: var(--signal);
+  border-color: var(--signal);
+}
+
 @media (min-width: 640px) {
   .centrala {
     max-width: 34rem;

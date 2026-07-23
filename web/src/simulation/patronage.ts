@@ -6,6 +6,7 @@ import {
   sponsors,
   type CompanyId,
 } from '../content/patronage'
+import { openEventOrCentrala } from './events'
 import type {
   FnmAssignment,
   GameAction,
@@ -59,10 +60,16 @@ export function openPeniazePhase(state: GameState, rng: Rng): GameState {
   }
 }
 
-function cashForDeal(companyId: CompanyId, sponsorId: SponsorId): number {
+function cashForDeal(
+  companyId: CompanyId,
+  sponsorId: SponsorId,
+  patronagePower: GameState['patronagePower'],
+): number {
   const company = companies[companyId]
   const sponsor = sponsors[sponsorId]
-  return Math.round(company.bookValue * sponsor.generosity)
+  const raw = company.bookValue * sponsor.generosity
+  const factor = patronagePower === 'full' ? 1 : 0.45
+  return Math.round(raw * factor)
 }
 
 function pressureForDeal(companyId: CompanyId, sponsorId: SponsorId): number {
@@ -112,7 +119,7 @@ export function applyCoalitionCollapse(state: GameState): GameState {
 
 function maybeEndPeniaze(state: GameState, remainingOffers: CompanyId[]): GameState {
   if (remainingOffers.length === 0 && state.turnPhase === 'peniaze') {
-    return { ...state, turnPhase: 'centrala', fnmOffered: remainingOffers }
+    return openEventOrCentrala({ ...state, fnmOffered: remainingOffers })
   }
   return { ...state, fnmOffered: remainingOffers }
 }
@@ -138,7 +145,7 @@ export function applyAssignFnm(
     if (!(destination.sponsorId in sponsors)) {
       return state
     }
-    const cash = cashForDeal(companyId, destination.sponsorId)
+    const cash = cashForDeal(companyId, destination.sponsorId, state.patronagePower)
     const pressure = pressureForDeal(companyId, destination.sponsorId)
     const entry: KauzaEntry = {
       id: `${companyId}:${destination.sponsorId}:${state.year}Q${state.quarter}`,
@@ -220,12 +227,11 @@ export function applyFinishPeniaze(state: GameState): GameState {
   if (state.phase !== 'playing' || state.turnPhase !== 'peniaze') {
     return state
   }
-  return {
+  return openEventOrCentrala({
     ...state,
-    turnPhase: 'centrala',
     fnmPool: [...state.fnmPool, ...state.fnmOffered],
     fnmOffered: [],
-  }
+  })
 }
 
 export function initialPatronageFields(inGovernment: boolean): Pick<

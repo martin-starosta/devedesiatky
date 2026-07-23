@@ -4,6 +4,7 @@ import {
   createRng,
   reduce,
   type CompanyId,
+  type EventChoiceId,
   type FnmDestination,
   type GameState,
   type Ideology,
@@ -19,6 +20,9 @@ type GameStore = {
   finishPolitika: () => void
   assignFnm: (companyId: CompanyId, destination: FnmDestination) => void
   finishPeniaze: () => void
+  resolveEvent: (choiceId: EventChoiceId) => void
+  collectFact: () => void
+  dismissFact: () => void
 }
 
 function dispatch(
@@ -45,4 +49,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   assignFnm: (companyId, destination) =>
     dispatch(get, set, { type: 'ASSIGN_FNM', companyId, destination }),
   finishPeniaze: () => dispatch(get, set, { type: 'FINISH_PENIAZE' }),
+  resolveEvent: (choiceId) => dispatch(get, set, { type: 'RESOLVE_EVENT', choiceId }),
+  collectFact: () => dispatch(get, set, { type: 'COLLECT_FACT' }),
+  dismissFact: () => dispatch(get, set, { type: 'DISMISS_FACT' }),
 }))

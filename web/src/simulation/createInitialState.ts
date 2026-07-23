@@ -55,7 +55,18 @@ export function createInitialState(options: InitialOptions): GameState {
   }
 
   if (founded.turnPhase === 'peniaze') {
-    return applyFinishPeniaze(founded)
+    founded = applyFinishPeniaze(founded)
   }
+
+  // Fixtures skip event/fact overlays unless a suite opens them explicitly.
+  if (founded.turnPhase === 'event' || founded.turnPhase === 'fact') {
+    founded = {
+      ...founded,
+      turnPhase: 'centrala',
+      activeEventId: null,
+      pendingFactId: null,
+    }
+  }
+
   return founded
 }

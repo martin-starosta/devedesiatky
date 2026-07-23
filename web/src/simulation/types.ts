@@ -1,11 +1,12 @@
 import type { CompanyId, SponsorId } from '../content/patronage'
 import type { PolitikaActionId } from '../content/politika'
+import type { EventChoiceId, EventId, FactId } from '../content/timeline'
 
 export type Quarter = 1 | 2 | 3 | 4
 
 export type Phase = 'setup' | 'playing'
 
-export type TurnPhase = 'politika' | 'peniaze' | 'centrala'
+export type TurnPhase = 'politika' | 'peniaze' | 'event' | 'fact' | 'centrala'
 
 /** Each axis is -1 … +1. */
 export type Ideology = {
@@ -26,7 +27,7 @@ export type DemographicId =
 
 export type DemographicWeights = Record<DemographicId, number>
 
-export type { CompanyId, SponsorId, PolitikaActionId }
+export type { CompanyId, SponsorId, PolitikaActionId, EventId, EventChoiceId, FactId }
 
 export type KauzaEntry = {
   id: string
@@ -44,6 +45,8 @@ export type FnmDestination =
   | { kind: 'cancel' }
 
 export type FnmAssignment = FnmDestination
+
+export type PatronagePower = 'limited' | 'full'
 
 export type GameState = {
   seed: number
@@ -73,6 +76,12 @@ export type GameState = {
   kauzy: KauzaEntry[]
   /** Visible Eye pressure — sum of ledger pressures (detonation later) */
   kauzyPressure: number
+  activeEventId: EventId | null
+  pendingFactId: FactId | null
+  collectedFactIds: FactId[]
+  resolvedEventIds: EventId[]
+  patronagePower: PatronagePower
+  trustDebt: number
 }
 
 export type GameAction =
@@ -104,6 +113,19 @@ export type GameAction =
     }
   | {
       type: 'FINISH_PENIAZE'
+    }
+  | {
+      type: 'TRY_OPEN_EVENT'
+    }
+  | {
+      type: 'RESOLVE_EVENT'
+      choiceId: EventChoiceId
+    }
+  | {
+      type: 'COLLECT_FACT'
+    }
+  | {
+      type: 'DISMISS_FACT'
     }
 
 export type Rng = {

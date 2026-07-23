@@ -5,6 +5,7 @@ import {
   startingReputacia,
   type PolitikaActionId,
 } from '../content/politika'
+import { openEventOrCentrala } from './events'
 import { openPeniazePhase } from './patronage'
 import type { GameAction, GameState, Rng } from './types'
 
@@ -78,11 +79,10 @@ export function applyFinishPolitika(state: GameState, rng: Rng): GameState {
   if (state.inGovernment) {
     return openPeniazePhase(cleared, rng)
   }
-  return {
+  return openEventOrCentrala({
     ...cleared,
-    turnPhase: 'centrala',
     rngState: rng.state,
-  }
+  })
 }
 
 export function initialPolitikaFields(): Pick<

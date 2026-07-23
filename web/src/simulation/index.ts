@@ -2,6 +2,9 @@ export type {
   CompanyId,
   DemographicId,
   DemographicWeights,
+  EventChoiceId,
+  EventId,
+  FactId,
   FnmDestination,
   GameAction,
   GameState,
@@ -21,3 +24,4 @@ export { createRng } from './rng'
 export { reduce } from './reduce'
 export { neutralIdeology, weightsFromIdeology } from './foundParty'
 export { availablePolitikaActions } from './politika'
+export { choicesForEvent } from './events'

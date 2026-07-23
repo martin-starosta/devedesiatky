@@ -107,6 +107,17 @@ describe('Politika phase', () => {
     expect(state.turnPhase).toBe('peniaze')
 
     state = reduce(state, { type: 'FINISH_PENIAZE' }, createRng(state.rngState))
+    if (state.turnPhase === 'event' || state.turnPhase === 'fact') {
+      state = {
+        ...state,
+        turnPhase: 'centrala',
+        activeEventId: null,
+        pendingFactId: null,
+        resolvedEventIds: state.activeEventId
+          ? [...state.resolvedEventIds, state.activeEventId]
+          : state.resolvedEventIds,
+      }
+    }
     expect(state.turnPhase).toBe('centrala')
 
     state = reduce(state, { type: 'ADVANCE_QUARTER' }, createRng(state.rngState))

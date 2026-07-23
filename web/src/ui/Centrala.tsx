@@ -31,7 +31,7 @@ function topDemographics(
     .map(([id, weight]) => ({ id, weight }))
 }
 
-export function Centrala() {
+export function Centrala({ onOpenTimeline }: { onOpenTimeline?: () => void }) {
   const state = useGameStore((s) => s.state)
   const advanceQuarter = useGameStore((s) => s.advanceQuarter)
   const reduceMotion = useReducedMotion()
@@ -142,6 +142,11 @@ export function Centrala() {
       <button type="button" className="centrala__cta" onClick={advanceQuarter}>
         Ďalší ťah
       </button>
+      {onOpenTimeline ? (
+        <button type="button" className="centrala__link" onClick={onOpenTimeline}>
+          Časová os ({state.collectedFactIds.length})
+        </button>
+      ) : null}
     </main>
   )
 }

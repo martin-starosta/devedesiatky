@@ -10,6 +10,12 @@ import {
   applySpendPolitika,
   openPolitikaPhase,
 } from './politika'
+import {
+  applyCollectFact,
+  applyDismissFact,
+  applyResolveEvent,
+  applyTryOpenEvent,
+} from './events'
 
 function nextQuarter(year: number, quarter: Quarter): { year: number; quarter: Quarter } {
   if (quarter === 4) {
@@ -36,6 +42,14 @@ export function reduce(state: GameState, action: GameAction, rng: Rng): GameStat
       return applyAssignToSponsor(state, action, rng)
     case 'FINISH_PENIAZE':
       return applyFinishPeniaze(state)
+    case 'TRY_OPEN_EVENT':
+      return applyTryOpenEvent(state)
+    case 'RESOLVE_EVENT':
+      return applyResolveEvent(state, action, rng)
+    case 'COLLECT_FACT':
+      return applyCollectFact(state)
+    case 'DISMISS_FACT':
+      return applyDismissFact(state)
     case 'ADVANCE_QUARTER': {
       if (state.phase !== 'playing' || state.turnPhase !== 'centrala') {
         return state
