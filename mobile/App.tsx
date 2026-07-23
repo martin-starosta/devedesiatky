@@ -9,6 +9,7 @@ import { GameShell } from './src/GameShell'
 import { Centrala } from './src/Centrala'
 import { PolitikaScreen } from './src/PolitikaScreen'
 import { FnmScreen } from './src/FnmScreen'
+import { EventOverlay, FactOverlay } from './src/EventOverlay'
 import { PhaseStub } from './src/PhaseStub'
 
 const useGameStore = createGameStore({ persistence: devicePersistence })
@@ -26,6 +27,7 @@ export default function App() {
   const assignFnm = useGameStore((s) => s.assignFnm)
   const finishPeniaze = useGameStore((s) => s.finishPeniaze)
   const resolveEvent = useGameStore((s) => s.resolveEvent)
+  const collectFact = useGameStore((s) => s.collectFact)
   const dismissFact = useGameStore((s) => s.dismissFact)
   const newGame = useGameStore((s) => s.newGame)
   const hydrate = useGameStore((s) => s.hydrate)
@@ -96,17 +98,19 @@ export default function App() {
         onAssign={(companyId, destination) => void assignFnm(companyId, destination)}
         onFinish={() => void finishPeniaze()}
       />
-    ) : (
-      <PhaseStub
-        phase={turnPhase}
-        onContinue={
-          turnPhase === 'fact'
-            ? () => void dismissFact()
-            : turnPhase === 'event'
-              ? () => void resolveEvent()
-              : undefined
-        }
+    ) : turnPhase === 'event' ? (
+      <EventOverlay
+        state={state}
+        onResolve={(choiceId) => void resolveEvent(choiceId)}
       />
+    ) : turnPhase === 'fact' ? (
+      <FactOverlay
+        state={state}
+        onCollect={() => void collectFact()}
+        onDismiss={() => void dismissFact()}
+      />
+    ) : (
+      <PhaseStub phase={turnPhase} />
     )
 
   return (

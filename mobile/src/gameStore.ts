@@ -28,6 +28,7 @@ type GameStore = {
   assignFnm: (companyId: CompanyId, destination: FnmDestination) => Promise<void>
   finishPeniaze: () => Promise<void>
   resolveEvent: (choiceId?: EventChoiceId) => Promise<void>
+  collectFact: () => Promise<void>
   dismissFact: () => Promise<void>
   newGame: (input: { confirmed: boolean }) => NewGameResult | Promise<NewGameResult>
 }
@@ -100,6 +101,9 @@ export function createGameStore(options: { persistence: Persistence; seed?: numb
         const choice = choiceId ?? choicesForEvent(state)[0]?.id
         if (!choice) return
         await dispatch({ type: 'RESOLVE_EVENT', choiceId: choice })
+      },
+      collectFact: async () => {
+        await dispatch({ type: 'COLLECT_FACT' })
       },
       dismissFact: async () => {
         await dispatch({ type: 'DISMISS_FACT' })
