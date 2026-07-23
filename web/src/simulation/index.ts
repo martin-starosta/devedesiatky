@@ -10,6 +10,8 @@ export type {
   GameState,
   Ideology,
   KauzaEntry,
+  NpcArchetypeId,
+  NpcPartyState,
   PartyPresetId,
   Phase,
   PolitikaActionId,
@@ -25,3 +27,5 @@ export { reduce } from './reduce'
 export { neutralIdeology, weightsFromIdeology } from './foundParty'
 export { availablePolitikaActions } from './politika'
 export { choicesForEvent } from './events'
+export { snemField, SNEM_SEATS, MAJORITY_SEATS } from './snem'
+export { pickNpcPolitikaAction, pickNpcPeniazeDestination } from './npcAi'

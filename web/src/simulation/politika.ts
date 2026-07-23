@@ -6,6 +6,7 @@ import {
   type PolitikaActionId,
 } from '../content/politika'
 import { openEventOrCentrala } from './events'
+import { runNpcGovernmentPeniaze, runNpcPolitika } from './npcAi'
 import { openPeniazePhase } from './patronage'
 import type { GameAction, GameState, Rng } from './types'
 
@@ -67,22 +68,21 @@ export function applySpendPolitika(
   return next
 }
 
-/** End Politika; government opens Peniaze, opposition returns to Centrála. */
+/** End Politika; NPCs act; government opens Peniaze (player or NPC bloc). */
 export function applyFinishPolitika(state: GameState, rng: Rng): GameState {
   if (state.phase !== 'playing' || state.turnPhase !== 'politika') {
     return state
   }
-  const cleared: GameState = {
+  let next: GameState = {
     ...state,
     actionPoints: 0,
   }
+  next = runNpcPolitika(next, rng)
   if (state.inGovernment) {
-    return openPeniazePhase(cleared, rng)
+    return openPeniazePhase(next, rng)
   }
-  return openEventOrCentrala({
-    ...cleared,
-    rngState: rng.state,
-  })
+  next = runNpcGovernmentPeniaze(next, rng)
+  return openEventOrCentrala(next)
 }
 
 export function initialPolitikaFields(): Pick<

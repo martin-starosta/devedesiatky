@@ -5,6 +5,7 @@ import {
   partyPresets,
 } from '../content/partyFounding'
 import { fnmEffects } from '../content/patronage'
+import { buildNpcRoster } from './npcRoster'
 import { openPolitikaPhase } from './politika'
 import type {
   DemographicWeights,
@@ -107,6 +108,7 @@ export function applyFoundParty(
   }
 
   const founded = resolveFounding(action, rng)
+  const roster = buildNpcRoster(founded.presetId, founded.inGovernment)
   const playing: GameState = {
     ...state,
     phase: 'playing',
@@ -118,6 +120,8 @@ export function applyFoundParty(
     presetId: founded.presetId,
     inGovernment: founded.inGovernment,
     koalicia: founded.inGovernment ? fnmEffects.startingKoalicia : 0,
+    npcParties: roster.npcParties,
+    mainAntagonistId: roster.mainAntagonistId,
     rngState: rng.state,
   }
 

@@ -41,7 +41,7 @@ export function reduce(state: GameState, action: GameAction, rng: Rng): GameStat
     case 'ASSIGN_TO_SPONSOR':
       return applyAssignToSponsor(state, action, rng)
     case 'FINISH_PENIAZE':
-      return applyFinishPeniaze(state)
+      return applyFinishPeniaze(state, rng)
     case 'TRY_OPEN_EVENT':
       return applyTryOpenEvent(state)
     case 'RESOLVE_EVENT':

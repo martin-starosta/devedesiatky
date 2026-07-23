@@ -1,6 +1,8 @@
+import type { NpcArchetypeId } from '../content/npcParties'
 import type { CompanyId, SponsorId } from '../content/patronage'
 import type { PolitikaActionId } from '../content/politika'
 import type { EventChoiceId, EventId, FactId } from '../content/timeline'
+import type { NpcPartyState } from './npcRoster'
 
 export type Quarter = 1 | 2 | 3 | 4
 
@@ -27,7 +29,8 @@ export type DemographicId =
 
 export type DemographicWeights = Record<DemographicId, number>
 
-export type { CompanyId, SponsorId, PolitikaActionId, EventId, EventChoiceId, FactId }
+export type { CompanyId, SponsorId, PolitikaActionId, EventId, EventChoiceId, FactId, NpcArchetypeId }
+export type { NpcPartyState }
 
 export type KauzaEntry = {
   id: string
@@ -82,6 +85,8 @@ export type GameState = {
   resolvedEventIds: EventId[]
   patronagePower: PatronagePower
   trustDebt: number
+  npcParties: NpcPartyState[]
+  mainAntagonistId: NpcArchetypeId | null
 }
 
 export type GameAction =

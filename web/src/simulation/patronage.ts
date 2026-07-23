@@ -7,6 +7,7 @@ import {
   type CompanyId,
 } from '../content/patronage'
 import { openEventOrCentrala } from './events'
+import { runNpcOppositionPeniaze } from './npcAi'
 import type {
   FnmAssignment,
   GameAction,
@@ -117,9 +118,15 @@ export function applyCoalitionCollapse(state: GameState): GameState {
   }
 }
 
-function maybeEndPeniaze(state: GameState, remainingOffers: CompanyId[]): GameState {
+function maybeEndPeniaze(
+  state: GameState,
+  remainingOffers: CompanyId[],
+  rng: Rng,
+): GameState {
   if (remainingOffers.length === 0 && state.turnPhase === 'peniaze') {
-    return openEventOrCentrala({ ...state, fnmOffered: remainingOffers })
+    const cleared = { ...state, fnmOffered: remainingOffers }
+    const afterNpc = runNpcOppositionPeniaze(cleared, rng)
+    return openEventOrCentrala(afterNpc)
   }
   return { ...state, fnmOffered: remainingOffers }
 }
@@ -165,7 +172,7 @@ export function applyAssignFnm(
       fnmOffered: remaining,
     }
     const afterPoll = applyPollTickAfterPatronage(afterDeal, cash, rng)
-    return maybeEndPeniaze(afterPoll, remaining)
+    return maybeEndPeniaze(afterPoll, remaining, rng)
   }
 
   if (destination.kind === 'partner') {
@@ -177,7 +184,7 @@ export function applyAssignFnm(
       fnmOffered: remaining,
       rngState: rng.state,
     }
-    return applyCoalitionCollapse(maybeEndPeniaze(next, remaining))
+    return applyCoalitionCollapse(maybeEndPeniaze(next, remaining, rng))
   }
 
   if (destination.kind === 'auction') {
@@ -190,7 +197,7 @@ export function applyAssignFnm(
       fnmOffered: remaining,
       rngState: rng.state,
     }
-    return applyCoalitionCollapse(maybeEndPeniaze(next, remaining))
+    return applyCoalitionCollapse(maybeEndPeniaze(next, remaining, rng))
   }
 
   // cancel / delay: political cost, company returns to the pool
@@ -204,7 +211,7 @@ export function applyAssignFnm(
     fnmOffered: remaining,
     rngState: rng.state,
   }
-  return applyCoalitionCollapse(maybeEndPeniaze(next, remaining))
+  return applyCoalitionCollapse(maybeEndPeniaze(next, remaining, rng))
 }
 
 export function applyAssignToSponsor(
@@ -223,15 +230,17 @@ export function applyAssignToSponsor(
   )
 }
 
-export function applyFinishPeniaze(state: GameState): GameState {
+export function applyFinishPeniaze(state: GameState, rng: Rng): GameState {
   if (state.phase !== 'playing' || state.turnPhase !== 'peniaze') {
     return state
   }
-  return openEventOrCentrala({
+  const cleared: GameState = {
     ...state,
     fnmPool: [...state.fnmPool, ...state.fnmOffered],
     fnmOffered: [],
-  })
+  }
+  const afterNpc = runNpcOppositionPeniaze(cleared, rng)
+  return openEventOrCentrala(afterNpc)
 }
 
 export function initialPatronageFields(inGovernment: boolean): Pick<

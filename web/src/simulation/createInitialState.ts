@@ -55,7 +55,7 @@ export function createInitialState(options: InitialOptions): GameState {
   }
 
   if (founded.turnPhase === 'peniaze') {
-    founded = applyFinishPeniaze(founded)
+    founded = applyFinishPeniaze(founded, createRng(founded.rngState))
   }
 
   // Fixtures skip event/fact overlays unless a suite opens them explicitly.
