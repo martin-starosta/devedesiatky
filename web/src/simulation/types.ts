@@ -3,13 +3,47 @@ import type { KauzaCondition, KauzaStatus } from '../content/kauzy'
 import type { CompanyId, SponsorId } from '../content/patronage'
 import type { PolitikaActionId } from '../content/politika'
 import type { EventChoiceId, EventId, FactId } from '../content/timeline'
+import type {
+  CampaignChannel,
+  CampaignRegion,
+  CoalitionPost,
+  InstitutionAssignee,
+  InstitutionId,
+} from '../content/volby94'
 import type { NpcPartyState } from './npcRoster'
 
 export type Quarter = 1 | 2 | 3 | 4
 
 export type Phase = 'setup' | 'playing'
 
-export type TurnPhase = 'politika' | 'peniaze' | 'event' | 'fact' | 'centrala'
+export type TurnPhase =
+  | 'politika'
+  | 'peniaze'
+  | 'event'
+  | 'fact'
+  | 'centrala'
+  | 'volby-kampan'
+  | 'volby-noc'
+  | 'volby-koalicia'
+  | 'volby-noc-nozo'
+
+export type ElectionStage = 'campaign' | 'night' | 'coalition' | 'noc'
+
+export type ElectionState = {
+  id: 'volby-94'
+  stage: ElectionStage
+  campaignRound: 1 | 2 | 3
+  maxRounds: number
+  boostByRegion: Record<CampaignRegion, number>
+  totalBoost: number
+  exitPoll: number | null
+  finalShare: number | null
+  won: boolean | null
+  coalitionPartnerId: NpcArchetypeId | null
+  offeredPosts: CoalitionPost[]
+  acceptedPosts: CoalitionPost[]
+  institutions: Record<InstitutionId, InstitutionAssignee | null>
+}
 
 /** Each axis is -1 … +1. */
 export type Ideology = {
@@ -93,6 +127,7 @@ export type GameState = {
   trustDebt: number
   npcParties: NpcPartyState[]
   mainAntagonistId: NpcArchetypeId | null
+  election: ElectionState | null
 }
 
 export type GameAction =
@@ -137,6 +172,40 @@ export type GameAction =
     }
   | {
       type: 'DISMISS_FACT'
+    }
+  | {
+      type: 'CAMPAIGN_SPEND'
+      region: CampaignRegion
+      channel: CampaignChannel
+      amount: number
+    }
+  | {
+      type: 'FINISH_CAMPAIGN'
+    }
+  | {
+      type: 'RESOLVE_ELECTION_NIGHT'
+    }
+  | {
+      type: 'CONTINUE_AFTER_NIGHT'
+    }
+  | {
+      type: 'OFFER_COALITION'
+      partnerId: NpcArchetypeId
+      posts: CoalitionPost[]
+    }
+  | {
+      type: 'FINISH_COALITION'
+    }
+  | {
+      type: 'SKIP_NOC_NOZOV'
+    }
+  | {
+      type: 'ASSIGN_INSTITUTION'
+      institutionId: InstitutionId
+      assigneeId: InstitutionAssignee
+    }
+  | {
+      type: 'FINISH_NOC_NOZOV'
     }
 
 export type Rng = {

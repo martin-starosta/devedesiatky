@@ -2,6 +2,7 @@ export type {
   CompanyId,
   DemographicId,
   DemographicWeights,
+  ElectionState,
   EventChoiceId,
   EventId,
   FactId,

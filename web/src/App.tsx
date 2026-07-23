@@ -7,6 +7,12 @@ import { GameShell } from './ui/GameShell'
 import { PolitikaScreen } from './ui/PolitikaScreen'
 import { SetupParty } from './ui/SetupParty'
 import { Snem } from './ui/Snem'
+import {
+  VolbyKampan,
+  VolbyKoalicia,
+  VolbyNoc,
+  VolbyNocNozo,
+} from './ui/Volby94'
 import { useGameStore } from './ui/useGameStore'
 
 export default function App() {
@@ -33,6 +39,14 @@ export default function App() {
     stage = <PolitikaScreen />
   } else if (turnPhase === 'peniaze') {
     stage = <FnmScreen />
+  } else if (turnPhase === 'volby-kampan') {
+    stage = <VolbyKampan />
+  } else if (turnPhase === 'volby-noc') {
+    stage = <VolbyNoc />
+  } else if (turnPhase === 'volby-koalicia') {
+    stage = <VolbyKoalicia />
+  } else if (turnPhase === 'volby-noc-nozo') {
+    stage = <VolbyNocNozo />
   } else if (turnPhase === 'event') {
     stage = <EventOverlay />
   } else if (turnPhase === 'fact') {

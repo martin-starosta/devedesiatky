@@ -58,13 +58,21 @@ export function createInitialState(options: InitialOptions): GameState {
     founded = applyFinishPeniaze(founded, createRng(founded.rngState))
   }
 
-  // Fixtures skip event/fact overlays unless a suite opens them explicitly.
-  if (founded.turnPhase === 'event' || founded.turnPhase === 'fact') {
+  // Fixtures skip event/fact/election overlays unless a suite opens them explicitly.
+  if (
+    founded.turnPhase === 'event' ||
+    founded.turnPhase === 'fact' ||
+    founded.turnPhase === 'volby-kampan' ||
+    founded.turnPhase === 'volby-noc' ||
+    founded.turnPhase === 'volby-koalicia' ||
+    founded.turnPhase === 'volby-noc-nozo'
+  ) {
     founded = {
       ...founded,
       turnPhase: 'centrala',
       activeEventId: null,
       pendingFactId: null,
+      election: null,
     }
   }
 

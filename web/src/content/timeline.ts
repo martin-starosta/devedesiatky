@@ -9,9 +9,9 @@ export type FactId =
   | 'fact-vznik-republiky'
   | 'fact-kuponka'
   | 'fact-pad-vlady'
-  | 'fact-volby-94-stub'
+  | 'fact-volby-94'
 
-export type EventId = 'vznik-republiky' | 'kuponka' | 'pad-vlady' | 'volby-94-stub'
+export type EventId = 'vznik-republiky' | 'kuponka' | 'pad-vlady' | 'volby-94'
 
 export type EventChoiceId =
   | 'celebrate'
@@ -76,12 +76,12 @@ export const factCards: Record<FactId, FactCard> = {
       'Parlament odvolal vládu; nasledovala úradnícka vláda a cesta k predčasným voľbám.',
     sourceHook: 'NR SR: odvolanie vlády (marec 1994)',
   },
-  'fact-volby-94-stub': {
-    id: 'fact-volby-94-stub',
+  'fact-volby-94': {
+    id: 'fact-volby-94',
     titleSk: 'Voľby 1994',
     bodySk:
-      'Jesenné voľby 1994 predznamenali novú koaličnú matematiku. Plný volebný boss príde neskôr.',
-    sourceHook: 'ŠÚ SR: výsledky volieb do NR SR 1994',
+      'Jesenné voľby 1994 zmenili koaličnú matematiku. V noci z 3. na 4. novembra nová väčšina vymenila vedenie kľúčových inštitúcií.',
+    sourceHook: 'ŠÚ SR / chronológia Noci dlhých nožov (november 1994)',
   },
 }
 
@@ -164,12 +164,12 @@ export const timelineEvents: TimelineEvent[] = [
     ],
   },
   {
-    id: 'volby-94-stub',
-    titleSk: 'Voľby ’94 (náznak)',
-    bodySk: 'Kampaň sa blíži. Plný volebný boss príde neskôr; zatiaľ len náznak.',
+    id: 'volby-94',
+    titleSk: 'Voľby ’94',
+    bodySk: 'Kampaň, volebná noc, skladanie vlády. Boss prvého volebného cyklu.',
     year: 1994,
     quarter: 3,
-    factId: 'fact-volby-94-stub',
+    factId: 'fact-volby-94',
     choices: [
       {
         id: 'brace-election',

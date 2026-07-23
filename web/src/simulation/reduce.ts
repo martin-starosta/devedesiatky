@@ -16,6 +16,17 @@ import {
   applyResolveEvent,
   applyTryOpenEvent,
 } from './events'
+import {
+  applyAssignInstitution,
+  applyCampaignSpend,
+  applyContinueAfterNight,
+  applyFinishCampaign,
+  applyFinishCoalition,
+  applyFinishNocNozov,
+  applyOfferCoalition,
+  applyResolveElectionNight,
+  applySkipNocNozov,
+} from './volby94'
 
 function nextQuarter(year: number, quarter: Quarter): { year: number; quarter: Quarter } {
   if (quarter === 4) {
@@ -50,6 +61,24 @@ export function reduce(state: GameState, action: GameAction, rng: Rng): GameStat
       return applyCollectFact(state)
     case 'DISMISS_FACT':
       return applyDismissFact(state)
+    case 'CAMPAIGN_SPEND':
+      return applyCampaignSpend(state, action, rng)
+    case 'FINISH_CAMPAIGN':
+      return applyFinishCampaign(state, rng)
+    case 'RESOLVE_ELECTION_NIGHT':
+      return applyResolveElectionNight(state, rng)
+    case 'CONTINUE_AFTER_NIGHT':
+      return applyContinueAfterNight(state, rng)
+    case 'OFFER_COALITION':
+      return applyOfferCoalition(state, action, rng)
+    case 'FINISH_COALITION':
+      return applyFinishCoalition(state, rng)
+    case 'SKIP_NOC_NOZOV':
+      return applySkipNocNozov(state, rng)
+    case 'ASSIGN_INSTITUTION':
+      return applyAssignInstitution(state, action)
+    case 'FINISH_NOC_NOZOV':
+      return applyFinishNocNozov(state, rng)
     case 'ADVANCE_QUARTER': {
       if (state.phase !== 'playing' || state.turnPhase !== 'centrala') {
         return state

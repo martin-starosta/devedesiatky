@@ -7,6 +7,7 @@ import {
 } from '../content/timeline'
 import { onLostPower } from './kauzy'
 import type { GameAction, GameState, Rng } from './types'
+import { startVolby94 } from './volby94'
 
 function round1(value: number): number {
   return Math.round(value * 10) / 10
@@ -47,6 +48,9 @@ export function initialEventFields(): Pick<
 
 export function openEventOrCentrala(state: GameState): GameState {
   const eventId = eventIdForQuarter(state.year, state.quarter)
+  if (eventId === 'volby-94' && !state.resolvedEventIds.includes('volby-94')) {
+    return startVolby94(state)
+  }
   if (eventId && !state.resolvedEventIds.includes(eventId)) {
     return {
       ...state,

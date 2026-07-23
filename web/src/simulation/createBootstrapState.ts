@@ -5,6 +5,7 @@ import { initialKauzyFields } from './kauzy'
 import { initialNpcFields } from './npcRoster'
 import { initialPatronageFields } from './patronage'
 import { initialPolitikaFields } from './politika'
+import { initialElectionFields } from './volby94'
 import type { DemographicWeights, GameState } from './types'
 
 const emptyWeights: DemographicWeights = {
@@ -36,5 +37,6 @@ export function createBootstrapState(options: { seed: number }): GameState {
     ...initialEventFields(),
     ...initialNpcFields(),
     ...initialKauzyFields(),
+    ...initialElectionFields(),
   }
 }
