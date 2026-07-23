@@ -4,7 +4,7 @@ import {
   freeFoundingDefaults,
   partyPresets,
 } from '../content/partyFounding'
-import { openPeniazePhase } from './patronage'
+import { openPolitikaPhase } from './politika'
 import type {
   DemographicWeights,
   GameAction,
@@ -119,8 +119,5 @@ export function applyFoundParty(
     rngState: rng.state,
   }
 
-  if (!founded.inGovernment) {
-    return { ...playing, turnPhase: 'centrala' }
-  }
-  return openPeniazePhase(playing, rng)
+  return openPolitikaPhase(playing, rng)
 }

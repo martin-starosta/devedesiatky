@@ -8,6 +8,7 @@ export type {
   KauzaEntry,
   PartyPresetId,
   Phase,
+  PolitikaActionId,
   Quarter,
   Rng,
   SponsorId,
@@ -18,3 +19,4 @@ export { createInitialState } from './createInitialState'
 export { createRng } from './rng'
 export { reduce } from './reduce'
 export { neutralIdeology, weightsFromIdeology } from './foundParty'
+export { availablePolitikaActions } from './politika'

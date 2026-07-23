@@ -7,6 +7,7 @@ import {
   type GameState,
   type Ideology,
   type PartyPresetId,
+  type PolitikaActionId,
   type SponsorId,
 } from '../simulation'
 
@@ -14,11 +15,17 @@ type GameStore = {
   state: GameState
   advanceQuarter: () => void
   foundParty: (input: { ideology?: Ideology; preset?: PartyPresetId }) => void
+  spendPolitika: (actionId: PolitikaActionId) => void
+  finishPolitika: () => void
   assignToSponsor: (companyId: CompanyId, sponsorId: SponsorId) => void
   finishPeniaze: () => void
 }
 
-function dispatch(get: () => GameStore, set: (partial: Partial<GameStore>) => void, action: Parameters<typeof reduce>[1]) {
+function dispatch(
+  get: () => GameStore,
+  set: (partial: Partial<GameStore>) => void,
+  action: Parameters<typeof reduce>[1],
+) {
   const current = get().state
   const next = reduce(current, action, createRng(current.rngState))
   set({ state: next })
@@ -33,6 +40,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       ideology: input.ideology,
       preset: input.preset,
     }),
+  spendPolitika: (actionId) => dispatch(get, set, { type: 'SPEND_POLITIKA', actionId }),
+  finishPolitika: () => dispatch(get, set, { type: 'FINISH_POLITIKA' }),
   assignToSponsor: (companyId, sponsorId) =>
     dispatch(get, set, { type: 'ASSIGN_TO_SPONSOR', companyId, sponsorId }),
   finishPeniaze: () => dispatch(get, set, { type: 'FINISH_PENIAZE' }),

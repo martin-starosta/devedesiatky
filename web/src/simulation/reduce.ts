@@ -3,8 +3,12 @@ import { applyFoundParty } from './foundParty'
 import {
   applyAssignToSponsor,
   applyFinishPeniaze,
-  openPeniazePhase,
 } from './patronage'
+import {
+  applyFinishPolitika,
+  applySpendPolitika,
+  openPolitikaPhase,
+} from './politika'
 
 function nextQuarter(year: number, quarter: Quarter): { year: number; quarter: Quarter } {
   if (quarter === 4) {
@@ -21,12 +25,16 @@ export function reduce(state: GameState, action: GameAction, rng: Rng): GameStat
   switch (action.type) {
     case 'FOUND_PARTY':
       return applyFoundParty(state, action, rng)
+    case 'SPEND_POLITIKA':
+      return applySpendPolitika(state, action, rng)
+    case 'FINISH_POLITIKA':
+      return applyFinishPolitika(state, rng)
     case 'ASSIGN_TO_SPONSOR':
       return applyAssignToSponsor(state, action, rng)
     case 'FINISH_PENIAZE':
       return applyFinishPeniaze(state)
     case 'ADVANCE_QUARTER': {
-      if (state.phase !== 'playing' || state.turnPhase === 'peniaze') {
+      if (state.phase !== 'playing' || state.turnPhase !== 'centrala') {
         return state
       }
       rng.next()
@@ -36,7 +44,7 @@ export function reduce(state: GameState, action: GameAction, rng: Rng): GameStat
         ...calendar,
         rngState: rng.state,
       }
-      return openPeniazePhase(advanced, rng)
+      return openPolitikaPhase(advanced, rng)
     }
   }
 }

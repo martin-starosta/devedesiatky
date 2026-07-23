@@ -1,10 +1,11 @@
 import type { CompanyId, SponsorId } from '../content/patronage'
+import type { PolitikaActionId } from '../content/politika'
 
 export type Quarter = 1 | 2 | 3 | 4
 
 export type Phase = 'setup' | 'playing'
 
-export type TurnPhase = 'peniaze' | 'centrala'
+export type TurnPhase = 'politika' | 'peniaze' | 'centrala'
 
 /** Each axis is -1 … +1. */
 export type Ideology = {
@@ -25,7 +26,7 @@ export type DemographicId =
 
 export type DemographicWeights = Record<DemographicId, number>
 
-export type { CompanyId, SponsorId }
+export type { CompanyId, SponsorId, PolitikaActionId }
 
 export type KauzaEntry = {
   id: string
@@ -50,6 +51,9 @@ export type GameState = {
   demographicWeights: DemographicWeights
   presetId: PartyPresetId | null
   inGovernment: boolean
+  reputacia: number
+  media: number
+  actionPoints: number
   /** Companies still available in the privatization pool */
   fnmPool: CompanyId[]
   /** Companies offered this Peniaze phase */
@@ -69,6 +73,13 @@ export type GameAction =
       type: 'FOUND_PARTY'
       ideology?: Ideology
       preset?: PartyPresetId
+    }
+  | {
+      type: 'SPEND_POLITIKA'
+      actionId: PolitikaActionId
+    }
+  | {
+      type: 'FINISH_POLITIKA'
     }
   | {
       type: 'ASSIGN_TO_SPONSOR'

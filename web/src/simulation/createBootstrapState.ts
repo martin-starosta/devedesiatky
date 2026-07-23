@@ -1,6 +1,7 @@
 import { mvp1ClockStub } from '../content/mvp1ClockStub'
 import { neutralIdeology } from './foundParty'
 import { initialPatronageFields } from './patronage'
+import { initialPolitikaFields } from './politika'
 import type { DemographicWeights, GameState } from './types'
 
 const emptyWeights: DemographicWeights = {
@@ -28,5 +29,6 @@ export function createBootstrapState(options: { seed: number }): GameState {
     demographicWeights: emptyWeights,
     presetId: null,
     ...initialPatronageFields(false),
+    ...initialPolitikaFields(),
   }
 }

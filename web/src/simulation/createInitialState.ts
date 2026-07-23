@@ -1,6 +1,7 @@
 import { mvp1ClockStub } from '../content/mvp1ClockStub'
 import { createBootstrapState } from './createBootstrapState'
 import { applyFinishPeniaze } from './patronage'
+import { applyFinishPolitika } from './politika'
 import { createRng } from './rng'
 import { reduce } from './reduce'
 import type { GameState, Ideology, PartyPresetId, Quarter } from './types'
@@ -12,7 +13,9 @@ type InitialOptions = {
   preferencie?: number
   ideology?: Ideology
   preset?: PartyPresetId
-  /** Keep the post-founding Peniaze FNM offer open (patronage fixtures). */
+  /** Keep Politika phase open (politika fixtures). */
+  openPolitika?: boolean
+  /** Skip to open Peniaze FNM offer (patronage fixtures). */
   openPeniaze?: boolean
 }
 
@@ -39,7 +42,19 @@ export function createInitialState(options: InitialOptions): GameState {
     preferencie: options.preferencie ?? founded.preferencie ?? mvp1ClockStub.startPreferencie,
   }
 
-  if (!options.openPeniaze && founded.turnPhase === 'peniaze') {
+  if (options.openPolitika) {
+    return founded
+  }
+
+  if (founded.turnPhase === 'politika') {
+    founded = applyFinishPolitika(founded, createRng(founded.rngState))
+  }
+
+  if (options.openPeniaze) {
+    return founded
+  }
+
+  if (founded.turnPhase === 'peniaze') {
     return applyFinishPeniaze(founded)
   }
   return founded

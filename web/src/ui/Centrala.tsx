@@ -69,6 +69,20 @@ export function Centrala() {
             <strong className="centrala__value centrala__value--sm">{state.offices}</strong>
           </div>
         </div>
+        <div className="centrala__metrics-row">
+          <div className="centrala__metric">
+            <span className="centrala__label">Reputácia</span>
+            <strong className="centrala__value centrala__value--sm">
+              {state.reputacia.toFixed(1)}
+            </strong>
+          </div>
+          <div className="centrala__metric">
+            <span className="centrala__label">Médiá</span>
+            <strong className="centrala__value centrala__value--sm">
+              {state.media.toFixed(1)}
+            </strong>
+          </div>
+        </div>
         <div className="centrala__metric">
           <span className="centrala__label">Kauzy — oko</span>
           <div
