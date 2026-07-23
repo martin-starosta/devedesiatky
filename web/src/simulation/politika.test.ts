@@ -84,4 +84,35 @@ describe('Politika phase', () => {
     expect(rejected.actionPoints).toBe(state.actionPoints)
     expect(rejected.media).toBe(state.media)
   })
+
+  it('runs a full government AP script then reopens Politika next quarter', () => {
+    let state = createInitialState({
+      seed: 42,
+      preferencie: 10,
+      preset: 'hnutie-machine',
+      openPolitika: true,
+    })
+    const startingAp = state.actionPoints
+    const script = ['pass-policy', 'appoint-loyalist', 'pressure-media'] as const
+
+    for (let i = 0; i < startingAp; i += 1) {
+      state = reduce(
+        state,
+        { type: 'SPEND_POLITIKA', actionId: script[i] },
+        createRng(state.rngState),
+      )
+    }
+
+    expect(state.actionPoints).toBe(0)
+    expect(state.turnPhase).toBe('peniaze')
+
+    state = reduce(state, { type: 'FINISH_PENIAZE' }, createRng(state.rngState))
+    expect(state.turnPhase).toBe('centrala')
+
+    state = reduce(state, { type: 'ADVANCE_QUARTER' }, createRng(state.rngState))
+    expect(state.turnPhase).toBe('politika')
+    expect(state.quarter).toBe(2)
+    expect(state.actionPoints).toBeGreaterThanOrEqual(2)
+    expect(state.actionPoints).toBeLessThanOrEqual(3)
+  })
 })
