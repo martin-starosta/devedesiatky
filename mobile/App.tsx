@@ -4,6 +4,7 @@ import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'rea
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { createGameStore } from './src/gameStore'
 import { devicePersistence } from './src/devicePersistence'
+import { SetupParty } from './src/SetupParty'
 
 const useGameStore = createGameStore({ persistence: devicePersistence })
 
@@ -57,33 +58,27 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safe} edges={['top', 'right', 'bottom', 'left']}>
-        <View style={styles.container}>
-          <Text style={styles.brand}>Divoké deväťdesiate</Text>
-          <Text style={styles.meta}>
-            {year} Q{quarter} · {phase}
-            {hasSave ? ' · uložené' : ''}
-          </Text>
-          <Text style={styles.preferencie} accessibilityLabel="preferencie">
-            Preferencie: {preferencie.toFixed(1)} %
-          </Text>
-          {phase === 'setup' ? (
-            <Pressable
-              style={styles.cta}
-              onPress={() => void foundParty({ preset: 'hnutie-machine' })}
-              accessibilityRole="button"
-            >
-              <Text style={styles.ctaLabel}>Založiť stranu</Text>
-            </Pressable>
-          ) : (
+        {phase === 'setup' ? (
+          <SetupParty onFound={(input) => void foundParty(input)} />
+        ) : (
+          <View style={styles.container}>
+            <Text style={styles.brand}>Divoké deväťdesiate</Text>
+            <Text style={styles.meta}>
+              {year} Q{quarter} · {phase}
+              {hasSave ? ' · uložené' : ''}
+            </Text>
+            <Text style={styles.preferencie} accessibilityLabel="preferencie">
+              Preferencie: {preferencie.toFixed(1)} %
+            </Text>
             <Text style={styles.hint}>Engine live — GameState cez shared package.</Text>
-          )}
-          {hasSave ? (
-            <Pressable style={styles.secondary} onPress={requestNewGame} accessibilityRole="button">
-              <Text style={styles.secondaryLabel}>Nová hra</Text>
-            </Pressable>
-          ) : null}
-          <StatusBar style="light" />
-        </View>
+            {hasSave ? (
+              <Pressable style={styles.secondary} onPress={requestNewGame} accessibilityRole="button">
+                <Text style={styles.secondaryLabel}>Nová hra</Text>
+              </Pressable>
+            ) : null}
+          </View>
+        )}
+        <StatusBar style="light" />
       </SafeAreaView>
     </SafeAreaProvider>
   )
@@ -116,18 +111,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#f0f0f0',
     marginTop: 8,
-  },
-  cta: {
-    marginTop: 16,
-    alignSelf: 'flex-start',
-    backgroundColor: '#c45c26',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-  },
-  ctaLabel: {
-    color: '#fff8f0',
-    fontSize: 16,
-    fontWeight: '700',
   },
   secondary: {
     alignSelf: 'flex-start',

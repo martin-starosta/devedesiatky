@@ -10,6 +10,9 @@ importers:
 
   mobile:
     dependencies:
+      '@devedesiatky/content':
+        specifier: workspace:*
+        version: link:../packages/content
       '@devedesiatky/simulation':
         specifier: workspace:*
         version: link:../packages/simulation
