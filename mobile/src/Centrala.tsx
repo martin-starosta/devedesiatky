@@ -51,8 +51,6 @@ export function Centrala({
       contentContainerStyle={[styles.scroll, reduceMotion ? null : styles.scrollMotion]}
       accessibilityLabel="Centrála"
     >
-      <Text style={styles.title}>Divoké deväťdesiate</Text>
-      <Text style={styles.tagline}>Ty si šéf. Morálka je voliteľná.</Text>
       <Text style={styles.date}>{formatDateLabel(state.year, state.quarter)}</Text>
 
       <View style={styles.hq}>
@@ -118,15 +116,6 @@ const styles = StyleSheet.create({
   },
   scrollMotion: {
     opacity: 1,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#f4e6c8',
-  },
-  tagline: {
-    color: '#9a8a7a',
-    fontSize: 14,
   },
   date: {
     color: '#c4a484',

@@ -177,7 +177,7 @@ export default function App() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: '#1a0f12',
+    backgroundColor: '#000',
   },
   loading: {
     flex: 1,
