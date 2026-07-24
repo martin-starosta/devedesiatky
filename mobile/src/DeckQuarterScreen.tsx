@@ -1,7 +1,19 @@
+import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { cards, deckArchetypes, type DeckArchetypeId } from '@devedesiatky/content'
+import {
+  cards,
+  deckArchetypes,
+  type DeckArchetypeId,
+  type EventChoiceId,
+} from '@devedesiatky/content'
 import type { DeckRunState } from '@devedesiatky/simulation'
 import { DeckHud } from './DeckHud'
+import {
+  canOpenDeckEvent,
+  DeckCasovaOs,
+  DeckEventPanel,
+  DeckFactPanel,
+} from './DeckEventFact'
 
 const archetype = deckArchetypes['stroj-moci']
 
@@ -11,6 +23,10 @@ type Props = {
   onPlayCard: (instanceId: string) => void
   onEndQuarter: () => void
   onShopSkip: () => void
+  onOpenEvent: () => void
+  onResolveEvent: (choiceId: EventChoiceId) => void
+  onCollectFact: () => void
+  onDismissFact: () => void
 }
 
 export function DeckQuarterScreen({
@@ -19,7 +35,13 @@ export function DeckQuarterScreen({
   onPlayCard,
   onEndQuarter,
   onShopSkip,
+  onOpenEvent,
+  onResolveEvent,
+  onCollectFact,
+  onDismissFact,
 }: Props) {
+  const [showTimeline, setShowTimeline] = useState(false)
+
   if (state.deck.length === 0) {
     return (
       <ScrollView contentContainerStyle={styles.setup} accessibilityLabel="Výber archetypu">
@@ -37,13 +59,36 @@ export function DeckQuarterScreen({
     )
   }
 
+  if (showTimeline) {
+    return (
+      <DeckCasovaOs
+        collectedFactIds={state.collectedFactIds}
+        onClose={() => setShowTimeline(false)}
+      />
+    )
+  }
+
   return (
     <View style={styles.shell}>
       <DeckHud state={state} />
       <ScrollView contentContainerStyle={styles.body}>
-        <Text style={styles.meta}>
-          {state.year} Q{state.calendarQuarter} · {state.phase}
-        </Text>
+        <View style={styles.row}>
+          <Text style={styles.meta}>
+            {state.year} Q{state.calendarQuarter} · {state.phase}
+          </Text>
+          <Pressable accessibilityRole="button" onPress={() => setShowTimeline(true)}>
+            <Text style={styles.link}>Časová os ({state.collectedFactIds.length})</Text>
+          </Pressable>
+        </View>
+
+        {state.phase === 'FACT' ? (
+          <DeckFactPanel
+            state={state}
+            onCollect={onCollectFact}
+            onDismiss={onDismissFact}
+          />
+        ) : null}
+
         {state.phase === 'PLAY' ? (
           <>
             <Text style={styles.section}>Ruka</Text>
@@ -74,25 +119,40 @@ export function DeckQuarterScreen({
             </Pressable>
           </>
         ) : null}
+
         {state.phase === 'ACQUIRE' ? (
-          <View style={styles.result}>
-            <Text style={styles.section}>
-              {state.lastCleared ? 'Kvóta splnená' : 'Kvóta nesplnená'}
-            </Text>
-            <Text style={styles.blurb}>
-              Skóre {state.lastScore ?? 0} / {state.quota} · kvartál {state.quarter}/6
-            </Text>
-            <Pressable
-              accessibilityRole="button"
-              style={styles.primary}
-              onPress={onShopSkip}
-            >
-              <Text style={styles.primaryLabel}>
-                {state.quarter >= 6 ? 'Do volieb' : 'Ďalší kvartál'}
+          state.acquireNode === 'event' && state.activeEventId ? (
+            <DeckEventPanel state={state} onResolve={onResolveEvent} />
+          ) : (
+            <View style={styles.result}>
+              <Text style={styles.section}>
+                {state.lastCleared ? 'Kvóta splnená' : 'Kvóta nesplnená'}
               </Text>
-            </Pressable>
-          </View>
+              <Text style={styles.blurb}>
+                Skóre {state.lastScore ?? 0} / {state.quota} · kvartál {state.quarter}/6
+              </Text>
+              {canOpenDeckEvent(state) ? (
+                <Pressable
+                  accessibilityRole="button"
+                  style={styles.secondary}
+                  onPress={onOpenEvent}
+                >
+                  <Text style={styles.secondaryLabel}>Historická udalosť</Text>
+                </Pressable>
+              ) : null}
+              <Pressable
+                accessibilityRole="button"
+                style={styles.primary}
+                onPress={onShopSkip}
+              >
+                <Text style={styles.primaryLabel}>
+                  {state.quarter >= 6 ? 'Do volieb' : 'Ďalší kvartál'}
+                </Text>
+              </Pressable>
+            </View>
+          )
         ) : null}
+
         {state.phase === 'BOSS' ? (
           <Text style={styles.section}>
             Voľby '94 — boss stub (#35). Kvóta history done.
@@ -117,6 +177,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#0a0608',
   },
   body: { padding: 16, gap: 10, paddingBottom: 40 },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
+  },
   kicker: {
     color: '#c45c26',
     fontWeight: '800',
@@ -126,6 +192,7 @@ const styles = StyleSheet.create({
   title: { color: '#f4e6c8', fontSize: 28, fontWeight: '800' },
   blurb: { color: '#cbbba8', fontSize: 15, lineHeight: 22 },
   meta: { color: '#9a8a7a', fontWeight: '700' },
+  link: { color: '#c45c26', fontWeight: '700' },
   section: { color: '#f4e6c8', fontSize: 18, fontWeight: '800', marginTop: 8 },
   card: {
     borderWidth: 1,
@@ -146,5 +213,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryLabel: { color: '#140c0e', fontWeight: '800', fontSize: 16 },
+  secondary: {
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#c45c26',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  secondaryLabel: { color: '#f4e6c8', fontWeight: '800', fontSize: 15 },
   result: { gap: 8 },
 })

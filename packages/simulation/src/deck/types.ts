@@ -1,6 +1,8 @@
 import type {
   CardId,
   DeckArchetypeId,
+  EventChoiceId,
+  EventId,
   FactId,
 } from '@devedesiatky/content'
 
@@ -67,8 +69,13 @@ export type DeckRunState = {
   bossAdvantage: boolean
   resources: DeckResources
   govOrOpposition: 'government' | 'opposition'
+  activeEventId: EventId | null
+  resolvedEventIds: EventId[]
   pendingFactId: FactId | null
   collectedFactIds: FactId[]
+  /** Client education metric — fact overlays opened (collect or dismiss). */
+  factOpens: number
+  phaseAfterFact: DeckPhase | null
   nextInstanceSeq: number
 }
 
@@ -78,5 +85,7 @@ export type DeckAction =
   | { type: 'PLAY_CARD'; instanceId: string }
   | { type: 'END_QUARTER' }
   | { type: 'SHOP_SKIP' }
+  | { type: 'OPEN_EVENT' }
+  | { type: 'RESOLVE_EVENT'; choiceId: EventChoiceId }
   | { type: 'COLLECT_FACT' }
   | { type: 'DISMISS_FACT' }

@@ -6,7 +6,6 @@ import { DeckQuarterScreen } from './src/DeckQuarterScreen'
 
 /**
  * Product path for MVP-A (#27+): deck-run reducer, not v2 Politika/FNM.
- * Legacy v2 shell remains in git history / unused imports cleaned for this entry.
  */
 const useDeckStore = createDeckStore({ seed: 1993 })
 
@@ -16,6 +15,10 @@ export default function App() {
   const playCard = useDeckStore((s) => s.playCard)
   const endQuarter = useDeckStore((s) => s.endQuarter)
   const shopSkip = useDeckStore((s) => s.shopSkip)
+  const openEvent = useDeckStore((s) => s.openEvent)
+  const resolveEvent = useDeckStore((s) => s.resolveEvent)
+  const collectFact = useDeckStore((s) => s.collectFact)
+  const dismissFact = useDeckStore((s) => s.dismissFact)
 
   return (
     <SafeAreaProvider>
@@ -26,6 +29,10 @@ export default function App() {
           onPlayCard={playCard}
           onEndQuarter={endQuarter}
           onShopSkip={shopSkip}
+          onOpenEvent={openEvent}
+          onResolveEvent={resolveEvent}
+          onCollectFact={collectFact}
+          onDismissFact={dismissFact}
         />
         <StatusBar style="light" />
       </SafeAreaView>

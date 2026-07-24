@@ -47,3 +47,7 @@ export {
   quotaForQuarter,
   reduceDeck,
 } from './deck/reduce'
+export {
+  availableDeckEventId,
+  deckChoicesForEvent,
+} from './deck/events'

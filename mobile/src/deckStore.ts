@@ -5,7 +5,7 @@ import {
   reduceDeck,
   type DeckRunState,
 } from '@devedesiatky/simulation'
-import type { DeckArchetypeId } from '@devedesiatky/content'
+import type { DeckArchetypeId, EventChoiceId } from '@devedesiatky/content'
 
 type DeckStore = {
   state: DeckRunState
@@ -14,6 +14,10 @@ type DeckStore = {
   playCard: (instanceId: string) => void
   endQuarter: () => void
   shopSkip: () => void
+  openEvent: () => void
+  resolveEvent: (choiceId: EventChoiceId) => void
+  collectFact: () => void
+  dismissFact: () => void
 }
 
 export type DeckStoreApi = UseBoundStore<StoreApi<DeckStore>>
@@ -39,7 +43,6 @@ export function createDeckStore(options: { seed?: number } = {}): DeckStoreApi {
           archetypeId: input?.archetypeId ?? 'stroj-moci',
           seed: input?.seed ?? seed,
         })
-        // Auto-draw into PLAY for the product path.
         const afterStart = get().state
         set({
           state: reduceDeck(afterStart, { type: 'DRAW_HAND' }, createRng(afterStart.rngState)),
@@ -49,6 +52,10 @@ export function createDeckStore(options: { seed?: number } = {}): DeckStoreApi {
       playCard: (instanceId) => dispatch({ type: 'PLAY_CARD', instanceId }),
       endQuarter: () => dispatch({ type: 'END_QUARTER' }),
       shopSkip: () => dispatch({ type: 'SHOP_SKIP' }),
+      openEvent: () => dispatch({ type: 'OPEN_EVENT' }),
+      resolveEvent: (choiceId) => dispatch({ type: 'RESOLVE_EVENT', choiceId }),
+      collectFact: () => dispatch({ type: 'COLLECT_FACT' }),
+      dismissFact: () => dispatch({ type: 'DISMISS_FACT' }),
     }
   })
 }

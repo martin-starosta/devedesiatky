@@ -182,3 +182,40 @@ describe('deck card scaling (#29)', () => {
     expect(state.quarterPodpora).toBe(12) // +3 per kult × 2
   })
 })
+
+describe('deck events + facts (#30)', () => {
+  it('OPEN_EVENT → RESOLVE_EVENT → COLLECT_FACT on 1993 Q1', () => {
+    let state = reduceDeck(
+      createEmptyDeckLobby(1),
+      { type: 'START_RUN', archetypeId: 'stroj-moci', seed: 1 },
+      createRng(0),
+    )
+    state = reduceDeck(state, { type: 'DRAW_HAND' }, createRng(state.rngState))
+    state = playMitings(state, 3)
+    state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
+    expect(state.phase).toBe('ACQUIRE')
+    expect(state.year).toBe(1993)
+    expect(state.calendarQuarter).toBe(1)
+
+    const beforePref = state.resources.preferencie
+    state = reduceDeck(state, { type: 'OPEN_EVENT' }, createRng(state.rngState))
+    expect(state.activeEventId).toBe('vznik-republiky')
+    expect(state.acquireNode).toBe('event')
+
+    state = reduceDeck(
+      state,
+      { type: 'RESOLVE_EVENT', choiceId: 'celebrate' },
+      createRng(state.rngState),
+    )
+    expect(state.phase).toBe('FACT')
+    expect(state.pendingFactId).toBe('fact-vznik-republiky')
+    expect(state.resolvedEventIds).toContain('vznik-republiky')
+    expect(state.resources.preferencie).toBeGreaterThan(beforePref)
+
+    state = reduceDeck(state, { type: 'COLLECT_FACT' }, createRng(state.rngState))
+    expect(state.phase).toBe('ACQUIRE')
+    expect(state.collectedFactIds).toContain('fact-vznik-republiky')
+    expect(state.factOpens).toBe(1)
+    expect(state.pendingFactId).toBeNull()
+  })
+})

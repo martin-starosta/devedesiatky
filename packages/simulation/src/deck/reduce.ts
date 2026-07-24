@@ -12,6 +12,12 @@ import {
 } from '@devedesiatky/content'
 import { drawCards, shuffle } from './draw'
 import { playCard } from './effects'
+import {
+  collectDeckFact,
+  dismissDeckFact,
+  openDeckEvent,
+  resolveDeckEvent,
+} from './events'
 import type { DeckAction, DeckCardInstance, DeckRunState } from './types'
 import type { Rng } from '../types'
 import { createRng } from '../rng'
@@ -82,8 +88,12 @@ export function createEmptyDeckLobby(seed = 1993): DeckRunState {
       offices: 0,
     },
     govOrOpposition: 'government',
+    activeEventId: null,
+    resolvedEventIds: [],
     pendingFactId: null,
     collectedFactIds: [],
+    factOpens: 0,
+    phaseAfterFact: null,
     nextInstanceSeq: 1,
   }
 }
@@ -134,8 +144,12 @@ function startRun(
       offices: archetype.offices,
     },
     govOrOpposition: 'government',
+    activeEventId: null,
+    resolvedEventIds: [],
     pendingFactId: null,
     collectedFactIds: [],
+    factOpens: 0,
+    phaseAfterFact: null,
     nextInstanceSeq: minted.nextSeq,
   }
 }
@@ -254,10 +268,14 @@ export function reduceDeck(
       return endQuarter(state)
     case 'SHOP_SKIP':
       return advanceAfterAcquire(state, rng)
+    case 'OPEN_EVENT':
+      return openDeckEvent(state)
+    case 'RESOLVE_EVENT':
+      return resolveDeckEvent(state, action.choiceId)
     case 'COLLECT_FACT':
+      return collectDeckFact(state)
     case 'DISMISS_FACT':
-      if (state.phase !== 'FACT') return state
-      return { ...state, pendingFactId: null, phase: 'ACQUIRE' }
+      return dismissDeckFact(state)
     default:
       return state
   }
