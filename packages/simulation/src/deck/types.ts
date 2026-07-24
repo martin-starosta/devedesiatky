@@ -29,6 +29,8 @@ export type DeckCardInstance = {
   /** Unique instance id in this run. */
   instanceId: string
   cardId: AnyPlayableCardId
+  /** Only set for kauza curse instances. */
+  kauzaStatus?: 'latent' | 'muted' | 'detonated' | 'nevymazatelna'
 }
 
 export type SponsorDebt = {
@@ -85,6 +87,8 @@ export type DeckRunState = {
   /** Client education metric — fact overlays opened (collect or dismiss). */
   factOpens: number
   phaseAfterFact: DeckPhase | null
+  /** Conditions armed this quarter (lossOfPower may persist). */
+  armedConditions: import('@devedesiatky/content').KauzaCondition[]
   nextInstanceSeq: number
 }
 
@@ -101,5 +105,6 @@ export type DeckAction =
   | { type: 'RESOLVE_EVENT'; choiceId: EventChoiceId }
   | { type: 'COLLECT_FACT' }
   | { type: 'DISMISS_FACT' }
+  | { type: 'ARM_CONDITION'; condition: import('@devedesiatky/content').KauzaCondition }
 
 export type { KauzaCardId }

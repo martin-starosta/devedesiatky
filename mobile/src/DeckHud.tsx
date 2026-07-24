@@ -1,10 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native'
 import type { DeckRunState } from '@devedesiatky/simulation'
-import { quarterScore } from '@devedesiatky/simulation'
+import { countKauzyInRun, quarterScore } from '@devedesiatky/simulation'
 import { formatSk } from './shellModel'
 
 export function DeckHud({ state }: { state: DeckRunState }) {
   const score = quarterScore(state)
+  const kauzy = countKauzyInRun(state)
   return (
     <View style={styles.hud} accessibilityLabel="Deck skóre">
       <View style={styles.cell}>
@@ -27,6 +28,10 @@ export function DeckHud({ state }: { state: DeckRunState }) {
           {score}/{state.quota}
         </Text>
       </View>
+      <View style={styles.cell} accessibilityLabel={`Kauzy v balíku ${kauzy}`}>
+        <Text style={styles.label}>Kauzy</Text>
+        <Text style={[styles.value, kauzy > 0 ? styles.signal : null]}>{kauzy}</Text>
+      </View>
     </View>
   )
 }
@@ -43,7 +48,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#140c0e',
   },
   cell: {
-    minWidth: '22%',
+    minWidth: '18%',
     flexGrow: 1,
   },
   label: {

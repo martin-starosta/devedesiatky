@@ -3,6 +3,7 @@ import {
   actIOpeningQuota,
   actIQuarterCount,
   actIQuotaGrowthPerQuarter,
+  kauzaCardIds,
   quotaMissPreferencieBleed,
 } from '@devedesiatky/content'
 import { createRng } from '../rng'
@@ -269,5 +270,95 @@ describe('deck acquisition shops (#32)', () => {
     expect(state.sponsors.some((s) => s.sponsorId === 'zelezny-baron' && s.obligations >= 1)).toBe(
       true,
     )
+  })
+})
+
+describe('deck kauzy (#33)', () => {
+  it('detonates kauza in hand when condition is armed; mute spends Reputácia', () => {
+    let state = reduceDeck(
+      createEmptyDeckLobby(5),
+      { type: 'START_RUN', archetypeId: 'stroj-moci', seed: 5 },
+      createRng(0),
+    )
+    const kauza = {
+      instanceId: 'k1',
+      cardId: 'kauza-novinar' as const,
+      kauzaStatus: 'latent' as const,
+    }
+    state = {
+      ...state,
+      phase: 'PLAY',
+      hand: [kauza],
+      deck: [...state.deck, kauza],
+      energy: 1,
+      resources: { ...state.resources, media: 0, preferencie: 10, reputacia: 5 },
+    }
+    state = reduceDeck(
+      state,
+      { type: 'ARM_CONDITION', condition: 'journalist' },
+      createRng(state.rngState),
+    )
+    expect(
+      state.hand.find((c) => c.instanceId === 'k1')?.kauzaStatus === 'nevymazatelna' ||
+        state.deck.find((c) => c.instanceId === 'k1')?.kauzaStatus === 'nevymazatelna',
+    ).toBe(true)
+
+    const tunel = {
+      instanceId: 'k2',
+      cardId: 'kauza-tunel' as const,
+      kauzaStatus: 'latent' as const,
+    }
+    state = {
+      ...state,
+      hand: [tunel],
+      deck: [...state.deck, tunel],
+      armedConditions: [],
+      resources: { ...state.resources, media: 6, preferencie: 10, reputacia: 5 },
+    }
+    const prefBeforeMute = state.resources.preferencie
+    const repBefore = state.resources.reputacia
+    state = reduceDeck(
+      state,
+      { type: 'ARM_CONDITION', condition: 'journalist' },
+      createRng(state.rngState),
+    )
+    expect(state.hand.find((c) => c.instanceId === 'k2')?.kauzaStatus).toBe('muted')
+    expect(state.resources.preferencie).toBeLessThan(prefBeforeMute)
+    expect(state.resources.reputacia).toBeLessThan(repBefore)
+  })
+
+  it('kauzy-choked deck fails a late Act I kvóta', () => {
+    let state = reduceDeck(
+      createEmptyDeckLobby(8),
+      { type: 'START_RUN', archetypeId: 'stroj-moci', seed: 8 },
+      createRng(0),
+    )
+    const curses = kauzaCardIds.slice(0, 5).map((id, i) => ({
+      instanceId: `clog${i}`,
+      cardId: id,
+      kauzaStatus: 'latent' as const,
+    }))
+    state = {
+      ...state,
+      phase: 'PLAY',
+      quarter: 6,
+      quota: quotaForQuarter(6),
+      hand: curses,
+      deck: [...state.deck, ...curses],
+      energy: 3,
+      quarterPodpora: 0,
+      quarterMobilizacia: 0,
+    }
+    for (const c of curses.slice(0, 3)) {
+      state = reduceDeck(
+        state,
+        { type: 'PLAY_CARD', instanceId: c.instanceId },
+        createRng(state.rngState),
+      )
+    }
+    expect(quarterScore(state)).toBe(0)
+    state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
+    expect(state.lastCleared).toBe(false)
+    expect(state.bossAdvantage).toBe(true)
   })
 })

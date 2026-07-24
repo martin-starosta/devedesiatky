@@ -18,6 +18,12 @@ import {
   openDeckEvent,
   resolveDeckEvent,
 } from './events'
+import {
+  clearTransientArmedConditions,
+  onCardsDrawn,
+  onResolveKauzy,
+  armCondition,
+} from './kauzy'
 import { openShop, shopBuy, takePatronage } from './shop'
 import type { DeckAction, DeckCardInstance, DeckRunState } from './types'
 import type { Rng } from '../types'
@@ -97,6 +103,7 @@ export function createEmptyDeckLobby(seed = 1993): DeckRunState {
     phaseAfterFact: null,
     shopOffers: null,
     sponsors: [],
+    armedConditions: [],
     nextInstanceSeq: 1,
   }
 }
@@ -155,6 +162,7 @@ function startRun(
     phaseAfterFact: null,
     shopOffers: null,
     sponsors: [],
+    armedConditions: [],
     nextInstanceSeq: minted.nextSeq,
   }
 }
@@ -163,7 +171,7 @@ function drawHand(state: DeckRunState, rng: Rng): DeckRunState {
   if (state.phase !== 'DRAW') return state
   let discardPile = [...state.discardPile, ...state.hand]
   const result = drawCards(state.drawPile, discardPile, state.handSize, rng)
-  return {
+  let next: DeckRunState = {
     ...state,
     phase: 'PLAY',
     hand: result.drawn,
@@ -174,43 +182,47 @@ function drawHand(state: DeckRunState, rng: Rng): DeckRunState {
     quarterMobilizacia: 0,
     rngState: rng.state,
   }
+  next = onCardsDrawn(next, result.drawn)
+  return next
 }
 
 function settleQuota(state: DeckRunState): DeckRunState {
-  const mobilizacia = Math.max(1, state.quarterMobilizacia)
-  const score = state.quarterPodpora * mobilizacia
-  const cleared = score >= state.quota
-  let preferencie = state.resources.preferencie
-  let pokladna = state.resources.pokladna
-  let bossAdvantage = state.bossAdvantage
+  // On-resolve kauzy before scoring.
+  let next = onResolveKauzy(state)
+  const mobilizacia = Math.max(1, next.quarterMobilizacia)
+  const score = next.quarterPodpora * mobilizacia
+  const cleared = score >= next.quota
+  let preferencie = next.resources.preferencie
+  let pokladna = next.resources.pokladna
+  let bossAdvantage = next.bossAdvantage
 
   if (cleared) {
     preferencie += quotaClearPreferencie
-    const overkill = score - state.quota
+    const overkill = score - next.quota
     if (overkill > 0) {
       pokladna += overkill * overkillPokladnaPerPoint
     }
   } else {
     preferencie = Math.max(0, preferencie - quotaMissPreferencieBleed)
-    if (score < state.quota * 0.5) {
+    if (score < next.quota * 0.5) {
       bossAdvantage = true
     }
   }
 
-  const afterQ6 = state.quarter >= actIQuarterCount
+  const afterQ6 = next.quarter >= actIQuarterCount
   return {
-    ...state,
+    ...next,
     phase: afterQ6 ? 'BOSS' : 'ACQUIRE',
     acquireNode: afterQ6 ? null : 'skip',
     lastScore: score,
     lastCleared: cleared,
     bossAdvantage,
     resources: {
-      ...state.resources,
+      ...next.resources,
       preferencie,
       pokladna,
     },
-    discardPile: [...state.discardPile, ...state.hand],
+    discardPile: [...next.discardPile, ...next.hand],
     hand: [],
     energy: 0,
     quarterPodpora: 0,
@@ -231,23 +243,21 @@ function advanceAfterAcquire(state: DeckRunState, rng: Rng): DeckRunState {
   const quarter = state.quarter + 1
   const { year, calendarQuarter } = yearQuarterForActQuarter(quarter)
   const combined = shuffle([...state.drawPile, ...state.discardPile], rng)
-  return drawHand(
-    {
-      ...state,
-      quarter,
-      year,
-      calendarQuarter,
-      quota: quotaForQuarter(quarter, state.quotaBase),
-      acquireNode: null,
-      shopOffers: null,
-      phase: 'DRAW',
-      drawPile: combined,
-      discardPile: [],
-      hand: [],
-      rngState: rng.state,
-    },
-    rng,
-  )
+  const advanced = clearTransientArmedConditions({
+    ...state,
+    quarter,
+    year,
+    calendarQuarter,
+    quota: quotaForQuarter(quarter, state.quotaBase),
+    acquireNode: null,
+    shopOffers: null,
+    phase: 'DRAW',
+    drawPile: combined,
+    discardPile: [],
+    hand: [],
+    rngState: rng.state,
+  })
+  return drawHand(advanced, rng)
 }
 
 /**
@@ -268,7 +278,12 @@ export function reduceDeck(
       return drawHand(state, rng)
     case 'PLAY_CARD': {
       if (state.phase !== 'PLAY') return state
-      return playCard(state, action.instanceId, rng)
+      const beforeMedia = state.resources.media
+      let next = playCard(state, action.instanceId, rng)
+      if (next.resources.media > beforeMedia) {
+        next = armCondition(next, 'journalist')
+      }
+      return next
     }
     case 'END_QUARTER':
       return endQuarter(state)
@@ -280,14 +295,20 @@ export function reduceDeck(
       return openShop(state, action.kind, rng)
     case 'SHOP_BUY':
       return shopBuy(state, action.cardId, rng)
-    case 'TAKE_PATRONAGE':
-      return takePatronage(state, action.cardId, rng, action.sponsorId)
+    case 'TAKE_PATRONAGE': {
+      let next = takePatronage(state, action.cardId, rng, action.sponsorId)
+      next = armCondition(next, 'journalist')
+      next = armCondition(next, 'defector')
+      return next
+    }
     case 'RESOLVE_EVENT':
       return resolveDeckEvent(state, action.choiceId)
     case 'COLLECT_FACT':
       return collectDeckFact(state)
     case 'DISMISS_FACT':
       return dismissDeckFact(state)
+    case 'ARM_CONDITION':
+      return armCondition(state, action.condition)
     default:
       return state
   }

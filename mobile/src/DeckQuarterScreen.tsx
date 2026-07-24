@@ -122,6 +122,7 @@ export function DeckQuarterScreen({
                 >
                   <Text style={styles.cardTitle}>
                     {def.titleSk} · {def.energyCost}⚡
+                    {def.tags.includes('kauza') ? ' · KAUZA' : ''}
                   </Text>
                   <Text style={styles.cardBlurb}>{def.blurbSk}</Text>
                 </Pressable>

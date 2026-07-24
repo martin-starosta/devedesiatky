@@ -71,8 +71,15 @@ function injectKauzy(state: DeckRunState, count: number, rng: Rng): DeckRunState
   const added: DeckCardInstance[] = []
   for (const kauzaId of picks) {
     const minted = mintInstance(next, kauzaId)
-    next = minted.state
-    added.push(minted.card)
+    next = {
+      ...minted.state,
+      deck: minted.state.deck.map((c) =>
+        c.instanceId === minted.card.instanceId
+          ? { ...c, kauzaStatus: 'latent' as const }
+          : c,
+      ),
+    }
+    added.push({ ...minted.card, kauzaStatus: 'latent' })
   }
   return {
     ...next,

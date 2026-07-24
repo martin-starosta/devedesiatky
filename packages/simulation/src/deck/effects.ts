@@ -1,5 +1,6 @@
 import { lookupCard, type CardEffect } from '@devedesiatky/content'
 import { drawCards } from './draw'
+import { onCardsDrawn } from './kauzy'
 import type { DeckRunState } from './types'
 import type { Rng } from '../types'
 
@@ -65,13 +66,15 @@ function applyOne(state: DeckRunState, effect: CardEffect, rng: Rng): DeckRunSta
         effect.amount,
         rng,
       )
-      return {
+      let next: DeckRunState = {
         ...state,
         hand: [...state.hand, ...result.drawn],
         drawPile: result.drawPile,
         discardPile: result.discardPile,
         rngState: rng.state,
       }
+      next = onCardsDrawn(next, result.drawn)
+      return next
     }
     case 'addKauza':
       return state
