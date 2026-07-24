@@ -1,16 +1,21 @@
 import { StatusBar } from 'expo-status-bar'
-import { StyleSheet } from 'react-native'
+import { useEffect, useState } from 'react'
+import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { createDeckStore } from './src/deckStore'
+import { deviceDeckPersistence } from './src/deviceDeckPersistence'
 import { DeckQuarterScreen } from './src/DeckQuarterScreen'
 
-/**
- * Product path for MVP-A (#27+): deck-run reducer, not v2 Politika/FNM.
- */
-const useDeckStore = createDeckStore({ seed: 1993 })
+const useDeckStore = createDeckStore({
+  persistence: deviceDeckPersistence,
+  seed: 1993,
+})
 
 export default function App() {
+  const [ready, setReady] = useState(false)
   const state = useDeckStore((s) => s.state)
+  const hasSave = useDeckStore((s) => s.hasSave)
+  const hydrate = useDeckStore((s) => s.hydrate)
   const startRun = useDeckStore((s) => s.startRun)
   const playCard = useDeckStore((s) => s.playCard)
   const endQuarter = useDeckStore((s) => s.endQuarter)
@@ -19,20 +24,58 @@ export default function App() {
   const resolveEvent = useDeckStore((s) => s.resolveEvent)
   const collectFact = useDeckStore((s) => s.collectFact)
   const dismissFact = useDeckStore((s) => s.dismissFact)
+  const newGame = useDeckStore((s) => s.newGame)
+
+  useEffect(() => {
+    void hydrate().finally(() => setReady(true))
+  }, [hydrate])
+
+  function requestNewGame() {
+    const result = newGame({ confirmed: false })
+    if (result instanceof Promise) {
+      void result
+      return
+    }
+    if (result.needsConfirmation) {
+      Alert.alert('Nová hra?', 'Mazanie uloženého deck behu. Naozaj?', [
+        { text: 'Zrušiť', style: 'cancel' },
+        {
+          text: 'Nová hra',
+          style: 'destructive',
+          onPress: () => {
+            void newGame({ confirmed: true })
+          },
+        },
+      ])
+    }
+  }
+
+  if (!ready) {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.safe}>
+          <View style={styles.loading}>
+            <ActivityIndicator color="#f4e6c8" />
+          </View>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    )
+  }
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safe} edges={['top', 'right', 'bottom', 'left']}>
         <DeckQuarterScreen
           state={state}
-          onStart={(input) => startRun(input)}
-          onPlayCard={playCard}
-          onEndQuarter={endQuarter}
-          onShopSkip={shopSkip}
-          onOpenEvent={openEvent}
-          onResolveEvent={resolveEvent}
-          onCollectFact={collectFact}
-          onDismissFact={dismissFact}
+          onStart={(input) => void startRun(input)}
+          onPlayCard={(id) => void playCard(id)}
+          onEndQuarter={() => void endQuarter()}
+          onShopSkip={() => void shopSkip()}
+          onOpenEvent={() => void openEvent()}
+          onResolveEvent={(id) => void resolveEvent(id)}
+          onCollectFact={() => void collectFact()}
+          onDismissFact={() => void dismissFact()}
+          onNewGame={hasSave ? requestNewGame : undefined}
         />
         <StatusBar style="light" />
       </SafeAreaView>
@@ -44,5 +87,10 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: '#000',
+  },
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 })

@@ -27,6 +27,7 @@ type Props = {
   onResolveEvent: (choiceId: EventChoiceId) => void
   onCollectFact: () => void
   onDismissFact: () => void
+  onNewGame?: () => void
 }
 
 export function DeckQuarterScreen({
@@ -39,6 +40,7 @@ export function DeckQuarterScreen({
   onResolveEvent,
   onCollectFact,
   onDismissFact,
+  onNewGame,
 }: Props) {
   const [showTimeline, setShowTimeline] = useState(false)
 
@@ -76,9 +78,16 @@ export function DeckQuarterScreen({
           <Text style={styles.meta}>
             {state.year} Q{state.calendarQuarter} · {state.phase}
           </Text>
-          <Pressable accessibilityRole="button" onPress={() => setShowTimeline(true)}>
-            <Text style={styles.link}>Časová os ({state.collectedFactIds.length})</Text>
-          </Pressable>
+          <View style={styles.rowActions}>
+            <Pressable accessibilityRole="button" onPress={() => setShowTimeline(true)}>
+              <Text style={styles.link}>Časová os ({state.collectedFactIds.length})</Text>
+            </Pressable>
+            {onNewGame ? (
+              <Pressable accessibilityRole="button" onPress={onNewGame}>
+                <Text style={styles.link}>Nová hra</Text>
+              </Pressable>
+            ) : null}
+          </View>
         </View>
 
         {state.phase === 'FACT' ? (
@@ -183,6 +192,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
+  rowActions: { flexDirection: 'row', gap: 12, alignItems: 'center' },
   kicker: {
     color: '#c45c26',
     fontWeight: '800',
