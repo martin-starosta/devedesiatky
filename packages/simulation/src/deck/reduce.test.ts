@@ -223,6 +223,63 @@ describe('deck events + facts (#30)', () => {
   })
 })
 
+describe('deck Kupónka fork — divoká privatizácia', () => {
+  // Advance to the 1993 Q3 acquire step where the Kupónka event fires.
+  function reachKuponkaAcquire(seed: number): DeckRunState {
+    let state = reduceDeck(
+      createEmptyDeckLobby(seed),
+      { type: 'START_RUN', archetypeId: 'stroj-moci', seed },
+      createRng(0),
+    )
+    state = reduceDeck(state, { type: 'DRAW_HAND' }, createRng(state.rngState))
+    for (let q = 1; q <= 3; q++) {
+      state = playMitings(state, 3)
+      state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
+      if (q < 3) {
+        state = reduceDeck(state, { type: 'SHOP_SKIP' }, createRng(state.rngState))
+      }
+    }
+    expect(state.phase).toBe('ACQUIRE')
+    expect(state.year).toBe(1993)
+    expect(state.calendarQuarter).toBe(3)
+    state = reduceDeck(state, { type: 'OPEN_EVENT' }, createRng(state.rngState))
+    expect(state.activeEventId).toBe('kuponka')
+    return state
+  }
+
+  it('cancel wave → direct sales: cash to the party, trust and country fall', () => {
+    let state = reachKuponkaAcquire(2001)
+    const before = { ...state.resources }
+    state = reduceDeck(
+      state,
+      { type: 'RESOLVE_EVENT', choiceId: 'cancel-wave' },
+      createRng(state.rngState),
+    )
+    // Direct-sale windfall flows to the party.
+    expect(state.resources.pokladna).toBe(before.pokladna + 40_000)
+    // Citizen trust (Reputácia) erodes by trustDebt.
+    expect(state.resources.reputacia).toBe(before.reputacia - 1)
+    // Country meter falls: trustDebt (−2) plus the full-sale hit (−2).
+    expect(state.resources.slovenskoIndex).toBe(before.slovenskoIndex - 4)
+    expect(state.phase).toBe('FACT')
+    expect(state.pendingFactId).toBe('fact-kuponka')
+  })
+
+  it('continue wave → coupons to citizens: trust and country hold', () => {
+    let state = reachKuponkaAcquire(2002)
+    const before = { ...state.resources }
+    state = reduceDeck(
+      state,
+      { type: 'RESOLVE_EVENT', choiceId: 'continue-wave' },
+      createRng(state.rngState),
+    )
+    expect(state.resources.pokladna).toBe(before.pokladna) // no windfall
+    expect(state.resources.reputacia).toBe(before.reputacia + 0.3)
+    expect(state.resources.slovenskoIndex).toBe(before.slovenskoIndex + 1)
+    expect(state.resources.preferencie).toBeGreaterThan(before.preferencie)
+  })
+})
+
 describe('deck acquisition shops (#32)', () => {
   it('clean shop adds card without kauzy; patronage injects kauzy + obligation', () => {
     let state = reduceDeck(

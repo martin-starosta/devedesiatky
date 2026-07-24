@@ -8,6 +8,9 @@ export type KauzaCardId =
   | 'kauza-novinar'
   | 'kauza-defektor'
   | 'kauza-archiv'
+  | 'kauza-priamy-predaj'
+  | 'kauza-dlhopis'
+  | 'kauza-oligarcha'
 
 export type KauzaCardDef = Omit<CardDef, 'id'> & {
   id: KauzaCardId
@@ -68,6 +71,37 @@ export const kauzaCards: Record<KauzaCardId, KauzaCardDef> = {
     effects: [],
     conditions: ['lossOfPower'],
     pressure: 1.5,
+  },
+  'kauza-priamy-predaj': {
+    id: 'kauza-priamy-predaj',
+    titleSk: 'Kauza — priamy predaj',
+    blurbSk: 'Predané pod cenu známemu. Otázka, komu to patrí.',
+    energyCost: 1,
+    tags: ['kauza'],
+    effects: [],
+    conditions: ['journalist', 'lossOfPower'],
+    pressure: 1.4,
+  },
+  'kauza-dlhopis': {
+    id: 'kauza-dlhopis',
+    titleSk: 'Kauza — dlhopisy',
+    blurbSk: 'Občania dostali papier bez hodnoty. Niekto zarobil.',
+    energyCost: 1,
+    tags: ['kauza'],
+    effects: [],
+    conditions: ['journalist', 'defector'],
+    pressure: 1.2,
+  },
+  'kauza-oligarcha': {
+    id: 'kauza-oligarcha',
+    titleSk: 'Kauza — oligarcha',
+    blurbSk: 'Magnát, ktorého si vytvoril, už diktuje podmienky. Nevymazateľná.',
+    energyCost: 1,
+    tags: ['kauza'],
+    effects: [],
+    conditions: ['defector', 'lossOfPower'],
+    pressure: 1.5,
+    nevymazatelnaOnDetonate: true,
   },
 }
 

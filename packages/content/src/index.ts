@@ -45,6 +45,7 @@ export {
 } from './politika'
 export {
   eventIdForQuarter,
+  eventPrivatizationEffects,
   factCards,
   timelineEvents,
   timelineEventsById,
