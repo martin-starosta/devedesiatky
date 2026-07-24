@@ -5,6 +5,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { createDeckStore } from './src/deckStore'
 import { deviceDeckPersistence } from './src/deviceDeckPersistence'
 import { DeckQuarterScreen } from './src/DeckQuarterScreen'
+import { GameHeader } from './src/GameHeader'
 
 const useDeckStore = createDeckStore({
   persistence: deviceDeckPersistence,
@@ -63,7 +64,8 @@ export default function App() {
   if (!ready) {
     return (
       <SafeAreaProvider>
-        <SafeAreaView style={styles.safe}>
+        <SafeAreaView style={styles.safe} edges={['right', 'bottom', 'left']}>
+          <GameHeader />
           <View style={styles.loading}>
             <ActivityIndicator color="#f4e6c8" />
           </View>
@@ -74,7 +76,8 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.safe} edges={['top', 'right', 'bottom', 'left']}>
+      <SafeAreaView style={styles.safe} edges={['right', 'bottom', 'left']}>
+        <GameHeader />
         <DeckQuarterScreen
           state={state}
           onStart={(input) => void startRun(input)}
