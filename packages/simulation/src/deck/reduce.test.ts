@@ -1,7 +1,40 @@
 import { describe, expect, it } from 'vitest'
-import { actIOpeningQuota } from '@devedesiatky/content'
+import {
+  actIOpeningQuota,
+  actIQuarterCount,
+  actIQuotaGrowthPerQuarter,
+  quotaMissPreferencieBleed,
+} from '@devedesiatky/content'
 import { createRng } from '../rng'
-import { createEmptyDeckLobby, quarterScore, reduceDeck } from './reduce'
+import {
+  createEmptyDeckLobby,
+  quarterScore,
+  quotaForQuarter,
+  reduceDeck,
+} from './reduce'
+import type { DeckRunState } from './types'
+
+function playMitings(state: DeckRunState, count: number): DeckRunState {
+  const mitings = state.deck.filter((c) => c.cardId === 'miting').slice(0, count)
+  let next: DeckRunState = {
+    ...state,
+    phase: 'PLAY',
+    hand: mitings,
+    drawPile: state.deck.filter((c) => !mitings.some((m) => m.instanceId === c.instanceId)),
+    discardPile: [],
+    energy: count,
+    quarterPodpora: 0,
+    quarterMobilizacia: 0,
+  }
+  for (const card of mitings) {
+    next = reduceDeck(
+      next,
+      { type: 'PLAY_CARD', instanceId: card.instanceId },
+      createRng(next.rngState),
+    )
+  }
+  return next
+}
 
 describe('deck reducer (#27)', () => {
   it('START_RUN builds shuffled deck and DRAW_HAND enters PLAY', () => {
@@ -31,32 +64,10 @@ describe('deck reducer (#27)', () => {
     )
     state = reduceDeck(state, { type: 'DRAW_HAND' }, createRng(state.rngState))
 
-    // Deterministic clear: three Míting (10×3=30 ≥ kvóta 20).
-    const mitings = state.deck.filter((c) => c.cardId === 'miting').slice(0, 3)
-    expect(mitings.length).toBe(3)
-    state = {
-      ...state,
-      hand: mitings,
-      drawPile: state.deck.filter((c) => !mitings.some((m) => m.instanceId === c.instanceId)),
-      discardPile: [],
-      energy: 3,
-      quarterPodpora: 0,
-      quarterMobilizacia: 0,
-    }
-
     const preferencieBefore = state.resources.preferencie
     const pokladnaBefore = state.resources.pokladna
-
-    for (const card of mitings) {
-      state = reduceDeck(
-        state,
-        { type: 'PLAY_CARD', instanceId: card.instanceId },
-        createRng(state.rngState),
-      )
-    }
-
+    state = playMitings(state, 3)
     expect(quarterScore(state)).toBe(30)
-    expect(quarterScore(state)).toBeGreaterThanOrEqual(actIOpeningQuota)
 
     state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
     expect(state.phase).toBe('ACQUIRE')
@@ -80,5 +91,59 @@ describe('deck reducer (#27)', () => {
       createRng(started.rngState),
     )
     expect(next).toEqual(started)
+  })
+})
+
+describe('deck Act I clock (#28)', () => {
+  it('raises kvóta each quarter and walks all 6 into BOSS', () => {
+    expect(quotaForQuarter(1)).toBe(actIOpeningQuota)
+    expect(quotaForQuarter(2)).toBe(actIOpeningQuota + actIQuotaGrowthPerQuarter)
+    expect(quotaForQuarter(6)).toBe(
+      actIOpeningQuota + 5 * actIQuotaGrowthPerQuarter,
+    )
+
+    let state = reduceDeck(
+      createEmptyDeckLobby(99),
+      { type: 'START_RUN', archetypeId: 'stroj-moci', seed: 99 },
+      createRng(0),
+    )
+    state = reduceDeck(state, { type: 'DRAW_HAND' }, createRng(state.rngState))
+
+    for (let q = 1; q <= actIQuarterCount; q++) {
+      expect(state.quarter).toBe(q)
+      expect(state.quota).toBe(quotaForQuarter(q))
+      state = playMitings(state, 3)
+      state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
+      if (q < actIQuarterCount) {
+        expect(state.phase).toBe('ACQUIRE')
+        state = reduceDeck(state, { type: 'SHOP_SKIP' }, createRng(state.rngState))
+        expect(state.phase).toBe('PLAY')
+      } else {
+        expect(state.phase).toBe('BOSS')
+      }
+    }
+    expect(state.year).toBe(1994)
+    expect(state.calendarQuarter).toBe(2)
+  })
+
+  it('miss bleeds Preferencie; severe miss sets bossAdvantage', () => {
+    let state = reduceDeck(
+      createEmptyDeckLobby(3),
+      { type: 'START_RUN', archetypeId: 'stroj-moci', seed: 3 },
+      createRng(0),
+    )
+    state = reduceDeck(state, { type: 'DRAW_HAND' }, createRng(state.rngState))
+    const before = state.resources.preferencie
+    state = {
+      ...state,
+      phase: 'PLAY',
+      quarterPodpora: 0,
+      quarterMobilizacia: 0,
+      energy: 0,
+    }
+    state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
+    expect(state.lastCleared).toBe(false)
+    expect(state.resources.preferencie).toBe(before - quotaMissPreferencieBleed)
+    expect(state.bossAdvantage).toBe(true)
   })
 })

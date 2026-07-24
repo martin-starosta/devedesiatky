@@ -79,18 +79,28 @@ export function DeckQuarterScreen({
             <Text style={styles.section}>
               {state.lastCleared ? 'Kvóta splnená' : 'Kvóta nesplnená'}
             </Text>
-            <Text style={styles.blurb}>Skóre {state.lastScore ?? 0} / {state.quota}</Text>
+            <Text style={styles.blurb}>
+              Skóre {state.lastScore ?? 0} / {state.quota} · kvartál {state.quarter}/6
+            </Text>
             <Pressable
               accessibilityRole="button"
               style={styles.primary}
               onPress={onShopSkip}
             >
-              <Text style={styles.primaryLabel}>Preskočiť obchod (MVP-A)</Text>
+              <Text style={styles.primaryLabel}>
+                {state.quarter >= 6 ? 'Do volieb' : 'Ďalší kvartál'}
+              </Text>
             </Pressable>
           </View>
         ) : null}
+        {state.phase === 'BOSS' ? (
+          <Text style={styles.section}>
+            Voľby '94 — boss stub (#35). Kvóta history done.
+            {state.bossAdvantage ? ' Boss má výhodu.' : ''}
+          </Text>
+        ) : null}
         {state.phase === 'TERMINAL' ? (
-          <Text style={styles.section}>Kvartál hotový. Ďalší clock príde v #28.</Text>
+          <Text style={styles.section}>Beh ukončený.</Text>
         ) : null}
       </ScrollView>
     </View>

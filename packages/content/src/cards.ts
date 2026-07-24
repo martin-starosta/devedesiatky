@@ -129,8 +129,17 @@ export const deckArchetypes: Record<DeckArchetypeId, DeckArchetype> = {
 /** Opening kvóta for Act I Q1 — stub path must clear with a good hand. */
 export const actIOpeningQuota = 20
 
+/** Act I length in engine quarters. */
+export const actIQuarterCount = 6
+
+/** Kvóta increase applied at the start of each subsequent quarter. */
+export const actIQuotaGrowthPerQuarter = 5
+
 /** Preferencie banked when kvóta is cleared. */
 export const quotaClearPreferencie = 1
+
+/** Preferencie lost when kvóta is missed. */
+export const quotaMissPreferencieBleed = 1
 
 /** Pokladňa per overkill point past kvóta. */
 export const overkillPokladnaPerPoint = 1000

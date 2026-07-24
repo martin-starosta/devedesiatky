@@ -71,12 +71,15 @@ export {
 } from './volby94'
 export {
   actIOpeningQuota,
+  actIQuarterCount,
+  actIQuotaGrowthPerQuarter,
   cards,
   deckArchetypes,
   defaultEnergyMax,
   defaultHandSize,
   overkillPokladnaPerPoint,
   quotaClearPreferencie,
+  quotaMissPreferencieBleed,
   type CardDef,
   type CardEffect,
   type CardEffectResource,

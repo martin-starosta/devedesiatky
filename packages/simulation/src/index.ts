@@ -44,5 +44,6 @@ export type {
 export {
   createEmptyDeckLobby,
   quarterScore,
+  quotaForQuarter,
   reduceDeck,
 } from './deck/reduce'

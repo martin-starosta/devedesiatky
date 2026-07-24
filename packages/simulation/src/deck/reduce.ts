@@ -1,10 +1,13 @@
 import {
   actIOpeningQuota,
+  actIQuarterCount,
+  actIQuotaGrowthPerQuarter,
   deckArchetypes,
   defaultEnergyMax,
   defaultHandSize,
   overkillPokladnaPerPoint,
   quotaClearPreferencie,
+  quotaMissPreferencieBleed,
   type DeckArchetypeId,
 } from '@devedesiatky/content'
 import { drawCards, shuffle } from './draw'
@@ -12,6 +15,10 @@ import { playCard } from './effects'
 import type { DeckAction, DeckCardInstance, DeckRunState } from './types'
 import type { Rng } from '../types'
 import { createRng } from '../rng'
+
+export function quotaForQuarter(quarter: number, quotaBase = actIOpeningQuota): number {
+  return quotaBase + (quarter - 1) * actIQuotaGrowthPerQuarter
+}
 
 function yearQuarterForActQuarter(quarter: number): {
   year: number
@@ -109,7 +116,7 @@ function startRun(
     energy: 0,
     energyMax: defaultEnergyMax,
     handSize: defaultHandSize,
-    quota: actIOpeningQuota,
+    quota: quotaForQuarter(1),
     quotaBase: actIOpeningQuota,
     quarterPodpora: 0,
     quarterMobilizacia: 0,
@@ -135,10 +142,8 @@ function startRun(
 
 function drawHand(state: DeckRunState, rng: Rng): DeckRunState {
   if (state.phase !== 'DRAW') return state
-  // Discard leftover hand into discard (shouldn't happen on first draw).
   let discardPile = [...state.discardPile, ...state.hand]
-  const needed = state.handSize
-  const result = drawCards(state.drawPile, discardPile, needed, rng)
+  const result = drawCards(state.drawPile, discardPile, state.handSize, rng)
   return {
     ...state,
     phase: 'PLAY',
@@ -167,16 +172,17 @@ function settleQuota(state: DeckRunState): DeckRunState {
       pokladna += overkill * overkillPokladnaPerPoint
     }
   } else {
-    preferencie = Math.max(0, preferencie - 1)
+    preferencie = Math.max(0, preferencie - quotaMissPreferencieBleed)
     if (score < state.quota * 0.5) {
       bossAdvantage = true
     }
   }
 
+  const afterQ6 = state.quarter >= actIQuarterCount
   return {
     ...state,
-    phase: 'ACQUIRE',
-    acquireNode: 'skip',
+    phase: afterQ6 ? 'BOSS' : 'ACQUIRE',
+    acquireNode: afterQ6 ? null : 'skip',
     lastScore: score,
     lastCleared: cleared,
     bossAdvantage,
@@ -185,7 +191,6 @@ function settleQuota(state: DeckRunState): DeckRunState {
       preferencie,
       pokladna,
     },
-    // Discard hand after settle.
     discardPile: [...state.discardPile, ...state.hand],
     hand: [],
     energy: 0,
@@ -196,8 +201,33 @@ function settleQuota(state: DeckRunState): DeckRunState {
 
 function endQuarter(state: DeckRunState): DeckRunState {
   if (state.phase !== 'PLAY') return state
-  // RESOLVE is atomic → ACQUIRE for MVP-A shell (#27).
   return settleQuota({ ...state, phase: 'RESOLVE' })
+}
+
+function advanceAfterAcquire(state: DeckRunState, rng: Rng): DeckRunState {
+  if (state.phase !== 'ACQUIRE') return state
+  if (state.quarter >= actIQuarterCount) {
+    return { ...state, phase: 'BOSS', acquireNode: null }
+  }
+  const quarter = state.quarter + 1
+  const { year, calendarQuarter } = yearQuarterForActQuarter(quarter)
+  const combined = shuffle([...state.drawPile, ...state.discardPile], rng)
+  return drawHand(
+    {
+      ...state,
+      quarter,
+      year,
+      calendarQuarter,
+      quota: quotaForQuarter(quarter, state.quotaBase),
+      acquireNode: null,
+      phase: 'DRAW',
+      drawPile: combined,
+      discardPile: [],
+      hand: [],
+      rngState: rng.state,
+    },
+    rng,
+  )
 }
 
 /**
@@ -222,11 +252,8 @@ export function reduceDeck(
     }
     case 'END_QUARTER':
       return endQuarter(state)
-    case 'SHOP_SKIP': {
-      // #28 advances calendar; #27 leaves ACQUIRE after skip as terminal-ish pause.
-      if (state.phase !== 'ACQUIRE') return state
-      return { ...state, acquireNode: null, phase: 'TERMINAL' }
-    }
+    case 'SHOP_SKIP':
+      return advanceAfterAcquire(state, rng)
     case 'COLLECT_FACT':
     case 'DISMISS_FACT':
       if (state.phase !== 'FACT') return state
