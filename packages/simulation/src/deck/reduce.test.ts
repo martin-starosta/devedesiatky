@@ -362,3 +362,52 @@ describe('deck kauzy (#33)', () => {
     expect(state.bossAdvantage).toBe(true)
   })
 })
+
+describe('deck relics + rest (#34)', () => {
+  it('claims STV and Ústavná väčšina; rest can remove a card', () => {
+    let state = reduceDeck(
+      createEmptyDeckLobby(34),
+      { type: 'START_RUN', archetypeId: 'stroj-moci', seed: 34 },
+      createRng(0),
+    )
+    state = reduceDeck(state, { type: 'DRAW_HAND' }, createRng(state.rngState))
+    state = playMitings(state, 3)
+    state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
+
+    state = reduceDeck(state, { type: 'OPEN_INSTITUTION' }, createRng(state.rngState))
+    const mediaBefore = state.resources.media
+    state = reduceDeck(
+      state,
+      { type: 'CLAIM_RELIC', relicId: 'statna-tv' },
+      createRng(state.rngState),
+    )
+    expect(state.relics).toContain('statna-tv')
+    expect(state.resources.media).toBe(mediaBefore + 1)
+
+    state = reduceDeck(state, { type: 'SHOP_SKIP' }, createRng(state.rngState))
+    state = playMitings(state, 3)
+    state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
+    state = reduceDeck(state, { type: 'OPEN_INSTITUTION' }, createRng(state.rngState))
+    state = reduceDeck(
+      state,
+      { type: 'CLAIM_RELIC', relicId: 'ustavna-vacina' },
+      createRng(state.rngState),
+    )
+    expect(state.handSize).toBe(6)
+
+    state = reduceDeck(state, { type: 'SHOP_SKIP' }, createRng(state.rngState))
+    state = playMitings(state, 3)
+    state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
+    const target = state.discardPile[0] ?? state.drawPile[0]
+    expect(target).toBeTruthy()
+    state = reduceDeck(state, { type: 'OPEN_REST' }, createRng(state.rngState))
+    const deckBefore = state.deck.length
+    state = reduceDeck(
+      state,
+      { type: 'REMOVE_CARD', instanceId: target!.instanceId },
+      createRng(state.rngState),
+    )
+    expect(state.deck.length).toBe(deckBefore - 1)
+    expect(state.restRemovesUsed).toBe(1)
+  })
+})

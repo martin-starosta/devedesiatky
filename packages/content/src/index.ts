@@ -105,3 +105,10 @@ export {
   type KauzaCardId,
 } from './kauzaCards'
 export { lookupCard, isKauzaCardId } from './kauzaCards'
+export {
+  actIRelicIds,
+  relics,
+  restRemovesPerAct,
+  type RelicDef,
+  type RelicId,
+} from './relics'

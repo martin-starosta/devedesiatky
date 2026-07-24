@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
+  actIRelicIds,
   cards,
   deckArchetypes,
   lookupCard,
+  relics,
   type AnyPlayableCardId,
   type DeckArchetypeId,
   type EventChoiceId,
+  type RelicId,
 } from '@devedesiatky/content'
 import type { DeckRunState } from '@devedesiatky/simulation'
 import { DeckHud } from './DeckHud'
@@ -27,8 +30,13 @@ type Props = {
   onShopSkip: () => void
   onOpenEvent: () => void
   onOpenShop: (kind: 'shop-clean' | 'shop-patronage') => void
+  onOpenRest: () => void
+  onOpenInstitution: () => void
   onShopBuy: (cardId: AnyPlayableCardId) => void
   onTakePatronage: (cardId: AnyPlayableCardId) => void
+  onRemoveCard: (instanceId: string) => void
+  onUpgradeCard: (instanceId: string) => void
+  onClaimRelic: (relicId: import('@devedesiatky/content').RelicId) => void
   onResolveEvent: (choiceId: EventChoiceId) => void
   onCollectFact: () => void
   onDismissFact: () => void
@@ -43,8 +51,13 @@ export function DeckQuarterScreen({
   onShopSkip,
   onOpenEvent,
   onOpenShop,
+  onOpenRest,
+  onOpenInstitution,
   onShopBuy,
   onTakePatronage,
+  onRemoveCard,
+  onUpgradeCard,
+  onClaimRelic,
   onResolveEvent,
   onCollectFact,
   onDismissFact,
@@ -181,6 +194,67 @@ export function DeckQuarterScreen({
                 <Text style={styles.secondaryLabel}>Preskočiť obchod</Text>
               </Pressable>
             </View>
+          ) : state.acquireNode === 'rest' ? (
+            <View style={styles.result}>
+              <Text style={styles.section}>Odpočinok</Text>
+              <Text style={styles.blurb}>
+                Odstráň alebo vylepši kartu (odstránenia: {state.restRemovesUsed}/2).
+              </Text>
+              {[...state.discardPile, ...state.drawPile].slice(0, 8).map((card) => {
+                const def = lookupCard(card.cardId)
+                if (!def) return null
+                return (
+                  <View key={card.instanceId} style={styles.card}>
+                    <Text style={styles.cardTitle}>{def.titleSk}</Text>
+                    <View style={styles.rowActions}>
+                      <Pressable
+                        accessibilityRole="button"
+                        onPress={() => onRemoveCard(card.instanceId)}
+                      >
+                        <Text style={styles.link}>Odstrániť</Text>
+                      </Pressable>
+                      <Pressable
+                        accessibilityRole="button"
+                        onPress={() => onUpgradeCard(card.instanceId)}
+                      >
+                        <Text style={styles.link}>Upgrade</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                )
+              })}
+              <Pressable
+                accessibilityRole="button"
+                style={styles.secondary}
+                onPress={onShopSkip}
+              >
+                <Text style={styles.secondaryLabel}>Preskočiť</Text>
+              </Pressable>
+            </View>
+          ) : state.acquireNode === 'institution' ? (
+            <View style={styles.result}>
+              <Text style={styles.section}>Inštitúcia</Text>
+              {actIRelicIds
+                .filter((id) => !state.relics.includes(id))
+                .map((id) => (
+                  <Pressable
+                    key={id}
+                    accessibilityRole="button"
+                    style={styles.card}
+                    onPress={() => onClaimRelic(id)}
+                  >
+                    <Text style={styles.cardTitle}>{relics[id].titleSk}</Text>
+                    <Text style={styles.cardBlurb}>{relics[id].blurbSk}</Text>
+                  </Pressable>
+                ))}
+              <Pressable
+                accessibilityRole="button"
+                style={styles.secondary}
+                onPress={onShopSkip}
+              >
+                <Text style={styles.secondaryLabel}>Preskočiť</Text>
+              </Pressable>
+            </View>
           ) : (
             <View style={styles.result}>
               <Text style={styles.section}>
@@ -202,6 +276,20 @@ export function DeckQuarterScreen({
                 onPress={() => onOpenShop('shop-patronage')}
               >
                 <Text style={styles.secondaryLabel}>Sponzor (kauzy)</Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                style={styles.secondary}
+                onPress={onOpenRest}
+              >
+                <Text style={styles.secondaryLabel}>Odpočinok</Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                style={styles.secondary}
+                onPress={onOpenInstitution}
+              >
+                <Text style={styles.secondaryLabel}>Inštitúcia</Text>
               </Pressable>
               {canOpenDeckEvent(state) ? (
                 <Pressable

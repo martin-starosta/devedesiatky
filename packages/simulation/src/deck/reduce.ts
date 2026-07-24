@@ -24,6 +24,15 @@ import {
   onResolveKauzy,
   armCondition,
 } from './kauzy'
+import {
+  claimRelic,
+  effectiveHandSize,
+  openInstitution,
+  openRest,
+  removeCard,
+  upgradeCard,
+  useSisExile,
+} from './relics'
 import { openShop, shopBuy, takePatronage } from './shop'
 import type { DeckAction, DeckCardInstance, DeckRunState } from './types'
 import type { Rng } from '../types'
@@ -104,6 +113,10 @@ export function createEmptyDeckLobby(seed = 1993): DeckRunState {
     shopOffers: null,
     sponsors: [],
     armedConditions: [],
+    relics: [],
+    pozornost: 0,
+    sisExileUsedThisAct: false,
+    restRemovesUsed: 0,
     nextInstanceSeq: 1,
   }
 }
@@ -163,6 +176,10 @@ function startRun(
     shopOffers: null,
     sponsors: [],
     armedConditions: [],
+    relics: [],
+    pozornost: 0,
+    sisExileUsedThisAct: false,
+    restRemovesUsed: 0,
     nextInstanceSeq: minted.nextSeq,
   }
 }
@@ -170,7 +187,7 @@ function startRun(
 function drawHand(state: DeckRunState, rng: Rng): DeckRunState {
   if (state.phase !== 'DRAW') return state
   let discardPile = [...state.discardPile, ...state.hand]
-  const result = drawCards(state.drawPile, discardPile, state.handSize, rng)
+  const result = drawCards(state.drawPile, discardPile, effectiveHandSize(state), rng)
   let next: DeckRunState = {
     ...state,
     phase: 'PLAY',
@@ -293,6 +310,10 @@ export function reduceDeck(
       return openDeckEvent(state)
     case 'OPEN_SHOP':
       return openShop(state, action.kind, rng)
+    case 'OPEN_REST':
+      return openRest(state)
+    case 'OPEN_INSTITUTION':
+      return openInstitution(state)
     case 'SHOP_BUY':
       return shopBuy(state, action.cardId, rng)
     case 'TAKE_PATRONAGE': {
@@ -301,6 +322,14 @@ export function reduceDeck(
       next = armCondition(next, 'defector')
       return next
     }
+    case 'REMOVE_CARD':
+      return removeCard(state, action.instanceId)
+    case 'UPGRADE_CARD':
+      return upgradeCard(state, action.instanceId)
+    case 'CLAIM_RELIC':
+      return claimRelic(state, action.relicId)
+    case 'USE_SIS_EXILE':
+      return useSisExile(state, action.instanceId)
     case 'RESOLVE_EVENT':
       return resolveDeckEvent(state, action.choiceId)
     case 'COLLECT_FACT':

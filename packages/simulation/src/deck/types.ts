@@ -31,6 +31,8 @@ export type DeckCardInstance = {
   cardId: AnyPlayableCardId
   /** Only set for kauza curse instances. */
   kauzaStatus?: 'latent' | 'muted' | 'detonated' | 'nevymazatelna'
+  /** Odpočinok upgrade: −1 energy cost when playing. */
+  upgraded?: boolean
 }
 
 export type SponsorDebt = {
@@ -89,6 +91,10 @@ export type DeckRunState = {
   phaseAfterFact: DeckPhase | null
   /** Conditions armed this quarter (lossOfPower may persist). */
   armedConditions: import('@devedesiatky/content').KauzaCondition[]
+  relics: import('@devedesiatky/content').RelicId[]
+  pozornost: number
+  sisExileUsedThisAct: boolean
+  restRemovesUsed: number
   nextInstanceSeq: number
 }
 
@@ -100,8 +106,14 @@ export type DeckAction =
   | { type: 'SHOP_SKIP' }
   | { type: 'OPEN_EVENT' }
   | { type: 'OPEN_SHOP'; kind: 'shop-clean' | 'shop-patronage' }
+  | { type: 'OPEN_REST' }
+  | { type: 'OPEN_INSTITUTION' }
   | { type: 'SHOP_BUY'; cardId: AnyPlayableCardId }
   | { type: 'TAKE_PATRONAGE'; cardId: AnyPlayableCardId; sponsorId?: SponsorId }
+  | { type: 'REMOVE_CARD'; instanceId: string }
+  | { type: 'UPGRADE_CARD'; instanceId: string }
+  | { type: 'CLAIM_RELIC'; relicId: import('@devedesiatky/content').RelicId }
+  | { type: 'USE_SIS_EXILE'; instanceId: string }
   | { type: 'RESOLVE_EVENT'; choiceId: EventChoiceId }
   | { type: 'COLLECT_FACT' }
   | { type: 'DISMISS_FACT' }

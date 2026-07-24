@@ -53,3 +53,8 @@ export {
 } from './deck/events'
 export { countKauzyInRun } from './deck/shop'
 export { armCondition } from './deck/kauzy'
+export {
+  claimRelic,
+  effectiveHandSize,
+  useSisExile,
+} from './deck/relics'

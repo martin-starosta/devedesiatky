@@ -14,6 +14,20 @@ function statValue(state: DeckRunState, stat: 'kult' | 'offices' | 'media'): num
   return state.resources.media
 }
 
+function energyCostFor(
+  state: DeckRunState,
+  cardInst: { cardId: string; upgraded?: boolean },
+  baseCost: number,
+): number {
+  let cost = baseCost
+  if (cardInst.upgraded) cost = Math.max(0, cost - 1)
+  const def = lookupCard(cardInst.cardId)
+  if (state.relics.includes('statna-tv') && def?.tags.includes('kult')) {
+    cost = Math.max(0, cost - 1)
+  }
+  return cost
+}
+
 export function applyEffects(
   state: DeckRunState,
   effects: CardEffect[],
@@ -93,13 +107,15 @@ export function playCard(
   if (index < 0) return state
   const cardInst = state.hand[index]
   const def = lookupCard(cardInst.cardId)
-  if (!def || state.energy < def.energyCost) return state
+  if (!def) return state
+  const cost = energyCostFor(state, cardInst, def.energyCost)
+  if (state.energy < cost) return state
 
   const hand = state.hand.filter((_, i) => i !== index)
   let next: DeckRunState = {
     ...state,
     hand,
-    energy: state.energy - def.energyCost,
+    energy: state.energy - cost,
     discardPile: [...state.discardPile, cardInst],
   }
   next = applyEffects(next, def.effects, rng)

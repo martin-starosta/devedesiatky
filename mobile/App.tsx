@@ -22,8 +22,13 @@ export default function App() {
   const shopSkip = useDeckStore((s) => s.shopSkip)
   const openEvent = useDeckStore((s) => s.openEvent)
   const openShop = useDeckStore((s) => s.openShop)
+  const openRest = useDeckStore((s) => s.openRest)
+  const openInstitution = useDeckStore((s) => s.openInstitution)
   const shopBuy = useDeckStore((s) => s.shopBuy)
   const takePatronage = useDeckStore((s) => s.takePatronage)
+  const removeCard = useDeckStore((s) => s.removeCard)
+  const upgradeCard = useDeckStore((s) => s.upgradeCard)
+  const claimRelic = useDeckStore((s) => s.claimRelic)
   const resolveEvent = useDeckStore((s) => s.resolveEvent)
   const collectFact = useDeckStore((s) => s.collectFact)
   const dismissFact = useDeckStore((s) => s.dismissFact)
@@ -76,8 +81,13 @@ export default function App() {
           onShopSkip={() => void shopSkip()}
           onOpenEvent={() => void openEvent()}
           onOpenShop={(kind) => void openShop(kind)}
+          onOpenRest={() => void openRest()}
+          onOpenInstitution={() => void openInstitution()}
           onShopBuy={(id) => void shopBuy(id)}
           onTakePatronage={(id) => void takePatronage(id)}
+          onRemoveCard={(id) => void removeCard(id)}
+          onUpgradeCard={(id) => void upgradeCard(id)}
+          onClaimRelic={(id) => void claimRelic(id)}
           onResolveEvent={(id) => void resolveEvent(id)}
           onCollectFact={() => void collectFact()}
           onDismissFact={() => void dismissFact()}

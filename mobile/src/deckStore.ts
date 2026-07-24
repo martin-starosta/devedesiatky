@@ -5,7 +5,12 @@ import {
   reduceDeck,
   type DeckRunState,
 } from '@devedesiatky/simulation'
-import type { AnyPlayableCardId, DeckArchetypeId, EventChoiceId } from '@devedesiatky/content'
+import type {
+  AnyPlayableCardId,
+  DeckArchetypeId,
+  EventChoiceId,
+  RelicId,
+} from '@devedesiatky/content'
 import type { DeckPersistence } from './deckPersistence'
 
 type NewGameResult = { needsConfirmation: true } | { needsConfirmation: false }
@@ -22,8 +27,13 @@ type DeckStore = {
   shopSkip: () => Promise<void>
   openEvent: () => Promise<void>
   openShop: (kind: 'shop-clean' | 'shop-patronage') => Promise<void>
+  openRest: () => Promise<void>
+  openInstitution: () => Promise<void>
   shopBuy: (cardId: AnyPlayableCardId) => Promise<void>
   takePatronage: (cardId: AnyPlayableCardId) => Promise<void>
+  removeCard: (instanceId: string) => Promise<void>
+  upgradeCard: (instanceId: string) => Promise<void>
+  claimRelic: (relicId: RelicId) => Promise<void>
   resolveEvent: (choiceId: EventChoiceId) => Promise<void>
   collectFact: () => Promise<void>
   dismissFact: () => Promise<void>
@@ -40,8 +50,13 @@ const DURABLE = new Set([
   'SHOP_SKIP',
   'OPEN_EVENT',
   'OPEN_SHOP',
+  'OPEN_REST',
+  'OPEN_INSTITUTION',
   'SHOP_BUY',
   'TAKE_PATRONAGE',
+  'REMOVE_CARD',
+  'UPGRADE_CARD',
+  'CLAIM_RELIC',
   'RESOLVE_EVENT',
   'COLLECT_FACT',
   'DISMISS_FACT',
@@ -102,9 +117,14 @@ export function createDeckStore(options: {
       shopSkip: async () => dispatch({ type: 'SHOP_SKIP' }),
       openEvent: async () => dispatch({ type: 'OPEN_EVENT' }),
       openShop: async (kind) => dispatch({ type: 'OPEN_SHOP', kind }),
+      openRest: async () => dispatch({ type: 'OPEN_REST' }),
+      openInstitution: async () => dispatch({ type: 'OPEN_INSTITUTION' }),
       shopBuy: async (cardId) => dispatch({ type: 'SHOP_BUY', cardId }),
       takePatronage: async (cardId) =>
         dispatch({ type: 'TAKE_PATRONAGE', cardId, sponsorId: 'zelezny-baron' }),
+      removeCard: async (instanceId) => dispatch({ type: 'REMOVE_CARD', instanceId }),
+      upgradeCard: async (instanceId) => dispatch({ type: 'UPGRADE_CARD', instanceId }),
+      claimRelic: async (relicId) => dispatch({ type: 'CLAIM_RELIC', relicId }),
       resolveEvent: async (choiceId) => dispatch({ type: 'RESOLVE_EVENT', choiceId }),
       collectFact: async () => dispatch({ type: 'COLLECT_FACT' }),
       dismissFact: async () => dispatch({ type: 'DISMISS_FACT' }),
