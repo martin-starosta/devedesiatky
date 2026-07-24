@@ -10,6 +10,7 @@ import {
   quotaMissPreferencieBleed,
   type DeckArchetypeId,
 } from '@devedesiatky/content'
+import { bossEndTurn, bossPlay, enterBoss } from './boss'
 import { drawCards, shuffle } from './draw'
 import { playCard } from './effects'
 import {
@@ -93,6 +94,8 @@ export function createEmptyDeckLobby(seed = 1993): DeckRunState {
     lastScore: null,
     lastCleared: null,
     bossAdvantage: false,
+    boss: null,
+    hostileKauzy: false,
     resources: {
       preferencie: 0,
       pokladna: 0,
@@ -156,6 +159,8 @@ function startRun(
     lastScore: null,
     lastCleared: null,
     bossAdvantage: false,
+    boss: null,
+    hostileKauzy: false,
     resources: {
       preferencie: archetype.preferencie,
       pokladna: archetype.pokladna,
@@ -203,7 +208,7 @@ function drawHand(state: DeckRunState, rng: Rng): DeckRunState {
   return next
 }
 
-function settleQuota(state: DeckRunState): DeckRunState {
+function settleQuota(state: DeckRunState, rng: Rng): DeckRunState {
   // On-resolve kauzy before scoring.
   let next = onResolveKauzy(state)
   const mobilizacia = Math.max(1, next.quarterMobilizacia)
@@ -226,11 +231,8 @@ function settleQuota(state: DeckRunState): DeckRunState {
     }
   }
 
-  const afterQ6 = next.quarter >= actIQuarterCount
-  return {
+  const settled: DeckRunState = {
     ...next,
-    phase: afterQ6 ? 'BOSS' : 'ACQUIRE',
-    acquireNode: afterQ6 ? null : 'skip',
     lastScore: score,
     lastCleared: cleared,
     bossAdvantage,
@@ -245,17 +247,27 @@ function settleQuota(state: DeckRunState): DeckRunState {
     quarterPodpora: 0,
     quarterMobilizacia: 0,
   }
+
+  const afterQ6 = settled.quarter >= actIQuarterCount
+  if (afterQ6) {
+    return enterBoss({ ...settled, phase: 'BOSS', acquireNode: null }, rng)
+  }
+  return {
+    ...settled,
+    phase: 'ACQUIRE',
+    acquireNode: 'skip',
+  }
 }
 
-function endQuarter(state: DeckRunState): DeckRunState {
+function endQuarter(state: DeckRunState, rng: Rng): DeckRunState {
   if (state.phase !== 'PLAY') return state
-  return settleQuota({ ...state, phase: 'RESOLVE' })
+  return settleQuota({ ...state, phase: 'RESOLVE' }, rng)
 }
 
 function advanceAfterAcquire(state: DeckRunState, rng: Rng): DeckRunState {
   if (state.phase !== 'ACQUIRE') return state
   if (state.quarter >= actIQuarterCount) {
-    return { ...state, phase: 'BOSS', acquireNode: null }
+    return enterBoss({ ...state, phase: 'BOSS', acquireNode: null }, rng)
   }
   const quarter = state.quarter + 1
   const { year, calendarQuarter } = yearQuarterForActQuarter(quarter)
@@ -303,7 +315,7 @@ export function reduceDeck(
       return next
     }
     case 'END_QUARTER':
-      return endQuarter(state)
+      return endQuarter(state, rng)
     case 'SHOP_SKIP':
       return advanceAfterAcquire(state, rng)
     case 'OPEN_EVENT':
@@ -338,6 +350,10 @@ export function reduceDeck(
       return dismissDeckFact(state)
     case 'ARM_CONDITION':
       return armCondition(state, action.condition)
+    case 'BOSS_PLAY':
+      return bossPlay(state, action.instanceId, rng)
+    case 'BOSS_END_TURN':
+      return bossEndTurn(state, rng)
     default:
       return state
   }

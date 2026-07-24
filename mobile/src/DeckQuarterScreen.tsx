@@ -12,6 +12,7 @@ import {
   type RelicId,
 } from '@devedesiatky/content'
 import type { DeckRunState } from '@devedesiatky/simulation'
+import { DeckBossFight } from './DeckBossFight'
 import { DeckHud } from './DeckHud'
 import {
   canOpenDeckEvent,
@@ -40,6 +41,8 @@ type Props = {
   onResolveEvent: (choiceId: EventChoiceId) => void
   onCollectFact: () => void
   onDismissFact: () => void
+  onBossPlay: (instanceId: string) => void
+  onBossEndTurn: () => void
   onNewGame?: () => void
 }
 
@@ -61,6 +64,8 @@ export function DeckQuarterScreen({
   onResolveEvent,
   onCollectFact,
   onDismissFact,
+  onBossPlay,
+  onBossEndTurn,
   onNewGame,
 }: Props) {
   const [showTimeline, setShowTimeline] = useState(false)
@@ -313,13 +318,14 @@ export function DeckQuarterScreen({
           )
         ) : null}
 
-        {state.phase === 'BOSS' ? (
-          <Text style={styles.section}>
-            Voľby '94 — boss stub (#35). Kvóta history done.
-            {state.bossAdvantage ? ' Boss má výhodu.' : ''}
-          </Text>
+        {state.phase === 'BOSS' || state.boss?.outcome ? (
+          <DeckBossFight
+            state={state}
+            onBossPlay={onBossPlay}
+            onBossEndTurn={onBossEndTurn}
+          />
         ) : null}
-        {state.phase === 'TERMINAL' ? (
+        {state.phase === 'TERMINAL' && !state.boss?.outcome ? (
           <Text style={styles.section}>Beh ukončený.</Text>
         ) : null}
       </ScrollView>

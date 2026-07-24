@@ -35,6 +35,7 @@ export { pickNpcPolitikaAction, pickNpcPeniazeDestination } from './npcAi'
 export { fireKauzaCondition, openHostileLedger } from './kauzy'
 export type {
   AcquireNode,
+  BossState,
   DeckAction,
   DeckCardInstance,
   DeckPhase,
@@ -58,3 +59,4 @@ export {
   effectiveHandSize,
   useSisExile,
 } from './deck/relics'
+export { enterBoss } from './deck/boss'

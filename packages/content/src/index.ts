@@ -112,3 +112,13 @@ export {
   type RelicDef,
   type RelicId,
 } from './relics'
+export {
+  bossAdvantageSupportBonus,
+  bossIntentDefs,
+  bossIntentOrder,
+  bossMaxRounds,
+  bossPreferencieFloor,
+  bossSupportBase,
+  pozornostBossSupportPerPoint,
+  type BossIntentId,
+} from './deckBoss'

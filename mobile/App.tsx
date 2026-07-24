@@ -30,6 +30,8 @@ export default function App() {
   const upgradeCard = useDeckStore((s) => s.upgradeCard)
   const claimRelic = useDeckStore((s) => s.claimRelic)
   const resolveEvent = useDeckStore((s) => s.resolveEvent)
+  const bossPlay = useDeckStore((s) => s.bossPlay)
+  const bossEndTurn = useDeckStore((s) => s.bossEndTurn)
   const collectFact = useDeckStore((s) => s.collectFact)
   const dismissFact = useDeckStore((s) => s.dismissFact)
   const newGame = useDeckStore((s) => s.newGame)
@@ -89,6 +91,8 @@ export default function App() {
           onUpgradeCard={(id) => void upgradeCard(id)}
           onClaimRelic={(id) => void claimRelic(id)}
           onResolveEvent={(id) => void resolveEvent(id)}
+          onBossPlay={(id) => void bossPlay(id)}
+          onBossEndTurn={() => void bossEndTurn()}
           onCollectFact={() => void collectFact()}
           onDismissFact={() => void dismissFact()}
           onNewGame={hasSave ? requestNewGame : undefined}

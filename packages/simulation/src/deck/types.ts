@@ -1,5 +1,6 @@
 import type {
   AnyPlayableCardId,
+  BossIntentId,
   DeckArchetypeId,
   EventChoiceId,
   EventId,
@@ -7,6 +8,18 @@ import type {
   KauzaCardId,
   SponsorId,
 } from '@devedesiatky/content'
+
+export type BossState = {
+  round: number
+  maxRounds: number
+  /** Rival hp-analogue. */
+  bossSupport: number
+  playerBlock: number
+  bossBlock: number
+  telegraph: BossIntentId
+  nextSmearBuff: number
+  outcome: 'win' | 'lose' | null
+}
 
 export type DeckPhase =
   | 'DRAW'
@@ -80,6 +93,9 @@ export type DeckRunState = {
   lastScore: number | null
   lastCleared: boolean | null
   bossAdvantage: boolean
+  boss: BossState | null
+  /** After boss loss: mute unavailable; kauzy in hostile hands. */
+  hostileKauzy: boolean
   resources: DeckResources
   govOrOpposition: 'government' | 'opposition'
   activeEventId: EventId | null
@@ -118,5 +134,7 @@ export type DeckAction =
   | { type: 'COLLECT_FACT' }
   | { type: 'DISMISS_FACT' }
   | { type: 'ARM_CONDITION'; condition: import('@devedesiatky/content').KauzaCondition }
+  | { type: 'BOSS_PLAY'; instanceId: string }
+  | { type: 'BOSS_END_TURN' }
 
 export type { KauzaCardId }

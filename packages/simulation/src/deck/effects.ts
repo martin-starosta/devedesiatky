@@ -28,6 +28,30 @@ function energyCostFor(
   return cost
 }
 
+function dealBossDamage(state: DeckRunState, amount: number): DeckRunState {
+  if (!state.boss || amount <= 0) return state
+  let remaining = amount
+  let bossBlock = state.boss.bossBlock
+  if (bossBlock > 0) {
+    const absorbed = Math.min(bossBlock, remaining)
+    bossBlock -= absorbed
+    remaining -= absorbed
+  }
+  const bossSupport = Math.max(0, state.boss.bossSupport - remaining)
+  return {
+    ...state,
+    boss: { ...state.boss, bossBlock, bossSupport },
+  }
+}
+
+function addPlayerBlock(state: DeckRunState, amount: number): DeckRunState {
+  if (!state.boss || amount <= 0) return state
+  return {
+    ...state,
+    boss: { ...state.boss, playerBlock: state.boss.playerBlock + amount },
+  }
+}
+
 export function applyEffects(
   state: DeckRunState,
   effects: CardEffect[],
@@ -42,25 +66,41 @@ export function applyEffects(
 
 function applyOne(state: DeckRunState, effect: CardEffect, rng: Rng): DeckRunState {
   switch (effect.type) {
-    case 'addPodpora':
+    case 'addPodpora': {
+      if (state.phase === 'BOSS' && state.boss) {
+        return dealBossDamage(state, effect.amount)
+      }
       return { ...state, quarterPodpora: state.quarterPodpora + effect.amount }
-    case 'addMobilizacia':
+    }
+    case 'addMobilizacia': {
+      if (state.phase === 'BOSS' && state.boss) {
+        return addPlayerBlock(state, effect.amount)
+      }
       return {
         ...state,
         quarterMobilizacia: state.quarterMobilizacia + effect.amount,
       }
-    case 'addPodporaPer':
+    }
+    case 'addPodporaPer': {
+      const amount = effect.amount * statValue(state, effect.stat)
+      if (state.phase === 'BOSS' && state.boss) {
+        return dealBossDamage(state, amount)
+      }
       return {
         ...state,
-        quarterPodpora:
-          state.quarterPodpora + effect.amount * statValue(state, effect.stat),
+        quarterPodpora: state.quarterPodpora + amount,
       }
-    case 'addMobilizaciaPer':
+    }
+    case 'addMobilizaciaPer': {
+      const amount = effect.amount * statValue(state, effect.stat)
+      if (state.phase === 'BOSS' && state.boss) {
+        return addPlayerBlock(state, amount)
+      }
       return {
         ...state,
-        quarterMobilizacia:
-          state.quarterMobilizacia + effect.amount * statValue(state, effect.stat),
+        quarterMobilizacia: state.quarterMobilizacia + amount,
       }
+    }
     case 'gainResource': {
       const resources = {
         ...state.resources,
@@ -93,8 +133,11 @@ function applyOne(state: DeckRunState, effect: CardEffect, rng: Rng): DeckRunSta
     case 'addKauza':
       return state
     case 'bossDamage':
+      if (state.phase !== 'BOSS' || !state.boss) return state
+      return dealBossDamage(state, effect.amount)
     case 'bossBlock':
-      return state
+      if (state.phase !== 'BOSS' || !state.boss) return state
+      return addPlayerBlock(state, effect.amount)
   }
 }
 
@@ -103,6 +146,8 @@ export function playCard(
   instanceId: string,
   rng: Rng,
 ): DeckRunState {
+  if (state.phase !== 'PLAY' && state.phase !== 'BOSS') return state
+  if (state.phase === 'BOSS' && state.boss?.outcome) return state
   const index = state.hand.findIndex((c) => c.instanceId === instanceId)
   if (index < 0) return state
   const cardInst = state.hand[index]

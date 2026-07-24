@@ -35,6 +35,8 @@ type DeckStore = {
   upgradeCard: (instanceId: string) => Promise<void>
   claimRelic: (relicId: RelicId) => Promise<void>
   resolveEvent: (choiceId: EventChoiceId) => Promise<void>
+  bossPlay: (instanceId: string) => Promise<void>
+  bossEndTurn: () => Promise<void>
   collectFact: () => Promise<void>
   dismissFact: () => Promise<void>
   newGame: (input: { confirmed: boolean }) => NewGameResult | Promise<NewGameResult>
@@ -58,6 +60,8 @@ const DURABLE = new Set([
   'UPGRADE_CARD',
   'CLAIM_RELIC',
   'RESOLVE_EVENT',
+  'BOSS_PLAY',
+  'BOSS_END_TURN',
   'COLLECT_FACT',
   'DISMISS_FACT',
 ])
@@ -126,6 +130,8 @@ export function createDeckStore(options: {
       upgradeCard: async (instanceId) => dispatch({ type: 'UPGRADE_CARD', instanceId }),
       claimRelic: async (relicId) => dispatch({ type: 'CLAIM_RELIC', relicId }),
       resolveEvent: async (choiceId) => dispatch({ type: 'RESOLVE_EVENT', choiceId }),
+      bossPlay: async (instanceId) => dispatch({ type: 'BOSS_PLAY', instanceId }),
+      bossEndTurn: async () => dispatch({ type: 'BOSS_END_TURN' }),
       collectFact: async () => dispatch({ type: 'COLLECT_FACT' }),
       dismissFact: async () => dispatch({ type: 'DISMISS_FACT' }),
       newGame: (input) => {

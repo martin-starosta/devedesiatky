@@ -13,6 +13,7 @@ import {
   quotaForQuarter,
   reduceDeck,
 } from './reduce'
+import { enterBoss } from './boss'
 import { countKauzyInRun } from './shop'
 import type { DeckRunState } from './types'
 
@@ -359,7 +360,9 @@ describe('deck kauzy (#33)', () => {
     expect(quarterScore(state)).toBe(0)
     state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
     expect(state.lastCleared).toBe(false)
-    expect(state.bossAdvantage).toBe(true)
+    expect(state.phase).toBe('BOSS')
+    // Severe miss feeds bossAdvantage into opening bossSupport (then flag is consumed).
+    expect(state.boss?.bossSupport).toBeGreaterThanOrEqual(50)
   })
 })
 
@@ -409,5 +412,108 @@ describe('deck relics + rest (#34)', () => {
     )
     expect(state.deck.length).toBe(deckBefore - 1)
     expect(state.restRemovesUsed).toBe(1)
+  })
+})
+
+describe('deck Voľby ’94 boss (#35)', () => {
+  function reachBoss(seed: number, opts?: { advantage?: boolean; pozornost?: number }) {
+    let state = reduceDeck(
+      createEmptyDeckLobby(seed),
+      { type: 'START_RUN', archetypeId: 'stroj-moci', seed },
+      createRng(0),
+    )
+    state = reduceDeck(state, { type: 'DRAW_HAND' }, createRng(state.rngState))
+    for (let q = 1; q <= actIQuarterCount; q++) {
+      state = playMitings(state, 3)
+      state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
+      if (q < actIQuarterCount) {
+        state = reduceDeck(state, { type: 'SHOP_SKIP' }, createRng(state.rngState))
+      }
+    }
+    if (opts?.advantage || opts?.pozornost != null) {
+      // Re-enter with forced modifiers for difficulty fixtures.
+      state = {
+        ...state,
+        bossAdvantage: opts.advantage ?? false,
+        pozornost: opts.pozornost ?? state.pozornost,
+        boss: null,
+        phase: 'BOSS',
+      }
+      state = enterBoss(state, createRng(state.rngState))
+    }
+    return state
+  }
+
+  it('enters BOSS with telegraphed intent after Q6', () => {
+    const state = reachBoss(77)
+    expect(state.phase).toBe('BOSS')
+    expect(state.boss).toBeTruthy()
+    expect(state.boss!.bossSupport).toBe(40)
+    expect(state.boss!.telegraph).toBeTruthy()
+    expect(state.hand.length).toBeGreaterThan(0)
+  })
+
+  it('bossAdvantage and Pozornosť raise opening bossSupport', () => {
+    const base = reachBoss(78)
+    const hard = reachBoss(78, { advantage: true, pozornost: 3 })
+    expect(hard.boss!.bossSupport).toBe(base.boss!.bossSupport + 10 + 6)
+  })
+
+  it('win path keeps government when bossSupport hits 0', () => {
+    let state = reachBoss(80)
+    state = {
+      ...state,
+      boss: state.boss
+        ? { ...state.boss, bossSupport: 5, bossBlock: 0, playerBlock: 0 }
+        : null,
+      hand: state.deck.filter((c) => c.cardId === 'miting').slice(0, 1),
+      energy: 3,
+    }
+    const card = state.hand[0]
+    expect(card).toBeTruthy()
+    state = reduceDeck(
+      state,
+      { type: 'BOSS_PLAY', instanceId: card!.instanceId },
+      createRng(state.rngState),
+    )
+    expect(state.boss?.bossSupport).toBe(0)
+    expect(state.phase).toBe('TERMINAL')
+    expect(state.boss?.outcome).toBe('win')
+    expect(state.govOrOpposition).toBe('government')
+  })
+
+  it('lose path flips to opposition and weaponizes kauzy', () => {
+    let state = reachBoss(81)
+    const kauzaId = kauzaCardIds[0]
+    const kauzaInst = {
+      instanceId: 'kx-boss',
+      cardId: kauzaId,
+      kauzaStatus: 'latent' as const,
+    }
+    state = {
+      ...state,
+      resources: { ...state.resources, preferencie: 6, media: 99 },
+      discardPile: [...state.discardPile, kauzaInst],
+      deck: [...state.deck, kauzaInst],
+      boss: state.boss
+        ? { ...state.boss, telegraph: 'smear', nextSmearBuff: 0, playerBlock: 0 }
+        : null,
+    }
+    state = reduceDeck(state, { type: 'BOSS_END_TURN' }, createRng(state.rngState))
+    expect(state.phase).toBe('TERMINAL')
+    expect(state.boss?.outcome).toBe('lose')
+    expect(state.govOrOpposition).toBe('opposition')
+    expect(state.hostileKauzy).toBe(true)
+    expect(state.armedConditions).toContain('lossOfPower')
+  })
+
+  it('same seed replays the same telegraph sequence', () => {
+    const a = reachBoss(91)
+    const b = reachBoss(91)
+    expect(a.boss?.telegraph).toBe(b.boss?.telegraph)
+    const a2 = reduceDeck(a, { type: 'BOSS_END_TURN' }, createRng(a.rngState))
+    const b2 = reduceDeck(b, { type: 'BOSS_END_TURN' }, createRng(b.rngState))
+    expect(a2.boss?.telegraph).toBe(b2.boss?.telegraph)
+    expect(a2.boss?.round).toBe(b2.boss?.round)
   })
 })

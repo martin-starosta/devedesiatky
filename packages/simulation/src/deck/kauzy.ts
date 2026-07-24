@@ -51,7 +51,7 @@ function attemptOne(
   const matching = def.conditions.filter((c) => state.armedConditions.includes(c))
   if (matching.length === 0) return state
 
-  const canMute = state.resources.media >= mediaMuteThreshold
+  const canMute = !state.hostileKauzy && state.resources.media >= mediaMuteThreshold
   if (canMute) {
     return applyMute(state, instanceId, def.pressure)
   }
