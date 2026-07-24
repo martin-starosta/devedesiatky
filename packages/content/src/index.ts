@@ -70,14 +70,17 @@ export {
   type InstitutionId,
 } from './volby94'
 export {
+  actICardIds,
   actIOpeningQuota,
   actIQuarterCount,
   actIQuotaGrowthPerQuarter,
   cards,
+  cleanShopCardIds,
   deckArchetypes,
   defaultEnergyMax,
   defaultHandSize,
   overkillPokladnaPerPoint,
+  patronageShopCardIds,
   quotaClearPreferencie,
   quotaMissPreferencieBleed,
   type CardDef,

@@ -147,3 +147,38 @@ describe('deck Act I clock (#28)', () => {
     expect(state.bossAdvantage).toBe(true)
   })
 })
+
+describe('deck card scaling (#29)', () => {
+  it('Regionálna sieť and Kult event scale off offices / kult', () => {
+    let state = reduceDeck(
+      createEmptyDeckLobby(11),
+      { type: 'START_RUN', archetypeId: 'stroj-moci', seed: 11 },
+      createRng(0),
+    )
+    state = reduceDeck(state, { type: 'DRAW_HAND' }, createRng(state.rngState))
+    const regional = state.deck.find((c) => c.cardId === 'regionalna-siet')
+    const kult = state.deck.find((c) => c.cardId === 'kult-event')
+    expect(regional && kult).toBeTruthy()
+    state = {
+      ...state,
+      phase: 'PLAY',
+      hand: [regional!, kult!],
+      energy: 2,
+      quarterPodpora: 0,
+      quarterMobilizacia: 0,
+      resources: { ...state.resources, offices: 3, kult: 2 },
+    }
+    state = reduceDeck(
+      state,
+      { type: 'PLAY_CARD', instanceId: regional!.instanceId },
+      createRng(state.rngState),
+    )
+    expect(state.quarterPodpora).toBe(6) // 2 per office × 3
+    state = reduceDeck(
+      state,
+      { type: 'PLAY_CARD', instanceId: kult!.instanceId },
+      createRng(state.rngState),
+    )
+    expect(state.quarterPodpora).toBe(12) // +3 per kult × 2
+  })
+})
