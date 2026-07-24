@@ -33,3 +33,16 @@ export { choicesForEvent } from './events'
 export { snemField, SNEM_SEATS, MAJORITY_SEATS } from './snem'
 export { pickNpcPolitikaAction, pickNpcPeniazeDestination } from './npcAi'
 export { fireKauzaCondition, openHostileLedger } from './kauzy'
+export type {
+  AcquireNode,
+  DeckAction,
+  DeckCardInstance,
+  DeckPhase,
+  DeckResources,
+  DeckRunState,
+} from './deck/types'
+export {
+  createEmptyDeckLobby,
+  quarterScore,
+  reduceDeck,
+} from './deck/reduce'
