@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { bossIntentDefs, lookupCard } from '@devedesiatky/content'
-import type { DeckRunState } from '@devedesiatky/simulation'
+import type { DeckRunState } from '@devedesiatky/simulation/deck'
 
 type Props = {
   state: DeckRunState

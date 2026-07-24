@@ -11,7 +11,7 @@ import {
   type EventChoiceId,
   type RelicId,
 } from '@devedesiatky/content'
-import type { DeckRunState } from '@devedesiatky/simulation'
+import type { DeckRunState } from '@devedesiatky/simulation/deck'
 import { DeckBossFight } from './DeckBossFight'
 import { DeckHud } from './DeckHud'
 import {
@@ -140,7 +140,7 @@ export function DeckQuarterScreen({
                 >
                   <Text style={styles.cardTitle}>
                     {def.titleSk} · {def.energyCost}⚡
-                    {def.tags.includes('kauza') ? ' · KAUZA' : ''}
+                    {def.tags?.includes('kauza') ? ' · KAUZA' : ''}
                   </Text>
                   <Text style={styles.cardBlurb}>{def.blurbSk}</Text>
                 </Pressable>
@@ -240,7 +240,7 @@ export function DeckQuarterScreen({
             <View style={styles.result}>
               <Text style={styles.section}>Inštitúcia</Text>
               {actIRelicIds
-                .filter((id) => !state.relics.includes(id))
+                .filter((id) => !(state.relics ?? []).includes(id))
                 .map((id) => (
                   <Pressable
                     key={id}

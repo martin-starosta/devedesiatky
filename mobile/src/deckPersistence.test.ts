@@ -3,7 +3,7 @@ import {
   createEmptyDeckLobby,
   createRng,
   reduceDeck,
-} from '@devedesiatky/simulation'
+} from '@devedesiatky/simulation/deck'
 import {
   createDeckMemoryStorage,
   createDeckPersistence,
@@ -31,6 +31,7 @@ describe('deckPersistence (#31)', () => {
     expect(loaded!.hand.map((c) => c.instanceId)).toEqual(handIds)
     expect(loaded!.quota).toBe(state.quota)
     expect(loaded!.resources.preferencie).toBe(state.resources.preferencie)
+    expect(loaded!.relics).toEqual([])
 
     const continued = reduceDeck(
       loaded!,
@@ -39,6 +40,26 @@ describe('deckPersistence (#31)', () => {
     )
     expect(continued.phase).toBe('ACQUIRE')
     expect(continued.lastScore).not.toBeNull()
+  })
+
+  it('normalizes legacy saves missing relics/boss fields', async () => {
+    const storage = createDeckMemoryStorage()
+    const persistence = createDeckPersistence(storage)
+    const lobby = createEmptyDeckLobby(3)
+    const legacy = { ...lobby } as Record<string, unknown>
+    delete legacy.relics
+    delete legacy.boss
+    delete legacy.hostileKauzy
+    delete legacy.armedConditions
+    await storage.setItem(
+      DECK_SAVE_KEY,
+      JSON.stringify({ version: 1, state: legacy }),
+    )
+    const loaded = await persistence.load()
+    expect(loaded?.relics).toEqual([])
+    expect(loaded?.boss).toBeNull()
+    expect(loaded?.hostileKauzy).toBe(false)
+    expect(loaded?.armedConditions).toEqual([])
   })
 
   it('clear removes only the deck save key', async () => {

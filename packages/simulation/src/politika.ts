@@ -104,10 +104,4 @@ export function initialPolitikaFields(): Pick<
   }
 }
 
-export function availablePolitikaActions(inGovernment: boolean): PolitikaActionId[] {
-  return (Object.keys(politikaActions) as PolitikaActionId[]).filter((id) => {
-    const role = politikaActions[id].role
-    if (role === 'both') return true
-    return inGovernment ? role === 'government' : role === 'opposition'
-  })
-}
+export { availablePolitikaActions } from './politikaAvailable'

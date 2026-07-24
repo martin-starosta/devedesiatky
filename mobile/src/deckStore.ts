@@ -4,7 +4,7 @@ import {
   createRng,
   reduceDeck,
   type DeckRunState,
-} from '@devedesiatky/simulation'
+} from '@devedesiatky/simulation/deck'
 import type {
   AnyPlayableCardId,
   DeckArchetypeId,

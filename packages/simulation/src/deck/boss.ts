@@ -10,7 +10,6 @@ import {
   type BossIntentId,
 } from '@devedesiatky/content'
 import { drawCards, shuffle } from './draw'
-import { playCard } from './effects'
 import { armCondition } from './kauzy'
 import { effectiveHandSize } from './relics'
 import type { BossState, DeckCardInstance, DeckRunState } from './types'
@@ -101,6 +100,13 @@ function applyBossWin(state: DeckRunState): DeckRunState {
   }
 }
 
+/** Call after BOSS_PLAY card resolution when support hits 0. */
+export function maybeBossWin(state: DeckRunState): DeckRunState {
+  if (state.phase !== 'BOSS' || !state.boss || state.boss.outcome) return state
+  if (state.boss.bossSupport <= 0) return applyBossWin(state)
+  return state
+}
+
 function pullLatentKauzyToHand(state: DeckRunState): DeckRunState {
   const isLatentKauza = (c: DeckCardInstance) =>
     isKauzaCardId(c.cardId) && (c.kauzaStatus === 'latent' || c.kauzaStatus === undefined)
@@ -131,19 +137,6 @@ function applyBossLose(state: DeckRunState): DeckRunState {
   }
   next = pullLatentKauzyToHand(next)
   next = armCondition(next, 'lossOfPower')
-  return next
-}
-
-export function bossPlay(
-  state: DeckRunState,
-  instanceId: string,
-  rng: Rng,
-): DeckRunState {
-  if (state.phase !== 'BOSS' || !state.boss || state.boss.outcome) return state
-  const next = playCard(state, instanceId, rng)
-  if (next.boss && next.boss.bossSupport <= 0 && !next.boss.outcome) {
-    return applyBossWin(next)
-  }
   return next
 }
 

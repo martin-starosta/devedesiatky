@@ -18,10 +18,10 @@ export function armCondition(
   state: DeckRunState,
   condition: KauzaCondition,
 ): DeckRunState {
-  if (state.armedConditions.includes(condition)) return state
+  if ((state.armedConditions ?? []).includes(condition)) return state
   let next: DeckRunState = {
     ...state,
-    armedConditions: [...state.armedConditions, condition],
+    armedConditions: [...(state.armedConditions ?? []), condition],
   }
   // On-condition-arm: scan hand only.
   next = attemptDetonations(next, next.hand.map((c) => c.instanceId))
@@ -32,7 +32,7 @@ export function clearTransientArmedConditions(state: DeckRunState): DeckRunState
   // lossOfPower is persistent until handled; others clear each quarter.
   return {
     ...state,
-    armedConditions: state.armedConditions.filter((c) => c === 'lossOfPower'),
+    armedConditions: (state.armedConditions ?? []).filter((c) => c === 'lossOfPower'),
   }
 }
 
@@ -48,7 +48,9 @@ function attemptOne(
   if (status !== 'latent') return state
 
   const def = kauzaCards[card.cardId]
-  const matching = def.conditions.filter((c) => state.armedConditions.includes(c))
+  const matching = def.conditions.filter((c) =>
+    (state.armedConditions ?? []).includes(c),
+  )
   if (matching.length === 0) return state
 
   const canMute = !state.hostileKauzy && state.resources.media >= mediaMuteThreshold

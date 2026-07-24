@@ -1,7 +1,7 @@
 import { companies, sponsors, type CompanyId, type SponsorId } from '@devedesiatky/content'
 import { npcArchetypes, type NpcArchetypeId } from '@devedesiatky/content'
 import { politikaActions, type PolitikaActionId } from '@devedesiatky/content'
-import { availablePolitikaActions } from './politika'
+import { availablePolitikaActions } from './politikaAvailable'
 import type { FnmDestination, GameState, PatronagePower, Rng } from './types'
 
 function round1(value: number): number {

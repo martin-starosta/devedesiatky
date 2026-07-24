@@ -59,4 +59,4 @@ export {
   effectiveHandSize,
   useSisExile,
 } from './deck/relics'
-export { enterBoss } from './deck/boss'
+export { normalizeDeckRunState } from './deck/normalize'

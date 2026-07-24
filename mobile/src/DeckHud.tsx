@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
-import type { DeckRunState } from '@devedesiatky/simulation'
-import { countKauzyInRun, quarterScore } from '@devedesiatky/simulation'
+import type { DeckRunState } from '@devedesiatky/simulation/deck'
+import { countKauzyInRun, quarterScore } from '@devedesiatky/simulation/deck'
 import { formatSk } from './shellModel'
 
 export function DeckHud({ state }: { state: DeckRunState }) {

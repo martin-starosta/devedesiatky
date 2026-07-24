@@ -65,7 +65,7 @@ export function upgradeCard(state: DeckRunState, instanceId: string): DeckRunSta
 export function claimRelic(state: DeckRunState, relicId: RelicId): DeckRunState {
   if (state.phase !== 'ACQUIRE' || state.acquireNode !== 'institution') return state
   if (!(relicId in relics)) return state
-  if (state.relics.includes(relicId)) return state
+  if ((state.relics ?? []).includes(relicId)) return state
   if (!actIRelicIds.includes(relicId)) return state
 
   let next: DeckRunState = {
@@ -88,7 +88,7 @@ export function claimRelic(state: DeckRunState, relicId: RelicId): DeckRunState 
 
 /** SIS once/act: exile kauza from hand → exhaust, +Pozornosť. */
 export function useSisExile(state: DeckRunState, instanceId: string): DeckRunState {
-  if (!state.relics.includes('sis') || state.sisExileUsedThisAct) return state
+  if (!(state.relics ?? []).includes('sis') || state.sisExileUsedThisAct) return state
   const card = state.hand.find((c) => c.instanceId === instanceId)
   if (!card || !isKauzaCardId(card.cardId)) return state
   return {
@@ -101,5 +101,5 @@ export function useSisExile(state: DeckRunState, instanceId: string): DeckRunSta
 }
 
 export function effectiveHandSize(state: DeckRunState): number {
-  return state.relics.includes('ustavna-vacina') ? 6 : state.handSize
+  return (state.relics ?? []).includes('ustavna-vacina') ? 6 : state.handSize
 }

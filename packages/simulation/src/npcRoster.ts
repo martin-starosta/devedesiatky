@@ -2,14 +2,9 @@ import {
   npcArchetypes,
   type NpcArchetypeId,
 } from '@devedesiatky/content'
-import type { GameState, PartyPresetId } from './types'
+import type { GameState, NpcPartyState, PartyPresetId } from './types'
 
-export type NpcPartyState = {
-  id: NpcArchetypeId
-  preferencie: number
-  pokladna: number
-  inGovernment: boolean
-}
+export type { NpcPartyState }
 
 export type NpcRoster = {
   npcParties: NpcPartyState[]

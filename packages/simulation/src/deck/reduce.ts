@@ -10,7 +10,7 @@ import {
   quotaMissPreferencieBleed,
   type DeckArchetypeId,
 } from '@devedesiatky/content'
-import { bossEndTurn, bossPlay, enterBoss } from './boss'
+import { bossEndTurn, enterBoss, maybeBossWin } from './boss'
 import { drawCards, shuffle } from './draw'
 import { playCard } from './effects'
 import {
@@ -25,6 +25,7 @@ import {
   onResolveKauzy,
   armCondition,
 } from './kauzy'
+import { normalizeDeckRunState } from './normalize'
 import {
   claimRelic,
   effectiveHandSize,
@@ -298,6 +299,7 @@ export function reduceDeck(
   action: DeckAction,
   rng: Rng,
 ): DeckRunState {
+  state = normalizeDeckRunState(state)
   switch (action.type) {
     case 'START_RUN': {
       const runRng = createRng(action.seed >>> 0)
@@ -350,8 +352,10 @@ export function reduceDeck(
       return dismissDeckFact(state)
     case 'ARM_CONDITION':
       return armCondition(state, action.condition)
-    case 'BOSS_PLAY':
-      return bossPlay(state, action.instanceId, rng)
+    case 'BOSS_PLAY': {
+      if (state.phase !== 'BOSS' || !state.boss || state.boss.outcome) return state
+      return maybeBossWin(playCard(state, action.instanceId, rng))
+    }
     case 'BOSS_END_TURN':
       return bossEndTurn(state, rng)
     default:

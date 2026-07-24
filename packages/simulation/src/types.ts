@@ -16,7 +16,6 @@ import type {
   PolitikaActionId,
   SponsorId,
 } from '@devedesiatky/content'
-import type { NpcPartyState } from './npcRoster'
 
 export type {
   CampaignChannel,
@@ -80,7 +79,12 @@ export type DemographicId =
 
 export type DemographicWeights = Record<DemographicId, number>
 
-export type { NpcPartyState }
+export type NpcPartyState = {
+  id: NpcArchetypeId
+  preferencie: number
+  pokladna: number
+  inGovernment: boolean
+}
 
 export type KauzaEntry = {
   id: string

@@ -22,7 +22,7 @@ function energyCostFor(
   let cost = baseCost
   if (cardInst.upgraded) cost = Math.max(0, cost - 1)
   const def = lookupCard(cardInst.cardId)
-  if (state.relics.includes('statna-tv') && def?.tags.includes('kult')) {
+  if ((state.relics ?? []).includes('statna-tv') && def?.tags?.includes('kult')) {
     cost = Math.max(0, cost - 1)
   }
   return cost

@@ -1,4 +1,7 @@
-import type { DeckRunState } from '@devedesiatky/simulation'
+import {
+  normalizeDeckRunState,
+  type DeckRunState,
+} from '@devedesiatky/simulation/deck'
 
 export const DECK_SAVE_KEY = 'devedesiatky.deck.save'
 export const DECK_SAVE_VERSION = 1
@@ -63,7 +66,7 @@ export function createDeckPersistence(storage: DeckPersistenceStorage): DeckPers
         if (parsed?.version !== DECK_SAVE_VERSION || !looksLikeDeckState(parsed.state)) {
           return null
         }
-        return parsed.state
+        return normalizeDeckRunState(parsed.state)
       } catch {
         return null
       }

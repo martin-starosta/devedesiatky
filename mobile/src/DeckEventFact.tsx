@@ -9,7 +9,7 @@ import {
   availableDeckEventId,
   deckChoicesForEvent,
   type DeckRunState,
-} from '@devedesiatky/simulation'
+} from '@devedesiatky/simulation/deck'
 
 export function DeckEventPanel({
   state,
