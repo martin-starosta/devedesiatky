@@ -1,4 +1,4 @@
-# Divoké deväťdesiate — Game Design Document v2
+C# Divoké deväťdesiate — Game Design Document v2
 
 **Working title:** Divoké deväťdesiate (The Wild Nineties)
 **Genre:** Arcade political party tycoon

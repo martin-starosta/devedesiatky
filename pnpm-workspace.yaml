@@ -1,6 +1,5 @@
 packages:
   - 'packages/*'
-  - 'web'
   - 'mobile'
 minimumReleaseAgeExclude:
   - '@expo/cli@57.0.10'
@@ -19,3 +18,6 @@ minimumReleaseAgeExclude:
   - expo-modules-core@57.0.7
   - expo-modules-jsi@57.0.4
   - expo@57.0.8
+  - expo-dev-client@57.0.9
+  - expo-dev-launcher@57.0.9
+  - expo-dev-menu@57.0.9

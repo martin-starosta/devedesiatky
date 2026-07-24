@@ -8,7 +8,10 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "sk.devedesiatky.app"
+      "bundleIdentifier": "sk.devedesiatky.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -22,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1a546097-b0f4-4c8b-80eb-939259bb1db3"
+      }
+    },
+    "owner": "martin.starosta"
   }
 }
