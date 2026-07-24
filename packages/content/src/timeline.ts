@@ -39,10 +39,30 @@ export type EventChoice = {
     preferencie?: number
     reputacia?: number
     koalicia?: number
+    /** Country meter swing (GDD v3 §8); applied by the deck reducer. */
+    slovenskoIndex?: number
+    /** Erodes citizen trust (Reputácia) and the country meter when resolved. */
     trustDebt?: number
+    /** 'full' = direct-sale access: a cash windfall to the party at the country's cost. */
     patronagePower?: 'limited' | 'full'
   }
 }
+
+/**
+ * Deck-side tunables for privatization event choices (content, not engine).
+ * The historical beat: cancelling the coupon wave for direct sales pours money
+ * into the party while citizen trust and the country meter fall.
+ */
+export const eventPrivatizationEffects = {
+  /** Reputácia lost per point of trustDebt. */
+  reputaciaPerTrustDebt: 1,
+  /** Slovensko index lost per point of trustDebt. */
+  slovenskoPerTrustDebt: 2,
+  /** Pokladňa windfall when patronagePower resolves as 'full' (direct sales). */
+  fullWindfall: 40_000,
+  /** Extra Slovensko-index hit when patronagePower resolves as 'full'. */
+  fullSlovenskoHit: 2,
+} as const
 
 export type TimelineEvent = {
   id: EventId
@@ -66,8 +86,8 @@ export const factCards: Record<FactId, FactCard> = {
     id: 'fact-kuponka',
     titleSk: 'Kupónová privatizácia',
     bodySk:
-      'Druhá vlna bola v praxi zrušená; občania dostali dlhopisy FNM (nominál 10 000 Sk), kým priame predaje šli predvybraným kupcom.',
-    sourceHook: 'FNM / historiografia kupónovej privatizácie (1995)',
+      'Druhú vlnu kupónky v roku 1995 zrušili; občania dostali dlhopisy FNM (nominál 10 000 Sk), kým podniky išli priamym predajom vopred vybraným kupcom. Cena sa znižovala o „investície", splácala sa dlhopismi a na splátky — často za zlomok hodnoty. Tak vznikli prví oligarchovia a štát dostal málo.',
+    sourceHook: 'FNM / historiografia kupónovej privatizácie a priamych predajov (1995)',
   },
   'fact-pad-vlady': {
     id: 'fact-pad-vlady',
@@ -119,9 +139,14 @@ export const timelineEvents: TimelineEvent[] = [
     choices: [
       {
         id: 'continue-wave',
-        labelSk: 'Pokračovať v kupónovej vlne',
+        labelSk: 'Pokračovať v kupónovej vlne (rozdať občanom)',
         role: 'government',
-        effects: { preferencie: 0.9, patronagePower: 'limited' },
+        effects: {
+          preferencie: 0.9,
+          reputacia: 0.3,
+          slovenskoIndex: 1,
+          patronagePower: 'limited',
+        },
       },
       {
         id: 'cancel-wave',

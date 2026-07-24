@@ -10,6 +10,10 @@ export type CardEffectResource =
   | 'kult'
   | 'koalicia'
   | 'offices'
+  // GDD v3 §8: high-scoring patronage/kult play pushes the country meter down;
+  // clean play (verejné obstarávanie) lifts it. Reducer already indexes resources
+  // generically, so this is a type-only opt-in for card effects.
+  | 'slovenskoIndex'
 
 export type CardEffect =
   | { type: 'addPodpora'; amount: number }
@@ -40,7 +44,13 @@ export type CardId =
   | 'sponzor-galavecer'
   | 'privatizacny-tip'
   | 'fnm-kontakt'
+  | 'priamy-predaj'
+  | 'manazerske-odkupenie'
+  | 'dlhopisova-schema'
+  | 'oligarcha'
   | 'verejna-sutaz-karta'
+  | 'verejne-obstaravanie'
+  | 'protikorupcny-audit'
   | 'dobrovolnici'
   | 'telefonna-banka'
   | 'noviny-titulka'
@@ -175,6 +185,7 @@ export const cards: Record<CardId, CardDef> = {
       { type: 'addPodpora', amount: 14 },
       { type: 'addMobilizacia', amount: 1 },
       { type: 'gainResource', resource: 'pokladna', amount: 15_000 },
+      { type: 'gainResource', resource: 'slovenskoIndex', amount: -1 },
     ],
   },
   'privatizacny-tip': {
@@ -186,6 +197,7 @@ export const cards: Record<CardId, CardDef> = {
     effects: [
       { type: 'addPodpora', amount: 16 },
       { type: 'gainResource', resource: 'reputacia', amount: -0.5 },
+      { type: 'gainResource', resource: 'slovenskoIndex', amount: -1 },
     ],
   },
   'fnm-kontakt': {
@@ -198,6 +210,58 @@ export const cards: Record<CardId, CardDef> = {
       { type: 'addMobilizacia', amount: 3 },
       { type: 'addPodpora', amount: 8 },
       { type: 'gainResource', resource: 'pokladna', amount: 20_000 },
+      { type: 'gainResource', resource: 'slovenskoIndex', amount: -1 },
+    ],
+  },
+  'priamy-predaj': {
+    id: 'priamy-predaj',
+    titleSk: 'Priamy predaj',
+    blurbSk: 'Podnik vopred vybranému kupcovi, pod cenu. Peniaze tečú strane.',
+    energyCost: 1,
+    tags: ['patronage'],
+    effects: [
+      { type: 'addPodpora', amount: 12 },
+      { type: 'gainResource', resource: 'pokladna', amount: 30_000 },
+      { type: 'gainResource', resource: 'reputacia', amount: -1 },
+      { type: 'gainResource', resource: 'slovenskoIndex', amount: -2 },
+    ],
+  },
+  'manazerske-odkupenie': {
+    id: 'manazerske-odkupenie',
+    titleSk: 'Manažérske odkúpenie',
+    blurbSk: 'Lojálny riaditeľ dostane fabriku. Nový úrad pre stranu.',
+    energyCost: 1,
+    tags: ['patronage'],
+    effects: [
+      { type: 'addPodpora', amount: 9 },
+      { type: 'gainResource', resource: 'offices', amount: 1 },
+      { type: 'gainResource', resource: 'slovenskoIndex', amount: -1 },
+    ],
+  },
+  'dlhopisova-schema': {
+    id: 'dlhopisova-schema',
+    titleSk: 'Dlhopisová schéma',
+    blurbSk: 'Občania dostanú papier, kupci majetok. Kúpna cena splátkami.',
+    energyCost: 2,
+    tags: ['patronage'],
+    effects: [
+      { type: 'addPodpora', amount: 10 },
+      { type: 'gainResource', resource: 'pokladna', amount: 25_000 },
+      { type: 'gainResource', resource: 'reputacia', amount: -1 },
+      { type: 'gainResource', resource: 'slovenskoIndex', amount: -2 },
+    ],
+  },
+  oligarcha: {
+    id: 'oligarcha',
+    titleSk: 'Oligarcha',
+    blurbSk: 'Zrodí sa magnát napojený na moc — a rastie s tým, čo už ovládaš.',
+    energyCost: 2,
+    tags: ['patronage'],
+    effects: [
+      { type: 'addPodporaPer', stat: 'offices', amount: 4 },
+      { type: 'gainResource', resource: 'offices', amount: 1 },
+      { type: 'gainResource', resource: 'media', amount: 1 },
+      { type: 'gainResource', resource: 'slovenskoIndex', amount: -2 },
     ],
   },
   'verejna-sutaz-karta': {
@@ -209,6 +273,31 @@ export const cards: Record<CardId, CardDef> = {
     effects: [
       { type: 'addPodpora', amount: 7 },
       { type: 'gainResource', resource: 'reputacia', amount: 0.5 },
+      { type: 'gainResource', resource: 'slovenskoIndex', amount: 0.5 },
+    ],
+  },
+  'verejne-obstaravanie': {
+    id: 'verejne-obstaravanie',
+    titleSk: 'Verejné obstarávanie',
+    blurbSk: 'Transparentný tender. Menej peňazí, viac dôvery občanov.',
+    energyCost: 1,
+    tags: ['basic', 'campaign'],
+    effects: [
+      { type: 'addPodpora', amount: 7 },
+      { type: 'gainResource', resource: 'reputacia', amount: 1 },
+      { type: 'gainResource', resource: 'slovenskoIndex', amount: 1 },
+    ],
+  },
+  'protikorupcny-audit': {
+    id: 'protikorupcny-audit',
+    titleSk: 'Protikorupčný audit',
+    blurbSk: 'Otvorené účty. Dôvera občanov rastie, mobilizácia s ňou.',
+    energyCost: 1,
+    tags: ['basic'],
+    effects: [
+      { type: 'gainResource', resource: 'reputacia', amount: 1.5 },
+      { type: 'addMobilizacia', amount: 1 },
+      { type: 'gainResource', resource: 'slovenskoIndex', amount: 1 },
     ],
   },
   dobrovolnici: {
@@ -267,21 +356,27 @@ export const cards: Record<CardId, CardDef> = {
 
 export const actICardIds = Object.keys(cards) as CardId[]
 
-/** Clean shop pool (weaker, no patronage). */
+/** Clean shop pool (weaker, no patronage — verejné obstarávanie, dôvera občanov). */
 export const cleanShopCardIds: CardId[] = [
   'letaky',
   'verejna-sutaz-karta',
+  'verejne-obstaravanie',
+  'protikorupcny-audit',
   'dobrovolnici',
   'stranicka-skola',
   'zahranicna-cesta',
   'odbory-dohoda',
 ]
 
-/** Patronage shop pool (strongest scorers — thesis temptation). */
+/** Patronage shop pool (strongest scorers — divoká privatizácia temptation). */
 export const patronageShopCardIds: CardId[] = [
   'sponzor-galavecer',
   'privatizacny-tip',
   'fnm-kontakt',
+  'priamy-predaj',
+  'manazerske-odkupenie',
+  'dlhopisova-schema',
+  'oligarcha',
 ]
 
 export type DeckArchetypeId = 'stroj-moci'

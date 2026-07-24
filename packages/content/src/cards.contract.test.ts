@@ -3,11 +3,20 @@ import {
   actICardIds,
   actIOpeningQuota,
   cards,
+  cleanShopCardIds,
   deckArchetypes,
   patronageShopCardIds,
   type CardEffect,
   type CardId,
 } from './cards'
+
+function slovenskoIndexDelta(cardId: CardId): number {
+  return cards[cardId].effects.reduce(
+    (sum, e) =>
+      e.type === 'gainResource' && e.resource === 'slovenskoIndex' ? sum + e.amount : sum,
+    0,
+  )
+}
 
 const EFFECT_TYPES = new Set([
   'addPodpora',
@@ -57,5 +66,29 @@ describe('card content contracts', () => {
     if (gala?.type === 'addPodpora' && miting?.type === 'addPodpora') {
       expect(gala.amount).toBeGreaterThan(miting.amount)
     }
+  })
+
+  it('divoká privatizácia thesis: patronage tanks the country, clean tenders lift it', () => {
+    // Every patronage-pool card pushes the Slovensko index down.
+    for (const id of patronageShopCardIds) {
+      expect(cards[id].tags).toContain('patronage')
+      expect(slovenskoIndexDelta(id)).toBeLessThan(0)
+    }
+    // Clean shop never tanks the country; the transparency cards lift it (dôvera občanov).
+    for (const id of cleanShopCardIds) {
+      expect(cards[id].tags).not.toContain('patronage')
+      expect(slovenskoIndexDelta(id)).toBeGreaterThanOrEqual(0)
+    }
+    expect(slovenskoIndexDelta('verejne-obstaravanie')).toBeGreaterThan(0)
+    expect(slovenskoIndexDelta('protikorupcny-audit')).toBeGreaterThan(0)
+
+    // The oligarch card scales off captured office and builds party power (offices + media).
+    const oligarcha = cards.oligarcha
+    expect(oligarcha.effects.some((e) => e.type === 'addPodporaPer' && e.stat === 'offices')).toBe(
+      true,
+    )
+    expect(
+      oligarcha.effects.some((e) => e.type === 'gainResource' && e.resource === 'media'),
+    ).toBe(true)
   })
 })

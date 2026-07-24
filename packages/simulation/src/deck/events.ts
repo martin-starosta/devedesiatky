@@ -1,5 +1,6 @@
 import {
   eventIdForQuarter,
+  eventPrivatizationEffects,
   timelineEventsById,
   type EventChoice,
   type EventChoiceId,
@@ -62,6 +63,25 @@ export function resolveDeckEvent(
   }
   if (effects.koalicia) {
     resources.koalicia = round1(resources.koalicia + effects.koalicia)
+  }
+  if (effects.slovenskoIndex) {
+    resources.slovenskoIndex = round1(resources.slovenskoIndex + effects.slovenskoIndex)
+  }
+  // Divoká privatizácia: erosion of citizen trust and the country meter, and the
+  // direct-sale windfall that flows to the party (GDD v3 §8; historical 1995 pivot).
+  if (effects.trustDebt) {
+    resources.reputacia = round1(
+      resources.reputacia - effects.trustDebt * eventPrivatizationEffects.reputaciaPerTrustDebt,
+    )
+    resources.slovenskoIndex = round1(
+      resources.slovenskoIndex - effects.trustDebt * eventPrivatizationEffects.slovenskoPerTrustDebt,
+    )
+  }
+  if (effects.patronagePower === 'full') {
+    resources.pokladna = round1(resources.pokladna + eventPrivatizationEffects.fullWindfall)
+    resources.slovenskoIndex = round1(
+      resources.slovenskoIndex - eventPrivatizationEffects.fullSlovenskoHit,
+    )
   }
 
   return {
