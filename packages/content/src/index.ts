@@ -92,3 +92,16 @@ export {
   type DeckArchetype,
   type DeckArchetypeId,
 } from './cards'
+export {
+  cleanShopPrice,
+  kauzaCardIds,
+  kauzaCards,
+  patronageKauzaInjectMax,
+  patronageKauzaInjectMin,
+  patronageShopPrice,
+  shopOfferCount,
+  type AnyPlayableCardId,
+  type KauzaCardDef,
+  type KauzaCardId,
+} from './kauzaCards'
+export { lookupCard, isKauzaCardId } from './kauzaCards'

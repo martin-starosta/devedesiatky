@@ -3,6 +3,8 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   cards,
   deckArchetypes,
+  lookupCard,
+  type AnyPlayableCardId,
   type DeckArchetypeId,
   type EventChoiceId,
 } from '@devedesiatky/content'
@@ -24,6 +26,9 @@ type Props = {
   onEndQuarter: () => void
   onShopSkip: () => void
   onOpenEvent: () => void
+  onOpenShop: (kind: 'shop-clean' | 'shop-patronage') => void
+  onShopBuy: (cardId: AnyPlayableCardId) => void
+  onTakePatronage: (cardId: AnyPlayableCardId) => void
   onResolveEvent: (choiceId: EventChoiceId) => void
   onCollectFact: () => void
   onDismissFact: () => void
@@ -37,6 +42,9 @@ export function DeckQuarterScreen({
   onEndQuarter,
   onShopSkip,
   onOpenEvent,
+  onOpenShop,
+  onShopBuy,
+  onTakePatronage,
   onResolveEvent,
   onCollectFact,
   onDismissFact,
@@ -102,7 +110,7 @@ export function DeckQuarterScreen({
           <>
             <Text style={styles.section}>Ruka</Text>
             {state.hand.map((card) => {
-              const def = cards[card.cardId]
+              const def = lookupCard(card.cardId) ?? cards.miting
               const affordable = state.energy >= def.energyCost
               return (
                 <Pressable
@@ -132,6 +140,46 @@ export function DeckQuarterScreen({
         {state.phase === 'ACQUIRE' ? (
           state.acquireNode === 'event' && state.activeEventId ? (
             <DeckEventPanel state={state} onResolve={onResolveEvent} />
+          ) : state.acquireNode === 'shop-clean' ||
+            state.acquireNode === 'shop-patronage' ? (
+            <View style={styles.result}>
+              <Text style={styles.section}>
+                {state.acquireNode === 'shop-clean'
+                  ? 'Verejná súťaž'
+                  : 'Sponzor — patronát'}
+              </Text>
+              <Text style={styles.blurb}>
+                {state.acquireNode === 'shop-clean'
+                  ? 'Slabšie karty, bez kauzy.'
+                  : 'Silné karty lacno — každá kúpa pridá kauzy.'}
+              </Text>
+              {(state.shopOffers ?? []).map((cardId) => {
+                const def = lookupCard(cardId)
+                if (!def) return null
+                return (
+                  <Pressable
+                    key={cardId}
+                    accessibilityRole="button"
+                    style={styles.card}
+                    onPress={() =>
+                      state.acquireNode === 'shop-clean'
+                        ? onShopBuy(cardId)
+                        : onTakePatronage(cardId)
+                    }
+                  >
+                    <Text style={styles.cardTitle}>{def.titleSk}</Text>
+                    <Text style={styles.cardBlurb}>{def.blurbSk}</Text>
+                  </Pressable>
+                )
+              })}
+              <Pressable
+                accessibilityRole="button"
+                style={styles.secondary}
+                onPress={onShopSkip}
+              >
+                <Text style={styles.secondaryLabel}>Preskočiť obchod</Text>
+              </Pressable>
+            </View>
           ) : (
             <View style={styles.result}>
               <Text style={styles.section}>
@@ -140,6 +188,20 @@ export function DeckQuarterScreen({
               <Text style={styles.blurb}>
                 Skóre {state.lastScore ?? 0} / {state.quota} · kvartál {state.quarter}/6
               </Text>
+              <Pressable
+                accessibilityRole="button"
+                style={styles.secondary}
+                onPress={() => onOpenShop('shop-clean')}
+              >
+                <Text style={styles.secondaryLabel}>Verejná súťaž</Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                style={styles.secondary}
+                onPress={() => onOpenShop('shop-patronage')}
+              >
+                <Text style={styles.secondaryLabel}>Sponzor (kauzy)</Text>
+              </Pressable>
               {canOpenDeckEvent(state) ? (
                 <Pressable
                   accessibilityRole="button"

@@ -51,3 +51,4 @@ export {
   availableDeckEventId,
   deckChoicesForEvent,
 } from './deck/events'
+export { countKauzyInRun } from './deck/shop'

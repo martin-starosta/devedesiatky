@@ -18,6 +18,7 @@ import {
   openDeckEvent,
   resolveDeckEvent,
 } from './events'
+import { openShop, shopBuy, takePatronage } from './shop'
 import type { DeckAction, DeckCardInstance, DeckRunState } from './types'
 import type { Rng } from '../types'
 import { createRng } from '../rng'
@@ -94,6 +95,8 @@ export function createEmptyDeckLobby(seed = 1993): DeckRunState {
     collectedFactIds: [],
     factOpens: 0,
     phaseAfterFact: null,
+    shopOffers: null,
+    sponsors: [],
     nextInstanceSeq: 1,
   }
 }
@@ -150,6 +153,8 @@ function startRun(
     collectedFactIds: [],
     factOpens: 0,
     phaseAfterFact: null,
+    shopOffers: null,
+    sponsors: [],
     nextInstanceSeq: minted.nextSeq,
   }
 }
@@ -234,6 +239,7 @@ function advanceAfterAcquire(state: DeckRunState, rng: Rng): DeckRunState {
       calendarQuarter,
       quota: quotaForQuarter(quarter, state.quotaBase),
       acquireNode: null,
+      shopOffers: null,
       phase: 'DRAW',
       drawPile: combined,
       discardPile: [],
@@ -270,6 +276,12 @@ export function reduceDeck(
       return advanceAfterAcquire(state, rng)
     case 'OPEN_EVENT':
       return openDeckEvent(state)
+    case 'OPEN_SHOP':
+      return openShop(state, action.kind, rng)
+    case 'SHOP_BUY':
+      return shopBuy(state, action.cardId, rng)
+    case 'TAKE_PATRONAGE':
+      return takePatronage(state, action.cardId, rng, action.sponsorId)
     case 'RESOLVE_EVENT':
       return resolveDeckEvent(state, action.choiceId)
     case 'COLLECT_FACT':

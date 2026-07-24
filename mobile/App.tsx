@@ -21,6 +21,9 @@ export default function App() {
   const endQuarter = useDeckStore((s) => s.endQuarter)
   const shopSkip = useDeckStore((s) => s.shopSkip)
   const openEvent = useDeckStore((s) => s.openEvent)
+  const openShop = useDeckStore((s) => s.openShop)
+  const shopBuy = useDeckStore((s) => s.shopBuy)
+  const takePatronage = useDeckStore((s) => s.takePatronage)
   const resolveEvent = useDeckStore((s) => s.resolveEvent)
   const collectFact = useDeckStore((s) => s.collectFact)
   const dismissFact = useDeckStore((s) => s.dismissFact)
@@ -72,6 +75,9 @@ export default function App() {
           onEndQuarter={() => void endQuarter()}
           onShopSkip={() => void shopSkip()}
           onOpenEvent={() => void openEvent()}
+          onOpenShop={(kind) => void openShop(kind)}
+          onShopBuy={(id) => void shopBuy(id)}
+          onTakePatronage={(id) => void takePatronage(id)}
           onResolveEvent={(id) => void resolveEvent(id)}
           onCollectFact={() => void collectFact()}
           onDismissFact={() => void dismissFact()}

@@ -1,4 +1,4 @@
-import { cards, type CardEffect } from '@devedesiatky/content'
+import { lookupCard, type CardEffect } from '@devedesiatky/content'
 import { drawCards } from './draw'
 import type { DeckRunState } from './types'
 import type { Rng } from '../types'
@@ -74,11 +74,9 @@ function applyOne(state: DeckRunState, effect: CardEffect, rng: Rng): DeckRunSta
       }
     }
     case 'addKauza':
-      // Kauza injection lands in a later slice; no-op until #32/#33.
       return state
     case 'bossDamage':
     case 'bossBlock':
-      // Boss phase only — no-op in engine quarter.
       return state
   }
 }
@@ -91,7 +89,7 @@ export function playCard(
   const index = state.hand.findIndex((c) => c.instanceId === instanceId)
   if (index < 0) return state
   const cardInst = state.hand[index]
-  const def = cards[cardInst.cardId]
+  const def = lookupCard(cardInst.cardId)
   if (!def || state.energy < def.energyCost) return state
 
   const hand = state.hand.filter((_, i) => i !== index)

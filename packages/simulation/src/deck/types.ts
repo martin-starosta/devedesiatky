@@ -1,9 +1,11 @@
 import type {
-  CardId,
+  AnyPlayableCardId,
   DeckArchetypeId,
   EventChoiceId,
   EventId,
   FactId,
+  KauzaCardId,
+  SponsorId,
 } from '@devedesiatky/content'
 
 export type DeckPhase =
@@ -26,7 +28,12 @@ export type AcquireNode =
 export type DeckCardInstance = {
   /** Unique instance id in this run. */
   instanceId: string
-  cardId: CardId
+  cardId: AnyPlayableCardId
+}
+
+export type SponsorDebt = {
+  sponsorId: SponsorId
+  obligations: number
 }
 
 export type DeckResources = {
@@ -50,6 +57,8 @@ export type DeckRunState = {
   calendarQuarter: 1 | 2 | 3 | 4
   phase: DeckPhase
   acquireNode: AcquireNode | null
+  shopOffers: AnyPlayableCardId[] | null
+  sponsors: SponsorDebt[]
   archetypeId: DeckArchetypeId
   deck: DeckCardInstance[]
   hand: DeckCardInstance[]
@@ -86,6 +95,11 @@ export type DeckAction =
   | { type: 'END_QUARTER' }
   | { type: 'SHOP_SKIP' }
   | { type: 'OPEN_EVENT' }
+  | { type: 'OPEN_SHOP'; kind: 'shop-clean' | 'shop-patronage' }
+  | { type: 'SHOP_BUY'; cardId: AnyPlayableCardId }
+  | { type: 'TAKE_PATRONAGE'; cardId: AnyPlayableCardId; sponsorId?: SponsorId }
   | { type: 'RESOLVE_EVENT'; choiceId: EventChoiceId }
   | { type: 'COLLECT_FACT' }
   | { type: 'DISMISS_FACT' }
+
+export type { KauzaCardId }

@@ -12,6 +12,7 @@ import {
   quotaForQuarter,
   reduceDeck,
 } from './reduce'
+import { countKauzyInRun } from './shop'
 import type { DeckRunState } from './types'
 
 function playMitings(state: DeckRunState, count: number): DeckRunState {
@@ -217,5 +218,56 @@ describe('deck events + facts (#30)', () => {
     expect(state.collectedFactIds).toContain('fact-vznik-republiky')
     expect(state.factOpens).toBe(1)
     expect(state.pendingFactId).toBeNull()
+  })
+})
+
+describe('deck acquisition shops (#32)', () => {
+  it('clean shop adds card without kauzy; patronage injects kauzy + obligation', () => {
+    let state = reduceDeck(
+      createEmptyDeckLobby(21),
+      { type: 'START_RUN', archetypeId: 'stroj-moci', seed: 21 },
+      createRng(0),
+    )
+    state = reduceDeck(state, { type: 'DRAW_HAND' }, createRng(state.rngState))
+    state = playMitings(state, 3)
+    state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
+
+    state = reduceDeck(
+      state,
+      { type: 'OPEN_SHOP', kind: 'shop-clean' },
+      createRng(state.rngState),
+    )
+    expect(state.acquireNode).toBe('shop-clean')
+    expect(state.shopOffers?.length).toBeGreaterThan(0)
+    const cleanCard = state.shopOffers![0]
+    const beforeCleanKauzy = countKauzyInRun(state)
+    state = reduceDeck(
+      state,
+      { type: 'SHOP_BUY', cardId: cleanCard },
+      createRng(state.rngState),
+    )
+    expect(countKauzyInRun(state)).toBe(beforeCleanKauzy)
+    expect(state.deck.some((c) => c.cardId === cleanCard)).toBe(true)
+
+    // Next quarter acquire → patronage
+    state = reduceDeck(state, { type: 'SHOP_SKIP' }, createRng(state.rngState))
+    state = playMitings(state, 3)
+    state = reduceDeck(state, { type: 'END_QUARTER' }, createRng(state.rngState))
+    state = reduceDeck(
+      state,
+      { type: 'OPEN_SHOP', kind: 'shop-patronage' },
+      createRng(state.rngState),
+    )
+    const patCard = state.shopOffers![0]
+    const beforePat = countKauzyInRun(state)
+    state = reduceDeck(
+      state,
+      { type: 'TAKE_PATRONAGE', cardId: patCard, sponsorId: 'zelezny-baron' },
+      createRng(state.rngState),
+    )
+    expect(countKauzyInRun(state)).toBeGreaterThan(beforePat)
+    expect(state.sponsors.some((s) => s.sponsorId === 'zelezny-baron' && s.obligations >= 1)).toBe(
+      true,
+    )
   })
 })
